@@ -5,13 +5,14 @@ export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
   const { data, error } = await supabase
     .from('stats_acumulado')
     .select('*')
-    .single();
+    .maybeSingle();
 
   if (error) {
+    // division by zero when tables are empty
     if (error.code === '22012') return null;
     throw error;
   }
-  return data as StatsAcumulado;
+  return data as StatsAcumulado | null;
 }
 
 export async function fetchStatsPorRodada(): Promise<StatsPorRodada[]> {
