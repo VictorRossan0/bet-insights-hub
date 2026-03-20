@@ -1,5 +1,5 @@
 import { supabase } from './client';
-import type { Jogo } from '@/types/database';
+import type { JogoComTimes, Jogo } from '@/types/database';
 
 export type JogosFilters = {
   rodada?: number;
@@ -15,7 +15,7 @@ export async function fetchJogos(filters: JogosFilters = {}) {
 
   let query = supabase
     .from('jogos')
-    .select('*', { count: 'exact' })
+    .select('*, time_casa:times!jogos_time_casa_id_fkey(nome, sigla), time_fora:times!jogos_time_fora_id_fkey(nome, sigla)', { count: 'exact' })
     .order('rodada', { ascending: false })
     .order('data_jogo', { ascending: false })
     .range(from, to);
@@ -25,13 +25,14 @@ export async function fetchJogos(filters: JogosFilters = {}) {
   }
 
   if (time) {
-    query = query.or(`time_casa_nome.ilike.%${time}%,time_fora_nome.ilike.%${time}%`);
+    // Filter by team name via the joined relation
+    query = query.or(`time_casa.nome.ilike.%${time}%,time_fora.nome.ilike.%${time}%`);
   }
 
   const { data, error, count } = await query;
 
   if (error) throw error;
-  return { data: (data as Jogo[]) || [], count: count || 0 };
+  return { data: (data as JogoComTimes[]) || [], count: count || 0 };
 }
 
 export async function createJogo(jogo: Partial<Jogo>) {
@@ -57,8 +58,8 @@ export async function fetchRodadas(): Promise<number[]> {
   return unique;
 }
 
-export async function fetchTimes(): Promise<string[]> {
-  const { data, error } = await supabase.from('times').select('nome').order('nome');
+export async function fetchTimes(): Promise<{ id: number; nome: string; sigla: string }[]> {
+  const { data, error } = await supabase.from('times').select('id, nome, sigla').order('nome');
   if (error) throw error;
-  return (data || []).map((t: { nome: string }) => t.nome);
+  return data || [];
 }

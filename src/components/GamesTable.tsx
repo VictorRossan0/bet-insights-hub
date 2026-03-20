@@ -1,8 +1,8 @@
-import type { Jogo } from '@/types/database';
+import type { JogoComTimes } from '@/types/database';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Props = {
-  jogos: Jogo[];
+  jogos: JogoComTimes[];
   isLoading: boolean;
   page: number;
   totalCount: number;
@@ -57,8 +57,8 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <th>U3.5G</th>
               <th>U2.5G</th>
               <th>U7C</th>
-              <th>O8E</th>
-              <th>O9E</th>
+              <th>O8C</th>
+              <th>O9C</th>
             </tr>
           </thead>
           <tbody>
@@ -66,9 +66,9 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <tr key={j.id}>
                 <td className="font-mono text-xs text-muted-foreground">{j.rodada}</td>
                 <td className="whitespace-nowrap">
-                  <span className="font-medium text-sm">{j.time_casa_nome}</span>
+                  <span className="font-medium text-sm">{j.time_casa?.nome ?? '—'}</span>
                   <span className="badge-score mx-2">{j.gols_casa}x{j.gols_fora}</span>
-                  <span className="font-medium text-sm">{j.time_fora_nome}</span>
+                  <span className="font-medium text-sm">{j.time_fora?.nome ?? '—'}</span>
                 </td>
                 <td className="font-mono text-sm">{j.gols_total}</td>
                 <td className="font-mono text-sm">{j.escanteios_total}</td>
@@ -79,15 +79,14 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                 <td><BoolBadge value={j.u35_gols} /></td>
                 <td><BoolBadge value={j.u25_gols} /></td>
                 <td><BoolBadge value={j.u7_cartoes} /></td>
-                <td><BoolBadge value={j.o8_escanteios} /></td>
-                <td><BoolBadge value={j.o9_escanteios} /></td>
+                <td><BoolBadge value={j.o8_cantos} /></td>
+                <td><BoolBadge value={j.o9_cantos} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
           <span>

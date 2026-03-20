@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Zap, Loader2 } from 'lucide-react';
 import InsightCards from '@/components/InsightCards';
-import { fetchSugestoes, updateSugestaoStatus } from '@/services/supabase/sugestoesService';
+import { fetchSugestoes, updateSugestaoResultado } from '@/services/supabase/sugestoesService';
 import { toast } from 'sonner';
 import type { SugestaoAposta } from '@/types/database';
 
@@ -17,8 +17,8 @@ export default function Insights() {
   });
 
   const markResultMutation = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: 'green' | 'red' }) =>
-      updateSugestaoStatus(id, status),
+    mutationFn: ({ id, resultado }: { id: number; resultado: 'ganhou' | 'perdeu' }) =>
+      updateSugestaoResultado(id, resultado),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sugestoes'] });
       toast.success('Resultado marcado');
@@ -69,7 +69,7 @@ export default function Insights() {
       <InsightCards
         sugestoes={sugestoes ?? []}
         isLoading={isLoading}
-        onMarkResult={(id, status) => markResultMutation.mutate({ id, status })}
+        onMarkResult={(id, resultado) => markResultMutation.mutate({ id, resultado })}
         onSendTelegram={handleSendTelegram}
       />
     </div>

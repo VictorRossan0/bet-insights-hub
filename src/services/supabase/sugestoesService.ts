@@ -11,10 +11,10 @@ export async function fetchSugestoes(): Promise<SugestaoAposta[]> {
   return (data as SugestaoAposta[]) || [];
 }
 
-export async function updateSugestaoStatus(id: number, status: 'green' | 'red') {
+export async function updateSugestaoResultado(id: number, resultado: 'ganhou' | 'perdeu') {
   const { error } = await supabase
     .from('sugestoes_apostas')
-    .update({ status })
+    .update({ resultado })
     .eq('id', id);
 
   if (error) throw error;

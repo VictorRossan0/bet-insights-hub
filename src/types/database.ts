@@ -1,8 +1,8 @@
 export type Time = {
   id: number;
   nome: string;
-  escudo_url?: string;
-  sofascore_id?: number;
+  sigla: string;
+  criado_em?: string;
 };
 
 export type Jogo = {
@@ -11,32 +11,32 @@ export type Jogo = {
   data_jogo: string;
   time_casa_id: number;
   time_fora_id: number;
-  time_casa_nome: string;
-  time_fora_nome: string;
   gols_casa: number;
   gols_fora: number;
   gols_total: number;
+  resultado?: 'casa' | 'fora' | 'empate';
   escanteios_casa: number;
   escanteios_fora: number;
   escanteios_total: number;
-  cartoes_casa: number;
-  cartoes_fora: number;
+  cartoes_amarelos: number;
+  cartoes_vermelhos: number;
   cartoes_total: number;
-  cartoes_amarelos_casa: number;
-  cartoes_amarelos_fora: number;
-  cartoes_vermelhos_casa: number;
-  cartoes_vermelhos_fora: number;
   o5_cantos: boolean;
   o6_cantos: boolean;
   o7_cantos: boolean;
+  o8_cantos: boolean;
+  o9_cantos: boolean;
   u35_gols: boolean;
   u25_gols: boolean;
   u7_cartoes: boolean;
-  o8_escanteios: boolean;
-  o9_escanteios: boolean;
   fonte?: string;
-  sofascore_id?: number;
-  created_at?: string;
+  criado_em?: string;
+};
+
+/** Jogo with team names resolved via join */
+export type JogoComTimes = Jogo & {
+  time_casa: Pick<Time, 'nome' | 'sigla'>;
+  time_fora: Pick<Time, 'nome' | 'sigla'>;
 };
 
 export type StatsPorRodada = {
@@ -64,8 +64,8 @@ export type StatsAcumulado = {
   pct_u35_gols: number;
   pct_u25_gols: number;
   pct_u7_cartoes: number;
-  pct_o8_escanteios: number;
-  pct_o9_escanteios: number;
+  pct_o8_cantos: number;
+  pct_o9_cantos: number;
 };
 
 export type StatsPorTime = {
@@ -79,13 +79,16 @@ export type StatsPorTime = {
 
 export type SugestaoAposta = {
   id: number;
+  rodada_referencia: number;
+  jogo_id?: number;
   mercado: string;
-  tipo: string;
+  tipo_aposta: string;
   descricao: string;
   confianca: number;
   odd_sugerida: number;
-  status?: 'pendente' | 'green' | 'red';
-  created_at: string;
+  resultado?: 'pendente' | 'ganhou' | 'perdeu';
+  enviado_telegram: boolean;
+  criado_em?: string;
 };
 
 export type MarketData = {
