@@ -28,6 +28,8 @@ export default function Jogos() {
     queryFn: fetchTimes,
   });
 
+  const timeNames = times?.map(t => t.nome) ?? [];
+
   const handleRefresh = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['jogos'] });
     toast.success('Dados atualizados');
