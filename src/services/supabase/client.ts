@@ -1,10 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.');
-}
+const supabaseUrl = 'https://ycnbcsxlnjhdnwvmufgj.supabase.co';
+const supabaseAnonKey = 'sb_publishable_ht6SFSxZW1HmGWU7q7hrEw_zVGUgV6q';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
