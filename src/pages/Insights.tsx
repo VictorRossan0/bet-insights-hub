@@ -87,11 +87,8 @@ export default function Insights() {
 
   const handleSendTelegram = useCallback(async (sugestao: SugestaoAposta) => {
     try {
-      const chatId = prompt('Informe o chat_id do Telegram:');
-      if (!chatId) return;
-
       const { data, error } = await cloudSupabase.functions.invoke('send-telegram', {
-        body: { chatId, sugestao },
+        body: { chatId: '153641423', sugestao },
       });
 
       if (error) throw error;
