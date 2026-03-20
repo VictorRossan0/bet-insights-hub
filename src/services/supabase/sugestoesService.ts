@@ -1,4 +1,4 @@
-import { supabase } from './client';
+import { supabase } from '@/integrations/supabase/client';
 import type { SugestaoAposta } from '@/types/database';
 
 export async function fetchSugestoes(): Promise<SugestaoAposta[]> {
