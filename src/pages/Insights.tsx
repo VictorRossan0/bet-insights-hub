@@ -3,8 +3,10 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Zap, Loader2 } from 'lucide-react';
 import InsightCards from '@/components/InsightCards';
-import { fetchSugestoes, updateSugestaoResultado } from '@/services/supabase/sugestoesService';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchSugestoes, updateSugestaoResultado, saveSugestoes } from '@/services/supabase/sugestoesService';
+import { supabase as cloudSupabase } from '@/integrations/supabase/client';
+import { supabase as externalSupabase } from '@/services/supabase/client';
+import { fetchStatsAcumulado, fetchStatsPorRodada } from '@/services/supabase/statsService';
 import { toast } from 'sonner';
 import type { SugestaoAposta } from '@/types/database';
 
@@ -30,11 +32,51 @@ export default function Insights() {
   const handleGenerateAnalysis = useCallback(async () => {
     setGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-insights');
+      // Fetch data from external Supabase
+      const [stats, roundStats, recentGamesRes] = await Promise.all([
+        fetchStatsAcumulado(),
+        fetchStatsPorRodada(),
+        externalSupabase
+          .from('jogos')
+          .select('*, time_casa:times!jogos_time_casa_id_fkey(nome,sigla), time_fora:times!jogos_time_fora_id_fkey(nome,sigla)')
+          .order('rodada', { ascending: false })
+          .limit(20),
+      ]);
+
+      const recentGames = recentGamesRes.data?.map((g: any) => ({
+        rodada: g.rodada,
+        casa: g.time_casa?.nome,
+        fora: g.time_fora?.nome,
+        gols: `${g.gols_casa}x${g.gols_fora}`,
+        escanteios: g.escanteios_total,
+        cartoes: g.cartoes_total,
+      }));
+
+      const lastRoundStats = roundStats.slice(-3);
+
+      // Call Groq via edge function
+      const { data, error } = await cloudSupabase.functions.invoke('generate-insights', {
+        body: { stats, recentGames, lastRoundStats },
+      });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+
+      // Save to external Supabase
+      const maxRodada = recentGames?.[0]?.rodada ?? 0;
+      const toSave = data.sugestoes.map((s: any) => ({
+        rodada_referencia: maxRodada + 1,
+        mercado: s.mercado,
+        tipo_aposta: s.tipo_aposta,
+        descricao: s.descricao,
+        confianca: Math.min(95, Math.max(50, s.confianca)),
+        odd_sugerida: s.odd_sugerida,
+        resultado: 'pendente',
+        enviado_telegram: false,
+      }));
+
+      await saveSugestoes(toSave);
       queryClient.invalidateQueries({ queryKey: ['sugestoes'] });
-      toast.success(`${data.sugestoes?.length ?? 0} sugestões geradas com sucesso!`);
+      toast.success(`${data.sugestoes.length} sugestões geradas com sucesso!`);
     } catch (err: any) {
       console.error('Generate insights error:', err);
       toast.error(err.message || 'Erro ao gerar análise');
