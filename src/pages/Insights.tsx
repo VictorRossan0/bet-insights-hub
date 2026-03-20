@@ -85,10 +85,23 @@ export default function Insights() {
     }
   }, [queryClient]);
 
-  const handleSendTelegram = useCallback((sugestao: SugestaoAposta) => {
-    const message = `⚽ BetAnalytics\n🔥 Sugestão: ${sugestao.mercado}\n📊 Confiança: ${sugestao.confianca}%\n💰 Odd: ${sugestao.odd_sugerida}\n🧠 ${sugestao.descricao}`;
-    toast.info('Integração Telegram será configurada. Mensagem preparada.');
-    console.log('Telegram message:', message);
+  const handleSendTelegram = useCallback(async (sugestao: SugestaoAposta) => {
+    try {
+      const chatId = prompt('Informe o chat_id do Telegram:');
+      if (!chatId) return;
+
+      const { data, error } = await cloudSupabase.functions.invoke('send-telegram', {
+        body: { chatId, sugestao },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast.success('Sugestão enviada ao Telegram!');
+    } catch (err: any) {
+      console.error('Telegram error:', err);
+      toast.error(err.message || 'Erro ao enviar para o Telegram');
+    }
   }, []);
 
   return (
