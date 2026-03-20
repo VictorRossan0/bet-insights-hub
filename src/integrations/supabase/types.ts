@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      sugestoes_apostas: {
+        Row: {
+          confianca: number | null
+          criado_em: string | null
+          descricao: string | null
+          enviado_telegram: boolean | null
+          id: number
+          jogo_id: number | null
+          mercado: string | null
+          odd_sugerida: number | null
+          resultado: string | null
+          rodada_referencia: number
+          tipo_aposta: string | null
+        }
+        Insert: {
+          confianca?: number | null
+          criado_em?: string | null
+          descricao?: string | null
+          enviado_telegram?: boolean | null
+          id?: number
+          jogo_id?: number | null
+          mercado?: string | null
+          odd_sugerida?: number | null
+          resultado?: string | null
+          rodada_referencia: number
+          tipo_aposta?: string | null
+        }
+        Update: {
+          confianca?: number | null
+          criado_em?: string | null
+          descricao?: string | null
+          enviado_telegram?: boolean | null
+          id?: number
+          jogo_id?: number | null
+          mercado?: string | null
+          odd_sugerida?: number | null
+          resultado?: string | null
+          rodada_referencia?: number
+          tipo_aposta?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
