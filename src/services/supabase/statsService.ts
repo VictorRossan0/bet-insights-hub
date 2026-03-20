@@ -1,5 +1,5 @@
 import { supabase } from './client';
-import type { StatsAcumulado, StatsPorRodada } from '@/types/database';
+import type { StatsAcumulado, StatsPorRodada, StatsPorTime } from '@/types/database';
 
 export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
   const { data, error } = await supabase
@@ -8,7 +8,6 @@ export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
     .maybeSingle();
 
   if (error) {
-    // division by zero when tables are empty
     if (error.code === '22012') return null;
     throw error;
   }
@@ -23,4 +22,14 @@ export async function fetchStatsPorRodada(): Promise<StatsPorRodada[]> {
 
   if (error) throw error;
   return (data as StatsPorRodada[]) || [];
+}
+
+export async function fetchStatsPorTime(): Promise<StatsPorTime[]> {
+  const { data, error } = await supabase
+    .from('stats_por_time')
+    .select('*')
+    .order('media_gols', { ascending: false });
+
+  if (error) throw error;
+  return (data as StatsPorTime[]) || [];
 }
