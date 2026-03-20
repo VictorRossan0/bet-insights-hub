@@ -56,7 +56,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <th>O7</th>
               <th>U3.5G</th>
               <th>U2.5G</th>
-              <th>U7C</th>
+              <th>U7 Cart.</th>
               <th>O8C</th>
               <th>O9C</th>
             </tr>
