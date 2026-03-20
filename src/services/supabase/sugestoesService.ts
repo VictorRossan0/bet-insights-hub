@@ -5,7 +5,7 @@ export async function fetchSugestoes(): Promise<SugestaoAposta[]> {
   const { data, error } = await supabase
     .from('sugestoes_apostas')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('id', { ascending: false });
 
   if (error) throw error;
   return (data as SugestaoAposta[]) || [];

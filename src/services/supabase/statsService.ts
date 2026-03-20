@@ -7,7 +7,10 @@ export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
     .select('*')
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === '22012') return null;
+    throw error;
+  }
   return data as StatsAcumulado;
 }
 
