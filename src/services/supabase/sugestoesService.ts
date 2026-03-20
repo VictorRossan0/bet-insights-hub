@@ -23,7 +23,7 @@ export async function updateSugestaoResultado(id: number, resultado: 'ganhou' | 
 export async function saveSugestoes(sugestoes: Partial<SugestaoAposta>[]) {
   const { data, error } = await supabase
     .from('sugestoes_apostas')
-    .insert(sugestoes)
+    .insert(sugestoes as any)
     .select();
 
   if (error) throw error;
