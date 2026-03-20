@@ -5,7 +5,7 @@ import { Check, X, Send } from 'lucide-react';
 type Props = {
   sugestoes: SugestaoAposta[];
   isLoading: boolean;
-  onMarkResult: (id: number, status: 'green' | 'red') => void;
+  onMarkResult: (id: number, resultado: 'ganhou' | 'perdeu') => void;
   onSendTelegram: (sugestao: SugestaoAposta) => void;
 };
 
@@ -54,7 +54,7 @@ export default function InsightCards({ sugestoes, isLoading, onMarkResult, onSen
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="font-semibold text-base">{s.mercado}</h3>
-                <span className="text-xs text-muted-foreground">{s.tipo}</span>
+                <span className="text-xs text-muted-foreground">{s.tipo_aposta}</span>
               </div>
               <span className={isPositiveEV ? 'badge-green' : 'badge-red'}>
                 {isPositiveEV ? '+' : ''}EV {ev.toFixed(2)}
@@ -86,26 +86,26 @@ export default function InsightCards({ sugestoes, isLoading, onMarkResult, onSen
               </div>
 
               <div className="flex items-center gap-1.5">
-                {s.status === 'pendente' || !s.status ? (
+                {s.resultado === 'pendente' || !s.resultado ? (
                   <>
                     <button
-                      onClick={() => onMarkResult(s.id, 'green')}
+                      onClick={() => onMarkResult(s.id, 'ganhou')}
                       className="p-1.5 rounded-md bg-bet-green/10 text-bet-green hover:bg-bet-green/20 transition-colors active:scale-95"
-                      title="Green"
+                      title="Ganhou"
                     >
                       <Check className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => onMarkResult(s.id, 'red')}
+                      onClick={() => onMarkResult(s.id, 'perdeu')}
                       className="p-1.5 rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors active:scale-95"
-                      title="Red"
+                      title="Perdeu"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </>
                 ) : (
-                  <span className={s.status === 'green' ? 'badge-green' : 'badge-red'}>
-                    {s.status === 'green' ? '✅ Green' : '❌ Red'}
+                  <span className={s.resultado === 'ganhou' ? 'badge-green' : 'badge-red'}>
+                    {s.resultado === 'ganhou' ? '✅ Ganhou' : '❌ Perdeu'}
                   </span>
                 )}
                 <button

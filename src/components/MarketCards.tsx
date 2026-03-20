@@ -22,8 +22,8 @@ function getMarkets(stats: StatsAcumulado): MarketData[] {
     { nome: 'Under 3.5 Gols', percentual: stats.pct_u35_gols, classificacao: getClassificacao(stats.pct_u35_gols) },
     { nome: 'Under 2.5 Gols', percentual: stats.pct_u25_gols, classificacao: getClassificacao(stats.pct_u25_gols) },
     { nome: 'Under 7 Cartões', percentual: stats.pct_u7_cartoes, classificacao: getClassificacao(stats.pct_u7_cartoes) },
-    { nome: 'Over 8 Escanteios', percentual: stats.pct_o8_escanteios, classificacao: getClassificacao(stats.pct_o8_escanteios) },
-    { nome: 'Over 9 Escanteios', percentual: stats.pct_o9_escanteios, classificacao: getClassificacao(stats.pct_o9_escanteios) },
+    { nome: 'Over 8 Cantos', percentual: stats.pct_o8_cantos, classificacao: getClassificacao(stats.pct_o8_cantos) },
+    { nome: 'Over 9 Cantos', percentual: stats.pct_o9_cantos, classificacao: getClassificacao(stats.pct_o9_cantos) },
   ];
 }
 
