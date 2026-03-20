@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Zap, Loader2 } from 'lucide-react';
 import InsightCards from '@/components/InsightCards';
 import { fetchSugestoes, updateSugestaoResultado } from '@/services/supabase/sugestoesService';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { SugestaoAposta } from '@/types/database';
 
@@ -28,9 +29,19 @@ export default function Insights() {
 
   const handleGenerateAnalysis = useCallback(async () => {
     setGenerating(true);
-    toast.info('Geração de análise com IA será implementada com a integração Claude.');
-    setTimeout(() => setGenerating(false), 1500);
-  }, []);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-insights');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      queryClient.invalidateQueries({ queryKey: ['sugestoes'] });
+      toast.success(`${data.sugestoes?.length ?? 0} sugestões geradas com sucesso!`);
+    } catch (err: any) {
+      console.error('Generate insights error:', err);
+      toast.error(err.message || 'Erro ao gerar análise');
+    } finally {
+      setGenerating(false);
+    }
+  }, [queryClient]);
 
   const handleSendTelegram = useCallback((sugestao: SugestaoAposta) => {
     const message = `⚽ BetAnalytics\n🔥 Sugestão: ${sugestao.mercado}\n📊 Confiança: ${sugestao.confianca}%\n💰 Odd: ${sugestao.odd_sugerida}\n🧠 ${sugestao.descricao}`;
