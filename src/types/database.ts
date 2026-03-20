@@ -8,7 +8,7 @@ export type Time = {
 export type Jogo = {
   id: number;
   rodada: number;
-  data_hora: string;
+  data_jogo: string;
   time_casa_id: number;
   time_fora_id: number;
   time_casa_nome: string;

@@ -17,7 +17,7 @@ export async function fetchJogos(filters: JogosFilters = {}) {
     .from('jogos')
     .select('*', { count: 'exact' })
     .order('rodada', { ascending: false })
-    .order('data_hora', { ascending: false })
+    .order('data_jogo', { ascending: false })
     .range(from, to);
 
   if (rodada) {
