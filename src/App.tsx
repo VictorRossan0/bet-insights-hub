@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Jogos from "@/pages/Jogos";
-import Insights from "@/pages/Insights";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient({
@@ -27,7 +26,7 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/jogos" element={<Jogos />} />
-            <Route path="/insights" element={<Insights />} />
+            
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

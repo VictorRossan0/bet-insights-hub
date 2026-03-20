@@ -1,12 +1,11 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { BarChart3, Home, Lightbulb, Trophy, Menu, X } from 'lucide-react';
+import { BarChart3, Home, Trophy, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Dashboard' },
   { to: '/jogos', icon: Trophy, label: 'Jogos' },
-  { to: '/insights', icon: Lightbulb, label: 'Insights' },
 ];
 
 export default function Layout() {
