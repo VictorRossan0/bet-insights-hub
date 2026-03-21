@@ -28,7 +28,7 @@ export async function fetchStatsPorTime(): Promise<StatsPorTime[]> {
   const { data, error } = await supabase
     .from('stats_por_time')
     .select('*')
-    .order('media_gols', { ascending: false });
+    .order('media_gols_jogo', { ascending: false });
 
   if (error) throw error;
   return (data as StatsPorTime[]) || [];

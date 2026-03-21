@@ -69,12 +69,14 @@ export type StatsAcumulado = {
 };
 
 export type StatsPorTime = {
-  time_id: number;
-  time_nome: string;
-  total_jogos: number;
-  media_gols: number;
-  media_escanteios: number;
-  media_cartoes: number;
+  time: string;
+  sigla: string;
+  jogos: number;
+  media_esc_proprio: number;
+  media_esc_jogo: number;
+  media_gols_proprio: number;
+  media_gols_jogo: number;
+  media_cartoes_jogo: number;
 };
 
 export type SugestaoAposta = {
