@@ -69,8 +69,27 @@ export default function Times() {
       >
         <h1 className="text-2xl font-bold">Estatísticas por Time</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        <div className="flex gap-2 mt-4">
+          {([['geral', 'Geral'], ['casa-fora', 'Casa / Fora']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`text-sm px-4 py-2 rounded-lg transition-colors ${
+                tab === key
+                  ? 'bg-primary text-primary-foreground font-semibold'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </motion.div>
 
+      {tab === 'casa-fora' ? (
+        <CasaForaStats />
+      ) : (
+      <>
       {/* Top Bar Chart */}
       <motion.div
         initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
