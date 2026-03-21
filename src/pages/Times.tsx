@@ -6,17 +6,17 @@ import { ArrowUpDown, Users } from 'lucide-react';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
 import type { StatsPorTime } from '@/types/database';
 
-type SortKey = 'media_gols' | 'media_escanteios' | 'media_cartoes' | 'total_jogos';
+type SortKey = 'media_gols_jogo' | 'media_esc_jogo' | 'media_cartoes_jogo' | 'jogos';
 
 const sortLabels: Record<SortKey, string> = {
-  media_gols: 'Gols',
-  media_escanteios: 'Escanteios',
-  media_cartoes: 'Cartões',
-  total_jogos: 'Jogos',
+  media_gols_jogo: 'Gols',
+  media_esc_jogo: 'Escanteios',
+  media_cartoes_jogo: 'Cartões',
+  jogos: 'Jogos',
 };
 
 export default function Times() {
-  const [sortBy, setSortBy] = useState<SortKey>('media_gols');
+  const [sortBy, setSortBy] = useState<SortKey>('media_gols_jogo');
   const [compareA, setCompareA] = useState<string>('');
   const [compareB, setCompareB] = useState<string>('');
 
@@ -30,27 +30,28 @@ export default function Times() {
     return [...times].sort((a, b) => b[sortBy] - a[sortBy]);
   }, [times, sortBy]);
 
-  const teamA = useMemo(() => times?.find(t => t.time_nome === compareA), [times, compareA]);
-  const teamB = useMemo(() => times?.find(t => t.time_nome === compareB), [times, compareB]);
+  const teamA = useMemo(() => times?.find(t => t.time === compareA), [times, compareA]);
+  const teamB = useMemo(() => times?.find(t => t.time === compareB), [times, compareB]);
 
   const radarData = useMemo(() => {
     if (!teamA || !teamB || !times) return [];
-    const maxGols = Math.max(...times.map(t => t.media_gols));
-    const maxEsc = Math.max(...times.map(t => t.media_escanteios));
-    const maxCart = Math.max(...times.map(t => t.media_cartoes));
+    const maxGols = Math.max(...times.map(t => t.media_gols_jogo));
+    const maxEsc = Math.max(...times.map(t => t.media_esc_jogo));
+    const maxCart = Math.max(...times.map(t => t.media_cartoes_jogo));
+    const maxJogos = Math.max(...times.map(t => t.jogos));
 
     return [
-      { stat: 'Gols', A: (teamA.media_gols / maxGols) * 100, B: (teamB.media_gols / maxGols) * 100 },
-      { stat: 'Escanteios', A: (teamA.media_escanteios / maxEsc) * 100, B: (teamB.media_escanteios / maxEsc) * 100 },
-      { stat: 'Cartões', A: (teamA.media_cartoes / maxCart) * 100, B: (teamB.media_cartoes / maxCart) * 100 },
-      { stat: 'Jogos', A: (teamA.total_jogos / Math.max(...times.map(t => t.total_jogos))) * 100, B: (teamB.total_jogos / Math.max(...times.map(t => t.total_jogos))) * 100 },
+      { stat: 'Gols', A: (teamA.media_gols_jogo / maxGols) * 100, B: (teamB.media_gols_jogo / maxGols) * 100 },
+      { stat: 'Escanteios', A: (teamA.media_esc_jogo / maxEsc) * 100, B: (teamB.media_esc_jogo / maxEsc) * 100 },
+      { stat: 'Cartões', A: (teamA.media_cartoes_jogo / maxCart) * 100, B: (teamB.media_cartoes_jogo / maxCart) * 100 },
+      { stat: 'Jogos', A: (teamA.jogos / maxJogos) * 100, B: (teamB.jogos / maxJogos) * 100 },
     ];
   }, [teamA, teamB, times]);
 
   const barChartData = useMemo(() => {
     if (!sorted.length) return [];
     return sorted.slice(0, 12).map(t => ({
-      nome: t.time_nome.length > 12 ? t.time_nome.slice(0, 12) + '…' : t.time_nome,
+      nome: t.time.length > 12 ? t.time.slice(0, 12) + '…' : t.time,
       value: t[sortBy],
     }));
   }, [sorted, sortBy]);
@@ -142,17 +143,17 @@ export default function Times() {
                     <th>Time</th>
                     <th className="text-center">Jogos</th>
                     <th className="text-center">
-                      <button onClick={() => setSortBy('media_gols')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                      <button onClick={() => setSortBy('media_gols_jogo')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
                         Gols <ArrowUpDown className="w-3 h-3" />
                       </button>
                     </th>
                     <th className="text-center">
-                      <button onClick={() => setSortBy('media_escanteios')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                      <button onClick={() => setSortBy('media_esc_jogo')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
                         Esc. <ArrowUpDown className="w-3 h-3" />
                       </button>
                     </th>
                     <th className="text-center">
-                      <button onClick={() => setSortBy('media_cartoes')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                      <button onClick={() => setSortBy('media_cartoes_jogo')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
                         Cart. <ArrowUpDown className="w-3 h-3" />
                       </button>
                     </th>
@@ -160,13 +161,13 @@ export default function Times() {
                 </thead>
                 <tbody>
                   {sorted.map((t, i) => (
-                    <tr key={t.time_id} className={i < 3 ? 'bg-primary/[0.03]' : ''}>
+                    <tr key={t.sigla} className={i < 3 ? 'bg-primary/[0.03]' : ''}>
                       <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
-                      <td className="font-medium text-sm">{t.time_nome}</td>
-                      <td className="text-center font-mono text-sm">{t.total_jogos}</td>
-                      <td className="text-center font-mono text-sm text-bet-green">{t.media_gols.toFixed(1)}</td>
-                      <td className="text-center font-mono text-sm">{t.media_escanteios.toFixed(1)}</td>
-                      <td className="text-center font-mono text-sm">{t.media_cartoes.toFixed(1)}</td>
+                      <td className="font-medium text-sm">{t.time}</td>
+                      <td className="text-center font-mono text-sm">{t.jogos}</td>
+                      <td className="text-center font-mono text-sm text-bet-green">{t.media_gols_jogo.toFixed(1)}</td>
+                      <td className="text-center font-mono text-sm">{t.media_esc_jogo.toFixed(1)}</td>
+                      <td className="text-center font-mono text-sm">{t.media_cartoes_jogo.toFixed(1)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -191,7 +192,7 @@ export default function Times() {
             >
               <option value="">Selecionar time A</option>
               {times?.map(t => (
-                <option key={t.time_id} value={t.time_nome}>{t.time_nome}</option>
+                <option key={t.sigla} value={t.time}>{t.time}</option>
               ))}
             </select>
             <select
@@ -201,7 +202,7 @@ export default function Times() {
             >
               <option value="">Selecionar time B</option>
               {times?.map(t => (
-                <option key={t.time_id} value={t.time_nome}>{t.time_nome}</option>
+                <option key={t.sigla} value={t.time}>{t.time}</option>
               ))}
             </select>
           </div>
@@ -213,8 +214,8 @@ export default function Times() {
                   <PolarGrid stroke="hsl(0 0% 14%)" />
                   <PolarAngleAxis dataKey="stat" tick={{ fontSize: 11, fill: 'hsl(0 0% 75%)' }} />
                   <PolarRadiusAxis tick={false} axisLine={false} />
-                  <Radar name={teamA.time_nome} dataKey="A" stroke="#00ff87" fill="#00ff87" fillOpacity={0.2} strokeWidth={2} />
-                  <Radar name={teamB.time_nome} dataKey="B" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.15} strokeWidth={2} />
+                  <Radar name={teamA.time} dataKey="A" stroke="#00ff87" fill="#00ff87" fillOpacity={0.2} strokeWidth={2} />
+                  <Radar name={teamB.time} dataKey="B" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.15} strokeWidth={2} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -222,9 +223,9 @@ export default function Times() {
               {/* Side-by-side stats */}
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {[
-                  { label: 'Gols', a: teamA.media_gols, b: teamB.media_gols },
-                  { label: 'Escanteios', a: teamA.media_escanteios, b: teamB.media_escanteios },
-                  { label: 'Cartões', a: teamA.media_cartoes, b: teamB.media_cartoes },
+                  { label: 'Gols', a: teamA.media_gols_jogo, b: teamB.media_gols_jogo },
+                  { label: 'Escanteios', a: teamA.media_esc_jogo, b: teamB.media_esc_jogo },
+                  { label: 'Cartões', a: teamA.media_cartoes_jogo, b: teamB.media_cartoes_jogo },
                 ].map(({ label, a, b }) => (
                   <div key={label} className="bg-secondary/50 rounded-lg p-3 text-center">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">{label}</p>
