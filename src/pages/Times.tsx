@@ -5,8 +5,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { ArrowUpDown, Users } from 'lucide-react';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
 import type { StatsPorTime } from '@/types/database';
+import CasaForaStats from '@/components/CasaForaStats';
 
 type SortKey = 'media_gols_jogo' | 'media_esc_jogo' | 'media_cartoes_jogo' | 'jogos';
+type Tab = 'geral' | 'casa-fora';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
