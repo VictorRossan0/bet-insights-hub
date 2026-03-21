@@ -21,6 +21,7 @@ export default function Times() {
   const [sortBy, setSortBy] = useState<SortKey>('media_gols_jogo');
   const [compareA, setCompareA] = useState<string>('');
   const [compareB, setCompareB] = useState<string>('');
+  const [tab, setTab] = useState<Tab>('geral');
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
