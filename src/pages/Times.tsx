@@ -5,8 +5,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { ArrowUpDown, Users } from 'lucide-react';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
 import type { StatsPorTime } from '@/types/database';
+import CasaForaStats from '@/components/CasaForaStats';
 
 type SortKey = 'media_gols_jogo' | 'media_esc_jogo' | 'media_cartoes_jogo' | 'jogos';
+type Tab = 'geral' | 'casa-fora';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
@@ -19,6 +21,7 @@ export default function Times() {
   const [sortBy, setSortBy] = useState<SortKey>('media_gols_jogo');
   const [compareA, setCompareA] = useState<string>('');
   const [compareB, setCompareB] = useState<string>('');
+  const [tab, setTab] = useState<Tab>('geral');
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
@@ -66,8 +69,27 @@ export default function Times() {
       >
         <h1 className="text-2xl font-bold">Estatísticas por Time</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        <div className="flex gap-2 mt-4">
+          {([['geral', 'Geral'], ['casa-fora', 'Casa / Fora']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`text-sm px-4 py-2 rounded-lg transition-colors ${
+                tab === key
+                  ? 'bg-primary text-primary-foreground font-semibold'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </motion.div>
 
+      {tab === 'casa-fora' ? (
+        <CasaForaStats />
+      ) : (
+      <>
       {/* Top Bar Chart */}
       <motion.div
         initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
@@ -246,6 +268,8 @@ export default function Times() {
           )}
         </motion.div>
       </div>
+      </>
+      )}
     </div>
   );
 }
