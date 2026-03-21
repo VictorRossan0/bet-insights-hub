@@ -268,6 +268,8 @@ export default function Times() {
           )}
         </motion.div>
       </div>
+      </>
+      )}
     </div>
   );
 }
