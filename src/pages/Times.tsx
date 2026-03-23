@@ -67,7 +67,7 @@ export default function Times() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="text-2xl font-bold">Estatísticas por Time</h1>
+        <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
         <div className="flex gap-2 mt-4">
           {([['geral', 'Geral'], ['casa-fora', 'Casa / Fora']] as const).map(([key, label]) => (

@@ -32,7 +32,7 @@ export default function Dashboard() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-display tracking-wide">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Visão geral do Brasileirão 2026</p>
         </div>
         <button

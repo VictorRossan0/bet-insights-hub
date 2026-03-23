@@ -6,6 +6,10 @@ import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Jogos from "@/pages/Jogos";
 import Times from "@/pages/Times";
+import Historico from "@/pages/Historico";
+import Confronto from "@/pages/Confronto";
+import Apostas from "@/pages/Apostas";
+import TimePerfil from "@/pages/TimePerfil";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient({
@@ -27,8 +31,11 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/jogos" element={<Jogos />} />
+            <Route path="/historico" element={<Historico />} />
             <Route path="/times" element={<Times />} />
-            
+            <Route path="/times/:id" element={<TimePerfil />} />
+            <Route path="/confronto" element={<Confronto />} />
+            <Route path="/apostas" element={<Apostas />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

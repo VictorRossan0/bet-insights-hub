@@ -4,9 +4,22 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Home, Plane } from 'lucide-react';
 import { fetchStatsCasaFora } from '@/services/supabase/statsService';
+import type { StatsCasaFora } from '@/types/database';
 
 type Metric = 'gols' | 'esc' | 'cart';
 const metricLabels: Record<Metric, string> = { gols: 'Gols', esc: 'Escanteios', cart: 'Cartões' };
+
+function getCasaValue(s: StatsCasaFora, metric: Metric) {
+  if (metric === 'gols') return s.casa_media_gols;
+  if (metric === 'esc') return s.casa_media_esc;
+  return s.casa_media_cart;
+}
+
+function getForaValue(s: StatsCasaFora, metric: Metric) {
+  if (metric === 'gols') return s.fora_media_gols;
+  if (metric === 'esc') return s.fora_media_esc;
+  return s.fora_media_cart;
+}
 
 export default function CasaForaStats() {
   const [metric, setMetric] = useState<Metric>('gols');
@@ -18,29 +31,23 @@ export default function CasaForaStats() {
 
   const chartData = useMemo(() => {
     if (!stats) return [];
-    const getValue = (s: typeof stats[0], loc: 'casa' | 'fora') => {
-      if (metric === 'gols') return s[loc].media_gols;
-      if (metric === 'esc') return s[loc].media_esc;
-      return s[loc].media_cart;
-    };
     return [...stats]
-      .sort((a, b) => getValue(b, 'casa') - getValue(a, 'casa'))
+      .sort((a, b) => getCasaValue(b, metric) - getCasaValue(a, metric))
       .slice(0, 12)
       .map(s => ({
-        nome: s.time.length > 12 ? s.time.slice(0, 12) + '…' : s.time,
-        Casa: +getValue(s, 'casa').toFixed(1),
-        Fora: +getValue(s, 'fora').toFixed(1),
+        nome: s.nome.length > 12 ? s.nome.slice(0, 12) + '…' : s.nome,
+        Casa: +getCasaValue(s, metric).toFixed(1),
+        Fora: +getForaValue(s, metric).toFixed(1),
       }));
   }, [stats, metric]);
 
   const tableData = useMemo(() => {
     if (!stats) return [];
-    return [...stats].sort((a, b) => b.casa.media_gols - a.casa.media_gols);
+    return [...stats].sort((a, b) => b.casa_media_gols - a.casa_media_gols);
   }, [stats]);
 
   return (
     <div className="space-y-6">
-      {/* Chart */}
       <motion.div
         initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -85,14 +92,13 @@ export default function CasaForaStats() {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: '11px' }} />
-              <Bar dataKey="Casa" fill="#00ff87" radius={[0, 4, 4, 0]} barSize={10} />
-              <Bar dataKey="Fora" fill="#60a5fa" radius={[0, 4, 4, 0]} barSize={10} />
+              <Bar dataKey="Casa" fill="hsl(153 100% 50%)" radius={[0, 4, 4, 0]} barSize={10} />
+              <Bar dataKey="Fora" fill="hsl(213 100% 65%)" radius={[0, 4, 4, 0]} barSize={10} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </motion.div>
 
-      {/* Table */}
       <motion.div
         initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -100,7 +106,7 @@ export default function CasaForaStats() {
         className="card-bet overflow-hidden"
       >
         <div className="p-4 border-b border-border flex items-center gap-2">
-          <Plane className="w-4 h-4 text-[#60a5fa]" />
+          <Plane className="w-4 h-4 text-bet-blue" />
           <h2 className="text-sm font-semibold">Detalhamento Casa / Fora</h2>
         </div>
         <div className="overflow-auto max-h-[480px] scrollbar-thin">
@@ -116,7 +122,7 @@ export default function CasaForaStats() {
                 <tr>
                   <th rowSpan={2}>Time</th>
                   <th colSpan={3} className="text-center text-bet-green border-b border-border">🏠 Casa</th>
-                  <th colSpan={3} className="text-center text-[#60a5fa] border-b border-border">✈️ Fora</th>
+                  <th colSpan={3} className="text-center text-bet-blue border-b border-border">✈️ Fora</th>
                 </tr>
                 <tr>
                   <th className="text-center text-[10px]">Gols</th>
@@ -130,13 +136,13 @@ export default function CasaForaStats() {
               <tbody>
                 {tableData.map(t => (
                   <tr key={t.sigla}>
-                    <td className="font-medium text-sm">{t.time}</td>
-                    <td className="text-center font-mono text-sm text-bet-green">{t.casa.media_gols.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.casa.media_esc.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.casa.media_cart.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm text-[#60a5fa]">{t.fora.media_gols.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.fora.media_esc.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.fora.media_cart.toFixed(1)}</td>
+                    <td className="font-medium text-sm">{t.nome}</td>
+                    <td className="text-center font-mono text-sm text-bet-green">{t.casa_media_gols.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.casa_media_esc.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.casa_media_cart.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm text-bet-blue">{t.fora_media_gols.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.fora_media_esc.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.fora_media_cart.toFixed(1)}</td>
                   </tr>
                 ))}
               </tbody>

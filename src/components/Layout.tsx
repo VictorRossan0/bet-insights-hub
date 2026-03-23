@@ -1,12 +1,15 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { BarChart3, Home, Trophy, Users, Menu, X } from 'lucide-react';
+import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Dashboard' },
   { to: '/jogos', icon: Trophy, label: 'Jogos' },
+  { to: '/historico', icon: History, label: 'Histórico' },
   { to: '/times', icon: Users, label: 'Times' },
+  { to: '/confronto', icon: Swords, label: 'Confronto H2H' },
+  { to: '/apostas', icon: TrendingUp, label: 'Apostas' },
 ];
 
 export default function Layout() {
@@ -26,7 +29,7 @@ export default function Layout() {
         </button>
         <div className="ml-3 flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-bet-green" />
-          <span className="font-bold text-sm">BetAnalytics</span>
+          <span className="font-display text-lg tracking-wide">BetAnalytics</span>
         </div>
       </div>
 
@@ -73,7 +76,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="flex items-center gap-2.5 px-3 py-4 mb-4">
         <BarChart3 className="w-7 h-7 text-bet-green" />
         <div>
-          <h1 className="font-bold text-base leading-tight">BetAnalytics</h1>
+          <h1 className="font-display text-xl tracking-wide leading-tight">BetAnalytics</h1>
           <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Brasileirão 2026</p>
         </div>
       </div>
