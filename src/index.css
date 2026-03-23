@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -38,6 +38,8 @@
 
     --bet-green: 153 100% 50%;
     --bet-red: 0 78% 62%;
+    --bet-yellow: 51 100% 50%;
+    --bet-blue: 213 100% 65%;
     --bet-green-raw: #00ff87;
     --bet-red-raw: #FF3D3D;
 

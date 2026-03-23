@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ["IBM Plex Sans", "system-ui", "sans-serif"],
+        mono: ["IBM Plex Mono", "monospace"],
+        display: ["Bebas Neue", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -64,6 +65,8 @@ export default {
         bet: {
           green: "hsl(var(--bet-green))",
           red: "hsl(var(--bet-red))",
+          yellow: "hsl(var(--bet-yellow))",
+          blue: "hsl(var(--bet-blue))",
         },
       },
       borderRadius: {
