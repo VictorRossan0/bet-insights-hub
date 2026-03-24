@@ -33,28 +33,28 @@ export default function Times() {
     return [...times].sort((a, b) => b[sortBy] - a[sortBy]);
   }, [times, sortBy]);
 
-  const teamA = useMemo(() => times?.find(t => t.time === compareA), [times, compareA]);
-  const teamB = useMemo(() => times?.find(t => t.time === compareB), [times, compareB]);
+  const teamA = useMemo(() => times?.find(t => t.nome === compareA), [times, compareA]);
+  const teamB = useMemo(() => times?.find(t => t.nome === compareB), [times, compareB]);
 
   const radarData = useMemo(() => {
     if (!teamA || !teamB || !times) return [];
     const maxGols = Math.max(...times.map(t => t.media_gols_jogo));
-    const maxEsc = Math.max(...times.map(t => t.media_esc_jogo));
+    const maxEsc = Math.max(...times.map(t => t.media_escanteios_jogo));
     const maxCart = Math.max(...times.map(t => t.media_cartoes_jogo));
-    const maxJogos = Math.max(...times.map(t => t.jogos));
+    const maxJogos = Math.max(...times.map(t => t.total_jogos));
 
     return [
       { stat: 'Gols', A: (teamA.media_gols_jogo / maxGols) * 100, B: (teamB.media_gols_jogo / maxGols) * 100 },
-      { stat: 'Escanteios', A: (teamA.media_esc_jogo / maxEsc) * 100, B: (teamB.media_esc_jogo / maxEsc) * 100 },
+      { stat: 'Escanteios', A: (teamA.media_escanteios_jogo / maxEsc) * 100, B: (teamB.media_escanteios_jogo / maxEsc) * 100 },
       { stat: 'Cartões', A: (teamA.media_cartoes_jogo / maxCart) * 100, B: (teamB.media_cartoes_jogo / maxCart) * 100 },
-      { stat: 'Jogos', A: (teamA.jogos / maxJogos) * 100, B: (teamB.jogos / maxJogos) * 100 },
+      { stat: 'Jogos', A: (teamA.total_jogos / maxJogos) * 100, B: (teamB.total_jogos / maxJogos) * 100 },
     ];
   }, [teamA, teamB, times]);
 
   const barChartData = useMemo(() => {
     if (!sorted.length) return [];
     return sorted.slice(0, 12).map(t => ({
-      nome: t.time.length > 12 ? t.time.slice(0, 12) + '…' : t.time,
+      nome: t.nome.length > 12 ? t.nome.slice(0, 12) + '…' : t.nome,
       value: t[sortBy],
     }));
   }, [sorted, sortBy]);
