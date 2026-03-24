@@ -7,14 +7,14 @@ import { fetchStatsPorTime } from '@/services/supabase/statsService';
 import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
 
-type SortKey = 'media_gols_jogo' | 'media_esc_jogo' | 'media_cartoes_jogo' | 'jogos';
+type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
-  media_esc_jogo: 'Escanteios',
+  media_escanteios_jogo: 'Escanteios',
   media_cartoes_jogo: 'Cartões',
-  jogos: 'Jogos',
+  total_jogos: 'Jogos',
 };
 
 export default function Times() {
@@ -33,28 +33,28 @@ export default function Times() {
     return [...times].sort((a, b) => b[sortBy] - a[sortBy]);
   }, [times, sortBy]);
 
-  const teamA = useMemo(() => times?.find(t => t.time === compareA), [times, compareA]);
-  const teamB = useMemo(() => times?.find(t => t.time === compareB), [times, compareB]);
+  const teamA = useMemo(() => times?.find(t => t.nome === compareA), [times, compareA]);
+  const teamB = useMemo(() => times?.find(t => t.nome === compareB), [times, compareB]);
 
   const radarData = useMemo(() => {
     if (!teamA || !teamB || !times) return [];
     const maxGols = Math.max(...times.map(t => t.media_gols_jogo));
-    const maxEsc = Math.max(...times.map(t => t.media_esc_jogo));
+    const maxEsc = Math.max(...times.map(t => t.media_escanteios_jogo));
     const maxCart = Math.max(...times.map(t => t.media_cartoes_jogo));
-    const maxJogos = Math.max(...times.map(t => t.jogos));
+    const maxJogos = Math.max(...times.map(t => t.total_jogos));
 
     return [
       { stat: 'Gols', A: (teamA.media_gols_jogo / maxGols) * 100, B: (teamB.media_gols_jogo / maxGols) * 100 },
-      { stat: 'Escanteios', A: (teamA.media_esc_jogo / maxEsc) * 100, B: (teamB.media_esc_jogo / maxEsc) * 100 },
+      { stat: 'Escanteios', A: (teamA.media_escanteios_jogo / maxEsc) * 100, B: (teamB.media_escanteios_jogo / maxEsc) * 100 },
       { stat: 'Cartões', A: (teamA.media_cartoes_jogo / maxCart) * 100, B: (teamB.media_cartoes_jogo / maxCart) * 100 },
-      { stat: 'Jogos', A: (teamA.jogos / maxJogos) * 100, B: (teamB.jogos / maxJogos) * 100 },
+      { stat: 'Jogos', A: (teamA.total_jogos / maxJogos) * 100, B: (teamB.total_jogos / maxJogos) * 100 },
     ];
   }, [teamA, teamB, times]);
 
   const barChartData = useMemo(() => {
     if (!sorted.length) return [];
     return sorted.slice(0, 12).map(t => ({
-      nome: t.time.length > 12 ? t.time.slice(0, 12) + '…' : t.time,
+      nome: t.nome.length > 12 ? t.nome.slice(0, 12) + '…' : t.nome,
       value: t[sortBy],
     }));
   }, [sorted, sortBy]);
@@ -170,7 +170,7 @@ export default function Times() {
                       </button>
                     </th>
                     <th className="text-center">
-                      <button onClick={() => setSortBy('media_esc_jogo')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                      <button onClick={() => setSortBy('media_escanteios_jogo')} className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
                         Esc. <ArrowUpDown className="w-3 h-3" />
                       </button>
                     </th>
@@ -185,10 +185,10 @@ export default function Times() {
                   {sorted.map((t, i) => (
                     <tr key={t.sigla} className={i < 3 ? 'bg-primary/[0.03]' : ''}>
                       <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
-                      <td className="font-medium text-sm">{t.time}</td>
-                      <td className="text-center font-mono text-sm">{t.jogos}</td>
+                      <td className="font-medium text-sm">{t.nome}</td>
+                      <td className="text-center font-mono text-sm">{t.total_jogos}</td>
                       <td className="text-center font-mono text-sm text-bet-green">{t.media_gols_jogo.toFixed(1)}</td>
-                      <td className="text-center font-mono text-sm">{t.media_esc_jogo.toFixed(1)}</td>
+                      <td className="text-center font-mono text-sm">{t.media_escanteios_jogo.toFixed(1)}</td>
                       <td className="text-center font-mono text-sm">{t.media_cartoes_jogo.toFixed(1)}</td>
                     </tr>
                   ))}
@@ -214,7 +214,7 @@ export default function Times() {
             >
               <option value="">Selecionar time A</option>
               {times?.map(t => (
-                <option key={t.sigla} value={t.time}>{t.time}</option>
+                <option key={t.sigla} value={t.nome}>{t.nome}</option>
               ))}
             </select>
             <select
@@ -224,7 +224,7 @@ export default function Times() {
             >
               <option value="">Selecionar time B</option>
               {times?.map(t => (
-                <option key={t.sigla} value={t.time}>{t.time}</option>
+                <option key={t.sigla} value={t.nome}>{t.nome}</option>
               ))}
             </select>
           </div>
@@ -236,8 +236,8 @@ export default function Times() {
                   <PolarGrid stroke="hsl(0 0% 14%)" />
                   <PolarAngleAxis dataKey="stat" tick={{ fontSize: 11, fill: 'hsl(0 0% 75%)' }} />
                   <PolarRadiusAxis tick={false} axisLine={false} />
-                  <Radar name={teamA.time} dataKey="A" stroke="#00ff87" fill="#00ff87" fillOpacity={0.2} strokeWidth={2} />
-                  <Radar name={teamB.time} dataKey="B" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.15} strokeWidth={2} />
+                  <Radar name={teamA.nome} dataKey="A" stroke="#00ff87" fill="#00ff87" fillOpacity={0.2} strokeWidth={2} />
+                  <Radar name={teamB.nome} dataKey="B" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.15} strokeWidth={2} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -246,7 +246,7 @@ export default function Times() {
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {[
                   { label: 'Gols', a: teamA.media_gols_jogo, b: teamB.media_gols_jogo },
-                  { label: 'Escanteios', a: teamA.media_esc_jogo, b: teamB.media_esc_jogo },
+                  { label: 'Escanteios', a: teamA.media_escanteios_jogo, b: teamB.media_escanteios_jogo },
                   { label: 'Cartões', a: teamA.media_cartoes_jogo, b: teamB.media_cartoes_jogo },
                 ].map(({ label, a, b }) => (
                   <div key={label} className="bg-secondary/50 rounded-lg p-3 text-center">
