@@ -7,14 +7,14 @@ import { fetchStatsPorTime } from '@/services/supabase/statsService';
 import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
 
-type SortKey = 'media_gols_jogo' | 'media_esc_jogo' | 'media_cartoes_jogo' | 'jogos';
+type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
-  media_esc_jogo: 'Escanteios',
+  media_escanteios_jogo: 'Escanteios',
   media_cartoes_jogo: 'Cartões',
-  jogos: 'Jogos',
+  total_jogos: 'Jogos',
 };
 
 export default function Times() {

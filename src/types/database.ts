@@ -105,14 +105,16 @@ export type StatsAcumulado = {
 };
 
 export type StatsPorTime = {
-  time: string;
+  time_id: number;
+  nome: string;
   sigla: string;
-  jogos: number;
-  media_esc_proprio: number;
-  media_esc_jogo: number;
-  media_gols_proprio: number;
+  total_jogos: number;
   media_gols_jogo: number;
+  media_escanteios_jogo: number;
   media_cartoes_jogo: number;
+  pct_o5: number;
+  pct_o6: number;
+  pct_u35: number;
 };
 
 export type StatsCasaFora = {
