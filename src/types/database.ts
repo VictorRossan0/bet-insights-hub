@@ -118,22 +118,17 @@ export type StatsPorTime = {
 };
 
 export type StatsCasaFora = {
+  time_id: number;
   nome: string;
   sigla: string;
-  casa_jogos: number;
-  casa_media_gols: number;
-  casa_media_esc: number;
-  casa_media_cart: number;
-  casa_pct_o5: number;
-  casa_pct_o6: number;
-  casa_pct_u35: number;
-  fora_jogos: number;
-  fora_media_gols: number;
-  fora_media_esc: number;
-  fora_media_cart: number;
-  fora_pct_o5: number;
-  fora_pct_o6: number;
-  fora_pct_u35: number;
+  jogos_casa: number;
+  media_gols_casa: number;
+  media_esc_casa: number;
+  media_cart_casa: number;
+  jogos_fora: number;
+  media_gols_fora: number;
+  media_esc_fora: number;
+  media_cart_fora: number;
 };
 
 export type StatsPorTemporada = {

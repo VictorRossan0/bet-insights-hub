@@ -10,15 +10,15 @@ type Metric = 'gols' | 'esc' | 'cart';
 const metricLabels: Record<Metric, string> = { gols: 'Gols', esc: 'Escanteios', cart: 'Cartões' };
 
 function getCasaValue(s: StatsCasaFora, metric: Metric) {
-  if (metric === 'gols') return s.casa_media_gols;
-  if (metric === 'esc') return s.casa_media_esc;
-  return s.casa_media_cart;
+  if (metric === 'gols') return s.media_gols_casa;
+  if (metric === 'esc') return s.media_esc_casa;
+  return s.media_cart_casa;
 }
 
 function getForaValue(s: StatsCasaFora, metric: Metric) {
-  if (metric === 'gols') return s.fora_media_gols;
-  if (metric === 'esc') return s.fora_media_esc;
-  return s.fora_media_cart;
+  if (metric === 'gols') return s.media_gols_fora;
+  if (metric === 'esc') return s.media_esc_fora;
+  return s.media_cart_fora;
 }
 
 export default function CasaForaStats() {
@@ -43,7 +43,7 @@ export default function CasaForaStats() {
 
   const tableData = useMemo(() => {
     if (!stats) return [];
-    return [...stats].sort((a, b) => b.casa_media_gols - a.casa_media_gols);
+    return [...stats].sort((a, b) => b.media_gols_casa - a.media_gols_casa);
   }, [stats]);
 
   return (
@@ -137,12 +137,12 @@ export default function CasaForaStats() {
                 {tableData.map(t => (
                   <tr key={t.sigla}>
                     <td className="font-medium text-sm">{t.nome}</td>
-                    <td className="text-center font-mono text-sm text-bet-green">{t.casa_media_gols.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.casa_media_esc.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.casa_media_cart.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm text-bet-blue">{t.fora_media_gols.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.fora_media_esc.toFixed(1)}</td>
-                    <td className="text-center font-mono text-sm">{t.fora_media_cart.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm text-bet-green">{t.media_gols_casa.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.media_esc_casa.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.media_cart_casa.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm text-bet-blue">{t.media_gols_fora.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.media_esc_fora.toFixed(1)}</td>
+                    <td className="text-center font-mono text-sm">{t.media_cart_fora.toFixed(1)}</td>
                   </tr>
                 ))}
               </tbody>
