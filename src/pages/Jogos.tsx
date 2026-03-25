@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Search, Plus, Upload, RefreshCw } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
-import { fetchJogos, fetchRodadas, fetchTimes } from '@/services/supabase/jogosService';
+import { fetchJogosResumo, fetchRodadas, fetchTimes } from '@/services/supabase/jogosService';
 import { toast } from 'sonner';
 
 export default function Jogos() {
@@ -15,7 +15,7 @@ export default function Jogos() {
 
   const { data: jogosData, isLoading } = useQuery({
     queryKey: ['jogos', page, rodadaFilter, timeFilter],
-    queryFn: () => fetchJogos({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined }),
+    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined }),
   });
 
   const { data: rodadas } = useQuery({

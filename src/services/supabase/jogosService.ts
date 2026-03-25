@@ -79,7 +79,7 @@ export async function importJogos(jogos: Partial<Jogo>[]) {
 
 export async function fetchRodadas(): Promise<number[]> {
   const { data, error } = await supabase
-    .from('jogos')
+    .from('jogos_resumo')
     .select('rodada')
     .order('rodada', { ascending: true });
 
