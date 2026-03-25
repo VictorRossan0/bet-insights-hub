@@ -6,7 +6,8 @@ import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
-const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as number[] } };
+const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease } };
 
 export default function Confronto() {
   const [timeAId, setTimeAId] = useState<number | null>(null);
