@@ -38,33 +38,33 @@ export default function Confronto() {
     return [
       { stat: 'Gols', value: h2h.media_gols },
       { stat: 'Escanteios', value: h2h.media_escanteios },
-      { stat: 'O5 Cantos %', value: h2h.pct_o5_cantos },
-      { stat: 'O6 Cantos %', value: h2h.pct_o6_cantos },
-      { stat: 'U3.5 Gols %', value: h2h.pct_u35_gols },
+      { stat: 'Cartões', value: h2h.media_cartoes },
+      { stat: 'Total Jogos', value: h2h.total_jogos },
     ];
   }, [h2h]);
 
-  // Recommendation logic
+  // Recommendation logic based on available data
   const recommendation = useMemo(() => {
     if (!h2h || !cfA || !cfB) return null;
 
     const signals: { label: string; positive: boolean }[] = [];
-    
-    // H2H corner signals
-    if (h2h.pct_o5_cantos >= 70) signals.push({ label: `O5 Cantos H2H: ${h2h.pct_o5_cantos.toFixed(0)}%`, positive: true });
-    else signals.push({ label: `O5 Cantos H2H: ${h2h.pct_o5_cantos.toFixed(0)}%`, positive: false });
 
-    if (h2h.pct_o6_cantos >= 60) signals.push({ label: `O6 Cantos H2H: ${h2h.pct_o6_cantos.toFixed(0)}%`, positive: true });
-    else signals.push({ label: `O6 Cantos H2H: ${h2h.pct_o6_cantos.toFixed(0)}%`, positive: false });
+    // H2H corner signal based on average
+    if (h2h.media_escanteios >= 10) signals.push({ label: `Média Escanteios H2H: ${h2h.media_escanteios.toFixed(1)}`, positive: true });
+    else signals.push({ label: `Média Escanteios H2H: ${h2h.media_escanteios.toFixed(1)}`, positive: false });
 
-    // Goals
-    if (h2h.pct_u35_gols >= 65) signals.push({ label: `U3.5 Gols H2H: ${h2h.pct_u35_gols.toFixed(0)}%`, positive: true });
-    else signals.push({ label: `U3.5 Gols H2H: ${h2h.pct_u35_gols.toFixed(0)}%`, positive: false });
+    // Goals signal
+    if (h2h.media_gols <= 3.5) signals.push({ label: `Média Gols H2H: ${h2h.media_gols.toFixed(2)} (U3.5 favorável)`, positive: true });
+    else signals.push({ label: `Média Gols H2H: ${h2h.media_gols.toFixed(2)} (U3.5 desfavorável)`, positive: false });
 
     // Casa/fora corners
     const avgEsc = (cfA.media_esc_casa + cfB.media_esc_fora) / 2;
     if (avgEsc >= 10) signals.push({ label: `Média Esc Casa/Fora: ${avgEsc.toFixed(1)}`, positive: true });
     else signals.push({ label: `Média Esc Casa/Fora: ${avgEsc.toFixed(1)}`, positive: false });
+
+    // Cards signal
+    if (h2h.media_cartoes >= 4) signals.push({ label: `Média Cartões H2H: ${h2h.media_cartoes.toFixed(1)}`, positive: true });
+    else signals.push({ label: `Média Cartões H2H: ${h2h.media_cartoes.toFixed(1)}`, positive: false });
 
     const positives = signals.filter(s => s.positive).length;
     const verdict = positives >= 3 ? 'APOSTAR' : positives >= 2 ? 'CAUTELOSO' : 'EVITAR';
@@ -148,27 +148,12 @@ export default function Confronto() {
           >
             <StatCard label="Total Jogos" value={h2h.total_jogos} />
             <StatCard label="Média Gols" value={h2h.media_gols.toFixed(2)} />
-            <StatCard label="Média Escanteios" value={h2h.media_escanteios.toFixed(1)} />
-            <StatCard label="O5 Cantos" value={`${h2h.pct_o5_cantos.toFixed(0)}%`} highlight={h2h.pct_o5_cantos >= 70} />
-          </motion.div>
-
-          {/* Market Percentages */}
-          <motion.div {...anim} transition={{ ...anim.transition, delay: 0.3 }}
-            className="card-bet p-5"
-          >
-            <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-bet-green" />
-              Mercados no H2H
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <MarketBar label="Over 5 Cantos" pct={h2h.pct_o5_cantos} />
-              <MarketBar label="Over 6 Cantos" pct={h2h.pct_o6_cantos} />
-              <MarketBar label="Under 3.5 Gols" pct={h2h.pct_u35_gols} />
-            </div>
+            <StatCard label="Média Escanteios" value={h2h.media_escanteios.toFixed(1)} highlight={h2h.media_escanteios >= 10} />
+            <StatCard label="Média Cartões" value={h2h.media_cartoes.toFixed(1)} />
           </motion.div>
 
           {/* Radar Chart */}
-          <motion.div {...anim} transition={{ ...anim.transition, delay: 0.35 }}
+          <motion.div {...anim} transition={{ ...anim.transition, delay: 0.3 }}
             className="card-bet p-5"
           >
             <h3 className="text-sm font-semibold mb-4">
@@ -193,7 +178,7 @@ export default function Confronto() {
 
           {/* Casa/Fora Comparison */}
           {cfA && cfB && (
-            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.4 }}
+            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.35 }}
               className="card-bet p-5"
             >
               <h3 className="text-sm font-semibold mb-4">🏠 Mando de Campo</h3>
@@ -219,7 +204,7 @@ export default function Confronto() {
 
           {/* Recommendation */}
           {recommendation && (
-            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.45 }}
+            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.4 }}
               className={`card-bet p-5 border-l-4 ${
                 recommendation.verdict === 'APOSTAR'
                   ? 'border-l-green-500'
@@ -269,21 +254,6 @@ function StatCard({ label, value, highlight }: { label: string; value: string | 
     <div className="card-bet p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className={`text-xl font-mono font-bold ${highlight ? 'text-bet-green' : ''}`}>{value}</p>
-    </div>
-  );
-}
-
-function MarketBar({ label, pct }: { label: string; pct: number }) {
-  const color = pct >= 70 ? 'bg-bet-green' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-1">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-mono font-bold">{pct.toFixed(0)}%</span>
-      </div>
-      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${Math.min(pct, 100)}%` }} />
-      </div>
     </div>
   );
 }
