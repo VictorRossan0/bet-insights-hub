@@ -147,14 +147,12 @@ export type StatsPorTemporada = {
 export type StatsH2H = {
   time_a_id: number;
   time_b_id: number;
-  time_a: string;
-  time_b: string;
+  time_a_nome: string;
+  time_b_nome: string;
   total_jogos: number;
   media_gols: number;
   media_escanteios: number;
-  pct_o5_cantos: number;
-  pct_o6_cantos: number;
-  pct_u35_gols: number;
+  media_cartoes: number;
 };
 
 export type ApostaSugerida = {
