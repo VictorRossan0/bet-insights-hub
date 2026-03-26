@@ -20,7 +20,7 @@ export default function Jogos() {
 
   const { data: rodadas } = useQuery({
     queryKey: ['rodadas'],
-    queryFn: fetchRodadas,
+    queryFn: () => fetchRodadas(),
   });
 
   const { data: times } = useQuery({

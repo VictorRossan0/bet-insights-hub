@@ -1,8 +1,8 @@
-import type { JogoResumo } from '@/types/database';
+import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Props = {
-  jogos: JogoResumo[];
+  jogos: JogoComTimesRaw[];
   isLoading: boolean;
   page: number;
   totalCount: number;
@@ -66,13 +66,13 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <tr key={j.id}>
                 <td className="font-mono text-xs text-muted-foreground">{j.rodada}</td>
                 <td className="whitespace-nowrap">
-                  <span className="font-medium text-sm">{j.time_casa ?? '—'}</span>
+                  <span className="font-medium text-sm">{j.time_casa?.nome ?? '—'}</span>
                   <span className="badge-score mx-2">{j.gols_casa}x{j.gols_fora}</span>
-                  <span className="font-medium text-sm">{j.time_fora ?? '—'}</span>
+                  <span className="font-medium text-sm">{j.time_fora?.nome ?? '—'}</span>
                 </td>
                 <td className="font-mono text-sm">{j.gols_total}</td>
-                <td className="font-mono text-sm">{j.escanteios}</td>
-                <td className="font-mono text-sm">{j.cartoes}</td>
+                <td className="font-mono text-sm">{j.escanteios_total}</td>
+                <td className="font-mono text-sm">{j.cartoes_total}</td>
                 <td><BoolBadge value={j.o5_cantos} /></td>
                 <td><BoolBadge value={j.o6_cantos} /></td>
                 <td><BoolBadge value={j.o7_cantos} /></td>
