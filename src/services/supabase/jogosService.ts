@@ -1,53 +1,63 @@
 import { supabase } from './client';
-import type { JogoResumo, Jogo } from '@/types/database';
+import type { Jogo } from '@/types/database';
+
+/** temporada_id mapping: 1=2026, 2=2025, ... 11=2016 */
+const TEMPORADA_2026 = 1;
 
 export type JogosFilters = {
   rodada?: number;
   time?: string;
-  temporada?: number;
+  temporada_id?: number;
   page?: number;
   pageSize?: number;
 };
 
-/** Fetch games using jogos_resumo view (totals already resolved) */
+export type JogoComTimesRaw = {
+  id: number;
+  rodada: number;
+  data_jogo: string;
+  temporada_id: number;
+  gols_casa: number;
+  gols_fora: number;
+  gols_total: number;
+  resultado: string | null;
+  escanteios_casa: number;
+  escanteios_fora: number;
+  escanteios_total: number;
+  cartoes_total: number;
+  o5_cantos: boolean;
+  o6_cantos: boolean;
+  o7_cantos: boolean;
+  o8_cantos: boolean;
+  o9_cantos: boolean;
+  u35_gols: boolean;
+  u25_gols: boolean;
+  u7_cartoes: boolean;
+  time_casa: { nome: string; sigla: string } | null;
+  time_fora: { nome: string; sigla: string } | null;
+};
+
+const JOGOS_SELECT = `
+  id, rodada, data_jogo, temporada_id,
+  gols_casa, gols_fora, gols_total, resultado,
+  escanteios_casa, escanteios_fora, escanteios_total,
+  cartoes_total,
+  o5_cantos, o6_cantos, o7_cantos, o8_cantos, o9_cantos,
+  u35_gols, u25_gols, u7_cartoes,
+  time_casa:times!jogos_time_casa_id_fkey(nome, sigla),
+  time_fora:times!jogos_time_fora_id_fkey(nome, sigla)
+`.replace(/\n/g, '');
+
+/** Fetch games directly from jogos table with team joins */
 export async function fetchJogosResumo(filters: JogosFilters = {}) {
-  const { page = 1, pageSize = 10, rodada, time, temporada } = filters;
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  let query = supabase
-    .from('jogos_resumo')
-    .select('*', { count: 'exact' })
-    .order('rodada', { ascending: false })
-    .order('data_jogo', { ascending: false })
-    .range(from, to);
-
-  if (temporada) {
-    query = query.eq('temporada', temporada);
-  }
-
-  if (rodada) {
-    query = query.eq('rodada', rodada);
-  }
-
-  if (time) {
-    query = query.or(`time_casa.ilike.%${time}%,time_fora.ilike.%${time}%`);
-  }
-
-  const { data, error, count } = await query;
-  if (error) throw error;
-  return { data: (data as JogoResumo[]) || [], count: count || 0 };
-}
-
-/** Legacy: fetch from jogos table with joins */
-export async function fetchJogos(filters: JogosFilters = {}) {
-  const { page = 1, pageSize = 10, rodada, time } = filters;
+  const { page = 1, pageSize = 10, rodada, time, temporada_id = TEMPORADA_2026 } = filters;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   let query = supabase
     .from('jogos')
-    .select('*, time_casa:times!jogos_time_casa_id_fkey(nome, sigla), time_fora:times!jogos_time_fora_id_fkey(nome, sigla)', { count: 'exact' })
+    .select(JOGOS_SELECT, { count: 'exact' })
+    .eq('temporada_id', temporada_id)
     .order('rodada', { ascending: false })
     .order('data_jogo', { ascending: false })
     .range(from, to);
@@ -56,31 +66,53 @@ export async function fetchJogos(filters: JogosFilters = {}) {
     query = query.eq('rodada', rodada);
   }
 
-  if (time) {
-    query = query.or(`time_casa.nome.ilike.%${time}%,time_fora.nome.ilike.%${time}%`);
-  }
-
+  // For time filter we need to filter after fetching since it's a joined field
   const { data, error, count } = await query;
   if (error) throw error;
-  return { data: data || [], count: count || 0 };
+
+  let results = (data as JogoComTimesRaw[]) || [];
+
+  // Client-side team name filter
+  if (time) {
+    const lower = time.toLowerCase();
+    results = results.filter(j =>
+      j.time_casa?.nome?.toLowerCase().includes(lower) ||
+      j.time_fora?.nome?.toLowerCase().includes(lower)
+    );
+  }
+
+  return { data: results, count: time ? results.length : (count || 0) };
 }
 
-export async function createJogo(jogo: Partial<Jogo>) {
-  const { data, error } = await supabase.from('jogos').insert(jogo).select().single();
-  if (error) throw error;
-  return data as Jogo;
+/** Fetch all jogos for a temporada (for stats computation) */
+export async function fetchAllJogos(temporada_id: number = TEMPORADA_2026): Promise<JogoComTimesRaw[]> {
+  const allData: JogoComTimesRaw[] = [];
+  let from = 0;
+  const batchSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('jogos')
+      .select(JOGOS_SELECT)
+      .eq('temporada_id', temporada_id)
+      .order('rodada', { ascending: true })
+      .range(from, from + batchSize - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    allData.push(...(data as JogoComTimesRaw[]));
+    if (data.length < batchSize) break;
+    from += batchSize;
+  }
+
+  return allData;
 }
 
-export async function importJogos(jogos: Partial<Jogo>[]) {
-  const { data, error } = await supabase.from('jogos').insert(jogos).select();
-  if (error) throw error;
-  return data as Jogo[];
-}
-
-export async function fetchRodadas(): Promise<number[]> {
+export async function fetchRodadas(temporada_id: number = TEMPORADA_2026): Promise<number[]> {
   const { data, error } = await supabase
-    .from('jogos_resumo')
+    .from('jogos')
     .select('rodada')
+    .eq('temporada_id', temporada_id)
     .order('rodada', { ascending: true });
 
   if (error) throw error;
@@ -95,7 +127,30 @@ export async function fetchTimes(): Promise<{ id: number; nome: string; sigla: s
 }
 
 export async function fetchTemporadas(): Promise<{ id: number; ano: number }[]> {
-  const { data, error } = await supabase.from('temporadas').select('id, ano').order('ano', { ascending: false });
+  // Hardcoded since the temporadas table is empty on the external Supabase
+  return [
+    { id: 1, ano: 2026 },
+    { id: 2, ano: 2025 },
+    { id: 3, ano: 2024 },
+    { id: 4, ano: 2019 },
+    { id: 5, ano: 2020 },
+    { id: 6, ano: 2021 },
+    { id: 7, ano: 2022 },
+    { id: 8, ano: 2023 },
+    { id: 9, ano: 2024 },
+    { id: 10, ano: 2025 },
+    { id: 11, ano: 2016 },
+  ];
+}
+
+export async function createJogo(jogo: Partial<Jogo>) {
+  const { data, error } = await supabase.from('jogos').insert(jogo).select().single();
   if (error) throw error;
-  return data || [];
+  return data as Jogo;
+}
+
+export async function importJogos(jogos: Partial<Jogo>[]) {
+  const { data, error } = await supabase.from('jogos').insert(jogos).select();
+  if (error) throw error;
+  return data as Jogo[];
 }
