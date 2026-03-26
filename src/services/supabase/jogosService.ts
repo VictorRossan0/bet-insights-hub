@@ -70,7 +70,7 @@ export async function fetchJogosResumo(filters: JogosFilters = {}) {
   const { data, error, count } = await query;
   if (error) throw error;
 
-  let results = (data as JogoComTimesRaw[]) || [];
+  let results = ((data as unknown) as JogoComTimesRaw[]) || [];
 
   // Client-side team name filter
   if (time) {
@@ -100,7 +100,7 @@ export async function fetchAllJogos(temporada_id: number = TEMPORADA_2026): Prom
 
     if (error) throw error;
     if (!data || data.length === 0) break;
-    allData.push(...(data as JogoComTimesRaw[]));
+    allData.push(...((data as unknown) as JogoComTimesRaw[]));
     if (data.length < batchSize) break;
     from += batchSize;
   }
