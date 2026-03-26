@@ -61,7 +61,7 @@ export default function MarketCards({ stats, isLoading }: Props) {
             <span className="text-lg">{market.classificacao}</span>
           </div>
           <p className="text-3xl font-bold font-mono tabular-nums text-bet-green mb-3">
-            {market.percentual.toFixed(1)}%
+            {(market.percentual ?? 0).toFixed(1)}%
           </p>
           <div className="market-bar">
             <motion.div

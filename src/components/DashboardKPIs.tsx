@@ -8,11 +8,11 @@ type Props = {
 };
 
 const kpis = [
-  { key: 'total_jogos', label: 'Total Jogos', icon: Trophy, format: (v: number) => v.toString() },
-  { key: 'total_rodadas', label: 'Rodadas', icon: Target, format: (v: number) => v.toString() },
-  { key: 'media_escanteios', label: 'Média Escanteios', icon: CornerDownRight, format: (v: number) => v.toFixed(1) },
-  { key: 'media_gols', label: 'Média Gols', icon: CreditCard, format: (v: number) => v.toFixed(2) },
-  { key: 'media_cartoes', label: 'Média Cartões', icon: AlertTriangle, format: (v: number) => v.toFixed(1) },
+  { key: 'total_jogos', label: 'Total Jogos', icon: Trophy, format: (v: number | null) => (v ?? 0).toString() },
+  { key: 'total_rodadas', label: 'Rodadas', icon: Target, format: (v: number | null) => (v ?? 0).toString() },
+  { key: 'media_escanteios', label: 'Média Escanteios', icon: CornerDownRight, format: (v: number | null) => (v ?? 0).toFixed(1) },
+  { key: 'media_gols', label: 'Média Gols', icon: CreditCard, format: (v: number | null) => (v ?? 0).toFixed(2) },
+  { key: 'media_cartoes', label: 'Média Cartões', icon: AlertTriangle, format: (v: number | null) => (v ?? 0).toFixed(1) },
 ] as const;
 
 export default function DashboardKPIs({ stats, isLoading }: Props) {
