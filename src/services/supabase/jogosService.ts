@@ -132,14 +132,10 @@ export async function fetchTemporadas(): Promise<{ id: number; ano: number }[]> 
     { id: 1, ano: 2026 },
     { id: 2, ano: 2025 },
     { id: 3, ano: 2024 },
-    { id: 4, ano: 2019 },
-    { id: 5, ano: 2020 },
+    { id: 4, ano: 2023 },
+    { id: 5, ano: 2022 },
     { id: 6, ano: 2021 },
-    { id: 7, ano: 2022 },
-    { id: 8, ano: 2023 },
-    { id: 9, ano: 2024 },
-    { id: 10, ano: 2025 },
-    { id: 11, ano: 2016 },
+    { id: 7, ano: 2020 },
   ];
 }
 

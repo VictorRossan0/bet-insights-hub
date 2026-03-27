@@ -180,17 +180,15 @@ export async function fetchStatsH2H(idA: number, idB: number): Promise<StatsH2H 
 
 /** Stats por temporada (for Histórico page) */
 export async function fetchStatsPorTemporada() {
-  // temporada_id 1=2026, 2=2025, 3=2024, ..., 11=2016
+  // temporada_id mapping: 1=2026, 2=2025, 3=2024, 4=2023, 5=2022, 6=2021, 7=2020
   const temporadaAnoMap: Record<number, number> = {
-    1: 2026, 2: 2025, 3: 2024, 4: 2019, 5: 2020, 6: 2021, 7: 2022, 8: 2023, 9: 2024, 10: 2025, 11: 2016,
+    2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020,
   };
 
   const results = [];
 
   for (const [tidStr, ano] of Object.entries(temporadaAnoMap)) {
     const tid = Number(tidStr);
-    if (tid === 1) continue; // Skip 2026 for histórico
-    
     const jogos = await fetchAllJogos(tid);
     if (jogos.length === 0) continue;
 
@@ -210,4 +208,33 @@ export async function fetchStatsPorTemporada() {
   }
 
   return results.sort((a, b) => a.ano - b.ano);
+}
+
+/** Fetch apostas_sugeridas from external Supabase */
+export async function fetchApostasSugeridas() {
+  const { supabase } = await import('./client');
+  const { data, error } = await supabase
+    .from('apostas_sugeridas')
+    .select(`
+      id, temporada_id, rodada, jogo_id,
+      time_casa_id, time_fora_id,
+      mercado, tipo, justificativa,
+      base_historica, base_h2h, base_casa_fora,
+      confianca, odd_minima, odd_sugerida,
+      resultado, criado_em,
+      time_casa:times!apostas_sugeridas_time_casa_id_fkey(nome),
+      time_fora:times!apostas_sugeridas_time_fora_id_fkey(nome)
+    `)
+    .order('criado_em', { ascending: false });
+
+  if (error) {
+    // If FK join fails, try without joins
+    const { data: plain, error: err2 } = await supabase
+      .from('apostas_sugeridas')
+      .select('*')
+      .order('criado_em', { ascending: false });
+    if (err2) throw err2;
+    return plain || [];
+  }
+  return data || [];
 }
