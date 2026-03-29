@@ -4,8 +4,8 @@ import type { StatsAcumulado, StatsPorRodada, StatsPorTime, StatsCasaFora, Stats
 const TEMPORADA_2026 = 1;
 
 /** Compute accumulated stats from raw jogos */
-export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
-  const jogos = await fetchAllJogos(TEMPORADA_2026);
+export async function fetchStatsAcumulado(temporada_id: number = TEMPORADA_2026): Promise<StatsAcumulado | null> {
+  const jogos = await fetchAllJogos(temporada_id);
   if (jogos.length === 0) return null;
 
   const n = jogos.length;
@@ -29,8 +29,8 @@ export async function fetchStatsAcumulado(): Promise<StatsAcumulado | null> {
 }
 
 /** Stats grouped by rodada */
-export async function fetchStatsPorRodada(): Promise<StatsPorRodada[]> {
-  const jogos = await fetchAllJogos(TEMPORADA_2026);
+export async function fetchStatsPorRodada(temporada_id: number = TEMPORADA_2026): Promise<StatsPorRodada[]> {
+  const jogos = await fetchAllJogos(temporada_id);
   if (jogos.length === 0) return [];
 
   const grouped = new Map<number, JogoComTimesRaw[]>();
