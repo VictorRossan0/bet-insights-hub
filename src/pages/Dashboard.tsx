@@ -6,17 +6,24 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import DashboardKPIs from '@/components/DashboardKPIs';
 import MarketCards from '@/components/MarketCards';
 import { fetchStatsAcumulado, fetchStatsPorRodada } from '@/services/supabase/statsService';
-import { fetchTemporadas } from '@/services/supabase/jogosService';
 
 const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
+const MAX_TEMPORADA_ID = 7;
 
 export default function Dashboard() {
   const [temporadaId, setTemporadaId] = useState(1);
   const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
+  const prevTemporadaId = temporadaId < MAX_TEMPORADA_ID ? temporadaId + 1 : null;
 
   const { data: stats, isLoading: loadingStats, refetch: refetchStats } = useQuery({
     queryKey: ['stats-acumulado', temporadaId],
     queryFn: () => fetchStatsAcumulado(temporadaId),
+  });
+
+  const { data: prevStats } = useQuery({
+    queryKey: ['stats-acumulado', prevTemporadaId],
+    queryFn: () => fetchStatsAcumulado(prevTemporadaId!),
+    enabled: prevTemporadaId !== null,
   });
 
   const { data: statsPorRodada, isLoading: loadingRodada, refetch: refetchRodada } = useQuery({
@@ -63,7 +70,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* KPIs */}
-      <DashboardKPIs stats={stats ?? null} isLoading={loadingStats} />
+      <DashboardKPIs stats={stats ?? null} prevStats={prevStats ?? null} isLoading={loadingStats} />
 
       {/* Markets */}
       <motion.div
@@ -72,7 +79,7 @@ export default function Dashboard() {
         transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <h2 className="text-lg font-semibold mb-4">🎯 Mercados</h2>
-        <MarketCards stats={stats ?? null} isLoading={loadingStats} />
+        <MarketCards stats={stats ?? null} prevStats={prevStats ?? null} isLoading={loadingStats} />
       </motion.div>
 
       {/* Charts */}
