@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import type { StatsAcumulado, MarketData } from '@/types/database';
 
 type Props = {
   stats: StatsAcumulado | null;
+  prevStats?: StatsAcumulado | null;
   isLoading: boolean;
 };
 
@@ -14,20 +16,34 @@ function getClassificacao(pct: number): string {
   return '⚠️';
 }
 
-function getMarkets(stats: StatsAcumulado): MarketData[] {
-  return [
-    { nome: 'Over 5 Cantos', percentual: stats.pct_o5_cantos, classificacao: getClassificacao(stats.pct_o5_cantos) },
-    { nome: 'Over 6 Cantos', percentual: stats.pct_o6_cantos, classificacao: getClassificacao(stats.pct_o6_cantos) },
-    { nome: 'Over 7 Cantos', percentual: stats.pct_o7_cantos, classificacao: getClassificacao(stats.pct_o7_cantos) },
-    { nome: 'Under 3.5 Gols', percentual: stats.pct_u35_gols, classificacao: getClassificacao(stats.pct_u35_gols) },
-    { nome: 'Under 2.5 Gols', percentual: stats.pct_u25_gols, classificacao: getClassificacao(stats.pct_u25_gols) },
-    { nome: 'Under 7 Cartões', percentual: stats.pct_u7_cartoes, classificacao: getClassificacao(stats.pct_u7_cartoes) },
-    { nome: 'Over 8 Cantos', percentual: stats.pct_o8_cantos, classificacao: getClassificacao(stats.pct_o8_cantos) },
-    { nome: 'Over 9 Cantos', percentual: stats.pct_o9_cantos, classificacao: getClassificacao(stats.pct_o9_cantos) },
-  ];
+type MarketKey = 'pct_o5_cantos' | 'pct_o6_cantos' | 'pct_o7_cantos' | 'pct_u35_gols' | 'pct_u25_gols' | 'pct_u7_cartoes' | 'pct_o8_cantos' | 'pct_o9_cantos';
+
+const MARKET_KEYS: { nome: string; key: MarketKey }[] = [
+  { nome: 'Over 5 Cantos', key: 'pct_o5_cantos' },
+  { nome: 'Over 6 Cantos', key: 'pct_o6_cantos' },
+  { nome: 'Over 7 Cantos', key: 'pct_o7_cantos' },
+  { nome: 'Under 3.5 Gols', key: 'pct_u35_gols' },
+  { nome: 'Under 2.5 Gols', key: 'pct_u25_gols' },
+  { nome: 'Under 7 Cartões', key: 'pct_u7_cartoes' },
+  { nome: 'Over 8 Cantos', key: 'pct_o8_cantos' },
+  { nome: 'Over 9 Cantos', key: 'pct_o9_cantos' },
+];
+
+function YoYDelta({ current, previous }: { current: number; previous: number }) {
+  const delta = current - previous;
+  if (Math.abs(delta) < 0.3) return null;
+  const isUp = delta > 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold ${
+      isUp ? 'text-bet-green' : 'text-destructive'
+    }`}>
+      {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+      {isUp ? '+' : ''}{delta.toFixed(1)}pp
+    </span>
+  );
 }
 
-export default function MarketCards({ stats, isLoading }: Props) {
+export default function MarketCards({ stats, prevStats, isLoading }: Props) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -44,35 +60,41 @@ export default function MarketCards({ stats, isLoading }: Props) {
 
   if (!stats) return null;
 
-  const markets = getMarkets(stats);
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {markets.map((market, i) => (
-        <motion.div
-          key={market.nome}
-          initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 0.3 + i * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="card-bet p-4 hover:border-bet-green/30 transition-colors duration-200"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold">{market.nome}</h3>
-            <span className="text-lg">{market.classificacao}</span>
-          </div>
-          <p className="text-3xl font-bold font-mono tabular-nums text-bet-green mb-3">
-            {(market.percentual ?? 0).toFixed(1)}%
-          </p>
-          <div className="market-bar">
-            <motion.div
-              className="market-bar-fill"
-              initial={{ width: 0 }}
-              animate={{ width: `${market.percentual}%` }}
-              transition={{ delay: 0.5 + i * 0.07, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            />
-          </div>
-        </motion.div>
-      ))}
+      {MARKET_KEYS.map((market, i) => {
+        const pct = stats[market.key] ?? 0;
+        const prevPct = prevStats?.[market.key];
+
+        return (
+          <motion.div
+            key={market.nome}
+            initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.3 + i * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="card-bet p-4 hover:border-bet-green/30 transition-colors duration-200"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold">{market.nome}</h3>
+              <span className="text-lg">{getClassificacao(pct)}</span>
+            </div>
+            <div className="flex items-end gap-2 mb-3">
+              <p className="text-3xl font-bold font-mono tabular-nums text-bet-green">
+                {pct.toFixed(1)}%
+              </p>
+              {prevPct != null && <YoYDelta current={pct} previous={prevPct} />}
+            </div>
+            <div className="market-bar">
+              <motion.div
+                className="market-bar-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ delay: 0.5 + i * 0.07, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
