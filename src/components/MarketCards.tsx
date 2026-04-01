@@ -61,7 +61,7 @@ export default function MarketCards({ stats, prevStats, isLoading }: Props) {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
       {MARKET_KEYS.map((market, i) => {
         const pct = stats[market.key] ?? 0;
         const prevPct = prevStats?.[market.key];
