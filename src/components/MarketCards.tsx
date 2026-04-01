@@ -46,9 +46,9 @@ function YoYDelta({ current, previous }: { current: number; previous: number }) 
 export default function MarketCards({ stats, prevStats, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="card-bet p-4 space-y-3">
+          <div key={i} className="card-bet p-3 sm:p-4 space-y-3">
             <div className="h-4 w-24 bg-secondary rounded animate-pulse" />
             <div className="h-8 w-16 bg-secondary rounded animate-pulse" />
             <div className="h-2 bg-secondary rounded animate-pulse" />
