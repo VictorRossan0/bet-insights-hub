@@ -35,7 +35,7 @@ function YoYBadge({ current, previous }: { current: number; previous: number }) 
 
 export default function DashboardKPIs({ stats, prevStats, isLoading }: Props) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-4 md:overflow-visible md:pb-0">
       {kpis.map((kpi, i) => {
         const currentVal = stats ? (stats[kpi.key] as number) : null;
         const prevVal = prevStats ? (prevStats[kpi.key] as number) : null;
