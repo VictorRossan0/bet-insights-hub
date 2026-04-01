@@ -37,7 +37,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="page-container space-y-8">
+    <div className="page-container space-y-5 sm:space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
