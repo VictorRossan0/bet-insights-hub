@@ -63,7 +63,7 @@ export default function Layout() {
       </AnimatePresence>
 
       {/* Main */}
-      <main className="flex-1 min-w-0 lg:ml-64 mt-14 lg:mt-0 overflow-x-hidden">
+      <main className="flex-1 min-w-0 lg:ml-64 mt-14 lg:mt-0 overflow-x-hidden overflow-y-auto h-[calc(100vh-3.5rem)] lg:h-screen">
         <Outlet />
       </main>
     </div>
