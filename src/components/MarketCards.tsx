@@ -72,14 +72,14 @@ export default function MarketCards({ stats, prevStats, isLoading }: Props) {
             initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.3 + i * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="card-bet p-4 hover:border-bet-green/30 transition-colors duration-200"
+            className="card-bet p-3 sm:p-4 hover:border-bet-green/30 transition-colors duration-200"
           >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold">{market.nome}</h3>
-              <span className="text-lg">{getClassificacao(pct)}</span>
+            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+              <h3 className="text-xs sm:text-sm font-semibold leading-tight">{market.nome}</h3>
+              <span className="text-sm sm:text-lg">{getClassificacao(pct)}</span>
             </div>
-            <div className="flex items-end gap-2 mb-3">
-              <p className="text-3xl font-bold font-mono tabular-nums text-bet-green">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-0.5 sm:gap-2 mb-2 sm:mb-3">
+              <p className="text-xl sm:text-3xl font-bold font-mono tabular-nums text-bet-green">
                 {pct.toFixed(1)}%
               </p>
               {prevPct != null && <YoYDelta current={pct} previous={prevPct} />}
