@@ -46,9 +46,9 @@ function YoYDelta({ current, previous }: { current: number; previous: number }) 
 export default function MarketCards({ stats, prevStats, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="card-bet p-4 space-y-3">
+          <div key={i} className="card-bet p-3 sm:p-4 space-y-3">
             <div className="h-4 w-24 bg-secondary rounded animate-pulse" />
             <div className="h-8 w-16 bg-secondary rounded animate-pulse" />
             <div className="h-2 bg-secondary rounded animate-pulse" />
@@ -61,7 +61,7 @@ export default function MarketCards({ stats, prevStats, isLoading }: Props) {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
       {MARKET_KEYS.map((market, i) => {
         const pct = stats[market.key] ?? 0;
         const prevPct = prevStats?.[market.key];
@@ -72,14 +72,14 @@ export default function MarketCards({ stats, prevStats, isLoading }: Props) {
             initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: 0.3 + i * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="card-bet p-4 hover:border-bet-green/30 transition-colors duration-200"
+            className="card-bet p-3 sm:p-4 hover:border-bet-green/30 transition-colors duration-200 min-w-0 overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold">{market.nome}</h3>
-              <span className="text-lg">{getClassificacao(pct)}</span>
+            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+              <h3 className="text-xs sm:text-sm font-semibold leading-tight">{market.nome}</h3>
+              <span className="text-sm sm:text-lg">{getClassificacao(pct)}</span>
             </div>
-            <div className="flex items-end gap-2 mb-3">
-              <p className="text-3xl font-bold font-mono tabular-nums text-bet-green">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-0.5 sm:gap-2 mb-2 sm:mb-3">
+              <p className="text-xl sm:text-3xl font-bold font-mono tabular-nums text-bet-green">
                 {pct.toFixed(1)}%
               </p>
               {prevPct != null && <YoYDelta current={pct} previous={prevPct} />}

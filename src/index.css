@@ -118,7 +118,7 @@
   }
 
   .page-container {
-    @apply p-6 lg:p-8 max-w-[1400px] mx-auto;
+    @apply p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto overflow-x-hidden;
   }
 
   .table-bet {

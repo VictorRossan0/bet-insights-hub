@@ -35,7 +35,7 @@ function YoYBadge({ current, previous }: { current: number; previous: number }) 
 
 export default function DashboardKPIs({ stats, prevStats, isLoading }: Props) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-4 md:overflow-visible md:pb-0">
       {kpis.map((kpi, i) => {
         const currentVal = stats ? (stats[kpi.key] as number) : null;
         const prevVal = prevStats ? (prevStats[kpi.key] as number) : null;
@@ -46,7 +46,7 @@ export default function DashboardKPIs({ stats, prevStats, isLoading }: Props) {
             initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ delay: i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="kpi-card group"
+            className="kpi-card group min-w-[140px] snap-start flex-shrink-0 md:min-w-0 md:flex-shrink"
           >
             <div className="flex items-center gap-2 mb-3">
               <kpi.icon className="w-4 h-4 text-bet-green" />
