@@ -4,7 +4,7 @@ import { TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-rea
 import { fetchApostasSugeridas } from '@/services/supabase/statsService';
 import { useMemo, useState } from 'react';
 
-type FilterResult = 'todos' | 'pendente' | 'ganhou' | 'perdeu';
+type FilterResult = 'todos' | 'pendente' | 'ganhou' | 'perdeu' | 'void';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
