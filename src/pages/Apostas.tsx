@@ -164,13 +164,13 @@ export default function Apostas() {
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {getResultIcon(aposta.resultado)}
-                      <span className="font-semibold text-sm">
-                        {aposta.time_casa?.nome || 'Time Casa'} vs {aposta.time_fora?.nome || 'Time Fora'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">R{aposta.rodada}</span>
-                    </div>
+                     <div className="flex items-center gap-2 mb-1">
+                       {getResultIcon(aposta.resultado)}
+                       <span className="font-semibold text-sm">
+                         {aposta.time_casa_nome || 'Time Casa'} vs {aposta.time_fora_nome || 'Time Fora'}
+                       </span>
+                       <span className="text-xs text-muted-foreground">R{aposta.rodada}</span>
+                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
                         {aposta.mercado || 'Mercado'}
