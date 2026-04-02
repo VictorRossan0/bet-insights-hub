@@ -50,7 +50,12 @@ export default function Apostas() {
   const filtered = useMemo(() => {
     if (!apostas) return [];
     if (filter === 'todos') return apostas;
-    return apostas.filter((a: any) => (a.resultado || 'pendente') === filter);
+    return apostas.filter((a: any) => {
+      const r = a.resultado || 'pendente';
+      if (filter === 'ganhou') return r === 'ganhou' || r === 'green';
+      if (filter === 'perdeu') return r === 'perdeu' || r === 'red';
+      return r === filter;
+    });
   }, [apostas, filter]);
 
   const resumo = useMemo(() => {
