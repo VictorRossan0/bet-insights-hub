@@ -137,7 +137,7 @@ export default function Apostas() {
             transition={{ delay: 0.15, duration: 0.5, ease }}
             className="flex gap-1.5"
           >
-            {(['todos', 'pendente', 'ganhou', 'perdeu'] as FilterResult[]).map(f => (
+            {(['todos', 'pendente', 'ganhou', 'perdeu', 'void'] as FilterResult[]).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
