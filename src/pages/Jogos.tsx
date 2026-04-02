@@ -29,6 +29,7 @@ export default function Jogos() {
 
   const handleRefresh = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['jogos'] });
+    queryClient.invalidateQueries({ queryKey: ['rodadas'] });
     toast.success('Dados atualizados');
   }, [queryClient]);
 
