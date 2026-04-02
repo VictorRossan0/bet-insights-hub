@@ -171,15 +171,15 @@ export default function Apostas() {
                        </span>
                        <span className="text-xs text-muted-foreground">R{aposta.rodada}</span>
                      </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
-                        {aposta.mercado || 'Mercado'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{aposta.tipo || 'Tipo'}</span>
-                      <span className={getResultBadge(aposta.resultado)}>
-                        {aposta.resultado || 'pendente'}
-                      </span>
-                    </div>
+                     <div className="flex items-center gap-2 flex-wrap">
+                       <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
+                         {aposta.mercado || 'Mercado'}
+                       </span>
+                       <span className="text-xs text-muted-foreground">{aposta.tipo || 'Tipo'}</span>
+                       <span className={getResultBadge(aposta.resultado)}>
+                         {aposta.resultado || 'pendente'}
+                       </span>
+                     </div>
                   </div>
                   {aposta.odd_sugerida && (
                     <div className="text-right">
