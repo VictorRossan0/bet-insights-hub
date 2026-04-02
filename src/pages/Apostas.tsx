@@ -181,12 +181,19 @@ export default function Apostas() {
                        </span>
                      </div>
                   </div>
-                  {aposta.odd_sugerida && (
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Odd</p>
-                      <p className="text-lg font-mono font-bold text-bet-green">{Number(aposta.odd_sugerida).toFixed(2)}</p>
-                    </div>
-                  )}
+                 {(aposta.odd_sugerida || aposta.odd_minima) && (
+                   <div className="text-right">
+                     {aposta.odd_sugerida && (
+                       <>
+                         <p className="text-xs text-muted-foreground">Odd</p>
+                         <p className="text-lg font-mono font-bold text-bet-green">{Number(aposta.odd_sugerida).toFixed(2)}</p>
+                       </>
+                     )}
+                     {aposta.odd_minima && (
+                       <p className="text-[10px] text-muted-foreground mt-0.5">mín: {Number(aposta.odd_minima).toFixed(2)}</p>
+                     )}
+                   </div>
+                 )}
                 </div>
 
                 {/* Confiança */}
