@@ -19,8 +19,9 @@ function getResultIcon(resultado?: string | null) {
 
 function getResultBadge(resultado?: string | null) {
   switch (resultado) {
-    case 'ganhou': return 'badge-green';
-    case 'perdeu': return 'badge-red';
+    case 'ganhou': case 'green': return 'badge-green';
+    case 'perdeu': case 'red': return 'badge-red';
+    case 'void': return 'text-xs font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground';
     default: return 'text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400';
   }
 }
