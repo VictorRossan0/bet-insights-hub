@@ -61,11 +61,12 @@ export default function Apostas() {
   const resumo = useMemo(() => {
     if (!apostas || apostas.length === 0) return null;
     const total = apostas.length;
-    const ganhou = apostas.filter((a: any) => a.resultado === 'ganhou').length;
-    const perdeu = apostas.filter((a: any) => a.resultado === 'perdeu').length;
+    const ganhou = apostas.filter((a: any) => a.resultado === 'ganhou' || a.resultado === 'green').length;
+    const perdeu = apostas.filter((a: any) => a.resultado === 'perdeu' || a.resultado === 'red').length;
     const pendente = apostas.filter((a: any) => !a.resultado || a.resultado === 'pendente').length;
+    const voided = apostas.filter((a: any) => a.resultado === 'void').length;
     const pctAcerto = ganhou + perdeu > 0 ? (ganhou / (ganhou + perdeu)) * 100 : 0;
-    return { total, ganhou, perdeu, pendente, pctAcerto };
+    return { total, ganhou, perdeu, pendente, voided, pctAcerto };
   }, [apostas]);
 
   return (
