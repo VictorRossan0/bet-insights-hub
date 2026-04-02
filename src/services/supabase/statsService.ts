@@ -210,31 +210,23 @@ export async function fetchStatsPorTemporada() {
   return results.sort((a, b) => a.ano - b.ano);
 }
 
-/** Fetch apostas_sugeridas from external Supabase */
+/** Fetch apostas from external Supabase via sugestoes_apostas_view */
 export async function fetchApostasSugeridas() {
   const { supabase } = await import('./client');
+
+  // Try the view first (has team names already joined)
   const { data, error } = await supabase
-    .from('apostas_sugeridas')
-    .select(`
-      id, temporada_id, rodada, jogo_id,
-      time_casa_id, time_fora_id,
-      mercado, tipo, justificativa,
-      base_historica, base_h2h, base_casa_fora,
-      confianca, odd_minima, odd_sugerida,
-      resultado, criado_em,
-      time_casa:times!apostas_sugeridas_time_casa_id_fkey(nome),
-      time_fora:times!apostas_sugeridas_time_fora_id_fkey(nome)
-    `)
+    .from('sugestoes_apostas_view')
+    .select('*')
     .order('criado_em', { ascending: false });
 
-  if (error) {
-    // If FK join fails, try without joins
-    const { data: plain, error: err2 } = await supabase
-      .from('apostas_sugeridas')
-      .select('*')
-      .order('criado_em', { ascending: false });
-    if (err2) throw err2;
-    return plain || [];
-  }
-  return data || [];
+  if (!error && data) return data;
+
+  // Fallback: query apostas_sugeridas directly
+  const { data: plain, error: err2 } = await supabase
+    .from('apostas_sugeridas')
+    .select('*')
+    .order('criado_em', { ascending: false });
+  if (err2) throw err2;
+  return plain || [];
 }

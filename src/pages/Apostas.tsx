@@ -4,14 +4,14 @@ import { TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-rea
 import { fetchApostasSugeridas } from '@/services/supabase/statsService';
 import { useMemo, useState } from 'react';
 
-type FilterResult = 'todos' | 'pendente' | 'ganhou' | 'perdeu';
+type FilterResult = 'todos' | 'pendente' | 'ganhou' | 'perdeu' | 'void';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 function getResultIcon(resultado?: string | null) {
   switch (resultado) {
-    case 'ganhou': return <CheckCircle className="w-4 h-4 text-bet-green" />;
-    case 'perdeu': return <XCircle className="w-4 h-4 text-bet-red" />;
+    case 'ganhou': case 'green': return <CheckCircle className="w-4 h-4 text-bet-green" />;
+    case 'perdeu': case 'red': return <XCircle className="w-4 h-4 text-bet-red" />;
     case 'void': return <AlertCircle className="w-4 h-4 text-muted-foreground" />;
     default: return <Clock className="w-4 h-4 text-yellow-500" />;
   }
@@ -19,8 +19,9 @@ function getResultIcon(resultado?: string | null) {
 
 function getResultBadge(resultado?: string | null) {
   switch (resultado) {
-    case 'ganhou': return 'badge-green';
-    case 'perdeu': return 'badge-red';
+    case 'ganhou': case 'green': return 'badge-green';
+    case 'perdeu': case 'red': return 'badge-red';
+    case 'void': return 'text-xs font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground';
     default: return 'text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400';
   }
 }
@@ -49,17 +50,23 @@ export default function Apostas() {
   const filtered = useMemo(() => {
     if (!apostas) return [];
     if (filter === 'todos') return apostas;
-    return apostas.filter((a: any) => (a.resultado || 'pendente') === filter);
+    return apostas.filter((a: any) => {
+      const r = a.resultado || 'pendente';
+      if (filter === 'ganhou') return r === 'ganhou' || r === 'green';
+      if (filter === 'perdeu') return r === 'perdeu' || r === 'red';
+      return r === filter;
+    });
   }, [apostas, filter]);
 
   const resumo = useMemo(() => {
     if (!apostas || apostas.length === 0) return null;
     const total = apostas.length;
-    const ganhou = apostas.filter((a: any) => a.resultado === 'ganhou').length;
-    const perdeu = apostas.filter((a: any) => a.resultado === 'perdeu').length;
+    const ganhou = apostas.filter((a: any) => a.resultado === 'ganhou' || a.resultado === 'green').length;
+    const perdeu = apostas.filter((a: any) => a.resultado === 'perdeu' || a.resultado === 'red').length;
     const pendente = apostas.filter((a: any) => !a.resultado || a.resultado === 'pendente').length;
+    const voided = apostas.filter((a: any) => a.resultado === 'void').length;
     const pctAcerto = ganhou + perdeu > 0 ? (ganhou / (ganhou + perdeu)) * 100 : 0;
-    return { total, ganhou, perdeu, pendente, pctAcerto };
+    return { total, ganhou, perdeu, pendente, voided, pctAcerto };
   }, [apostas]);
 
   return (
@@ -130,7 +137,7 @@ export default function Apostas() {
             transition={{ delay: 0.15, duration: 0.5, ease }}
             className="flex gap-1.5"
           >
-            {(['todos', 'pendente', 'ganhou', 'perdeu'] as FilterResult[]).map(f => (
+            {(['todos', 'pendente', 'ganhou', 'perdeu', 'void'] as FilterResult[]).map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -157,29 +164,36 @@ export default function Apostas() {
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {getResultIcon(aposta.resultado)}
-                      <span className="font-semibold text-sm">
-                        {aposta.time_casa?.nome || 'Time Casa'} vs {aposta.time_fora?.nome || 'Time Fora'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">R{aposta.rodada}</span>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
-                        {aposta.mercado || 'Mercado'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{aposta.tipo || 'Tipo'}</span>
-                      <span className={getResultBadge(aposta.resultado)}>
-                        {aposta.resultado || 'pendente'}
-                      </span>
-                    </div>
+                     <div className="flex items-center gap-2 mb-1">
+                       {getResultIcon(aposta.resultado)}
+                       <span className="font-semibold text-sm">
+                         {aposta.time_casa_nome || 'Time Casa'} vs {aposta.time_fora_nome || 'Time Fora'}
+                       </span>
+                       <span className="text-xs text-muted-foreground">R{aposta.rodada}</span>
+                     </div>
+                     <div className="flex items-center gap-2 flex-wrap">
+                       <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
+                         {aposta.mercado || 'Mercado'}
+                       </span>
+                       <span className="text-xs text-muted-foreground">{aposta.tipo || 'Tipo'}</span>
+                       <span className={getResultBadge(aposta.resultado)}>
+                         {aposta.resultado || 'pendente'}
+                       </span>
+                     </div>
                   </div>
-                  {aposta.odd_sugerida && (
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Odd</p>
-                      <p className="text-lg font-mono font-bold text-bet-green">{Number(aposta.odd_sugerida).toFixed(2)}</p>
-                    </div>
-                  )}
+                 {(aposta.odd_sugerida || aposta.odd_minima) && (
+                   <div className="text-right">
+                     {aposta.odd_sugerida && (
+                       <>
+                         <p className="text-xs text-muted-foreground">Odd</p>
+                         <p className="text-lg font-mono font-bold text-bet-green">{Number(aposta.odd_sugerida).toFixed(2)}</p>
+                       </>
+                     )}
+                     {aposta.odd_minima && (
+                       <p className="text-[10px] text-muted-foreground mt-0.5">mín: {Number(aposta.odd_minima).toFixed(2)}</p>
+                     )}
+                   </div>
+                 )}
                 </div>
 
                 {/* Confiança */}
