@@ -10,8 +10,8 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 function getResultIcon(resultado?: string | null) {
   switch (resultado) {
-    case 'ganhou': return <CheckCircle className="w-4 h-4 text-bet-green" />;
-    case 'perdeu': return <XCircle className="w-4 h-4 text-bet-red" />;
+    case 'ganhou': case 'green': return <CheckCircle className="w-4 h-4 text-bet-green" />;
+    case 'perdeu': case 'red': return <XCircle className="w-4 h-4 text-bet-red" />;
     case 'void': return <AlertCircle className="w-4 h-4 text-muted-foreground" />;
     default: return <Clock className="w-4 h-4 text-yellow-500" />;
   }
