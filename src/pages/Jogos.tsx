@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Upload, RefreshCw } from 'lucide-react';
+import { Search, Upload, RefreshCw, Plus, FileText, FileJson } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
-import { fetchJogosResumo, fetchRodadas, fetchTimes } from '@/services/supabase/jogosService';
+import FormNovoJogo from '@/components/FormNovoJogo';
+import { fetchJogosResumo, fetchRodadas } from '@/services/supabase/jogosService';
+import { importJogosValidated, parseCSV } from '@/services/supabase/importService';
 import { toast } from 'sonner';
 
 const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
@@ -13,6 +15,7 @@ export default function Jogos() {
   const [temporadaId, setTemporadaId] = useState(1);
   const [rodadaFilter, setRodadaFilter] = useState<number | undefined>();
   const [timeFilter, setTimeFilter] = useState('');
+  const [showForm, setShowForm] = useState(false);
   const pageSize = 10;
   const queryClient = useQueryClient();
   const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
@@ -27,33 +30,64 @@ export default function Jogos() {
     queryFn: () => fetchRodadas(temporadaId),
   });
 
-  const handleRefresh = useCallback(() => {
+  const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['jogos'] });
     queryClient.invalidateQueries({ queryKey: ['rodadas'] });
-    toast.success('Dados atualizados');
   }, [queryClient]);
 
-  const handleImportJSON = useCallback(() => {
+  const handleRefresh = useCallback(() => {
+    invalidateAll();
+    toast.success('Dados atualizados');
+  }, [invalidateAll]);
+
+  const handleImportFile = useCallback((accept: string) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json';
+    input.accept = accept;
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
       try {
         const text = await file.text();
-        const jogos = JSON.parse(text);
-        const { importJogos } = await import('@/services/supabase/jogosService');
-        await importJogos(jogos);
-        queryClient.invalidateQueries({ queryKey: ['jogos'] });
-        toast.success(`${jogos.length} jogos importados`);
-      } catch (err) {
-        toast.error('Erro ao importar JSON');
+        let jogos;
+
+        if (file.name.endsWith('.csv')) {
+          jogos = parseCSV(text);
+        } else {
+          jogos = JSON.parse(text);
+        }
+
+        if (!Array.isArray(jogos) || jogos.length === 0) {
+          toast.error('Arquivo vazio ou formato inválido');
+          return;
+        }
+
+        // Set temporada_id if missing
+        jogos = jogos.map((j: Record<string, unknown>) => ({
+          ...j,
+          temporada_id: j.temporada_id ?? temporadaId,
+        }));
+
+        const { inserted, duplicates } = await importJogosValidated(jogos);
+        invalidateAll();
+
+        if (duplicates > 0 && inserted > 0) {
+          toast.success(`${inserted} jogos importados, ${duplicates} duplicatas ignoradas`);
+        } else if (duplicates > 0) {
+          toast.warning(`Todos os ${duplicates} jogos já existem no banco`);
+        } else {
+          toast.success(`${inserted} jogos importados com sucesso`);
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Erro ao importar arquivo';
+        toast.error(msg);
         console.error(err);
       }
     };
     input.click();
-  }, [queryClient]);
+  }, [queryClient, temporadaId, invalidateAll]);
+
+  const btnCls = 'flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent text-xs sm:text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]';
 
   return (
     <div className="page-container space-y-6">
@@ -68,14 +102,18 @@ export default function Jogos() {
           <h1 className="text-2xl font-display tracking-wide">Jogos</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Brasileirão Série A {ano}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleRefresh} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Atualizar
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={handleRefresh} className={btnCls}>
+            <RefreshCw className="w-3.5 h-3.5" /> Atualizar
           </button>
-          <button onClick={handleImportJSON} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]">
-            <Upload className="w-3.5 h-3.5" />
-            Importar JSON
+          <button onClick={() => setShowForm(true)} className={btnCls}>
+            <Plus className="w-3.5 h-3.5" /> Novo Jogo
+          </button>
+          <button onClick={() => handleImportFile('.json')} className={btnCls}>
+            <FileJson className="w-3.5 h-3.5" /> JSON
+          </button>
+          <button onClick={() => handleImportFile('.csv')} className={btnCls}>
+            <FileText className="w-3.5 h-3.5" /> CSV
           </button>
         </div>
       </motion.div>
@@ -135,6 +173,15 @@ export default function Jogos() {
           onPageChange={setPage}
         />
       </motion.div>
+
+      {/* Form Modal */}
+      {showForm && (
+        <FormNovoJogo
+          temporadaId={temporadaId}
+          onSuccess={invalidateAll}
+          onClose={() => setShowForm(false)}
+        />
+      )}
     </div>
   );
 }
