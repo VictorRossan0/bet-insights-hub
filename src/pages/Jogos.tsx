@@ -171,6 +171,7 @@ export default function Jogos() {
           totalCount={jogosData?.count ?? 0}
           pageSize={pageSize}
           onPageChange={setPage}
+          onUpdate={invalidateAll}
         />
       </motion.div>
 
