@@ -115,6 +115,9 @@ export default function Jogos() {
           <button onClick={() => handleImportFile('.csv')} className={btnCls}>
             <FileText className="w-3.5 h-3.5" /> CSV
           </button>
+          <a href="/exemplo_jogos.csv" download className={btnCls}>
+            <Download className="w-3.5 h-3.5" /> Template
+          </a>
         </div>
       </motion.div>
 
