@@ -150,3 +150,9 @@ export async function importJogos(jogos: Partial<Jogo>[]) {
   if (error) throw error;
   return data as Jogo[];
 }
+
+export async function updateJogo(id: number, updates: Partial<Jogo>) {
+  const { data, error } = await supabase.from('jogos').update(updates).eq('id', id).select().single();
+  if (error) throw error;
+  return data as Jogo;
+}
