@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import FormEditarJogo from '@/components/FormEditarJogo';
 
 type Props = {
   jogos: JogoComTimesRaw[];
@@ -8,6 +10,7 @@ type Props = {
   totalCount: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  onUpdate?: () => void;
 };
 
 function BoolBadge({ value }: { value: boolean }) {
@@ -18,8 +21,9 @@ function BoolBadge({ value }: { value: boolean }) {
   );
 }
 
-export default function GamesTable({ jogos, isLoading, page, totalCount, pageSize, onPageChange }: Props) {
+export default function GamesTable({ jogos, isLoading, page, totalCount, pageSize, onPageChange, onUpdate }: Props) {
   const totalPages = Math.ceil(totalCount / pageSize);
+  const [editingJogo, setEditingJogo] = useState<JogoComTimesRaw | null>(null);
 
   if (isLoading) {
     return (
@@ -59,6 +63,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <th>U7 Cart.</th>
               <th>O8C</th>
               <th>O9C</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -81,6 +86,15 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                 <td><BoolBadge value={j.u7_cartoes} /></td>
                 <td><BoolBadge value={j.o8_cantos} /></td>
                 <td><BoolBadge value={j.o9_cantos} /></td>
+                <td>
+                  <button
+                    onClick={() => setEditingJogo(j)}
+                    className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                    title="Editar jogo"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -112,6 +126,14 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
             </button>
           </div>
         </div>
+      )}
+
+      {editingJogo && (
+        <FormEditarJogo
+          jogo={editingJogo}
+          onSuccess={() => onUpdate?.()}
+          onClose={() => setEditingJogo(null)}
+        />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Upload, RefreshCw, Plus, FileText, FileJson } from 'lucide-react';
+import { Search, Upload, RefreshCw, Plus, FileText, FileJson, Download } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
 import FormNovoJogo from '@/components/FormNovoJogo';
 import { fetchJogosResumo, fetchRodadas } from '@/services/supabase/jogosService';
@@ -115,6 +115,9 @@ export default function Jogos() {
           <button onClick={() => handleImportFile('.csv')} className={btnCls}>
             <FileText className="w-3.5 h-3.5" /> CSV
           </button>
+          <a href="/exemplo_jogos.csv" download className={btnCls}>
+            <Download className="w-3.5 h-3.5" /> Template
+          </a>
         </div>
       </motion.div>
 
@@ -171,6 +174,7 @@ export default function Jogos() {
           totalCount={jogosData?.count ?? 0}
           pageSize={pageSize}
           onPageChange={setPage}
+          onUpdate={invalidateAll}
         />
       </motion.div>
 
