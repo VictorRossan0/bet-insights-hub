@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Upload, RefreshCw, Plus, FileText, FileJson } from 'lucide-react';
+import { Search, Upload, RefreshCw, Plus, FileText, FileJson, Download } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
 import FormNovoJogo from '@/components/FormNovoJogo';
 import { fetchJogosResumo, fetchRodadas } from '@/services/supabase/jogosService';
