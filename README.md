@@ -105,10 +105,19 @@ src/
 │   ├── Apostas.tsx            # Central de sugestões de apostas
 │   └── NotFound.tsx           # Página 404
 ├── services/
+│   ├── api/                   # Camada de acesso a dados (Supabase)
+│   │   ├── games.api.ts       # CRUD e consultas de jogos
+│   │   ├── teams.api.ts       # CRUD e consultas de times
+│   │   └── bets.api.ts        # Consultas de apostas sugeridas
+│   ├── domain/                # Regras de negócio e transformações
+│   │   ├── stats.service.ts   # Agregação estatística (acumulado, rodada, time, H2H)
+│   │   ├── games.service.ts   # Importação CSV, validação de duplicatas
+│   │   └── betting.service.ts # Motor de recomendação de apostas
 │   └── supabase/
 │       ├── client.ts          # Cliente Supabase (externo)
-│       ├── jogosService.ts    # Serviço de jogos e times
-│       └── statsService.ts    # Serviço de estatísticas
+│       ├── jogosService.ts    # Re-exports (compatibilidade)
+│       ├── statsService.ts    # Re-exports (compatibilidade)
+│       └── importService.ts   # Re-exports (compatibilidade)
 ├── integrations/
 │   └── supabase/
 │       ├── client.ts          # Cliente Supabase (Lovable Cloud)
