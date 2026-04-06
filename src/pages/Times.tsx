@@ -93,7 +93,66 @@ export default function Times() {
         </div>
       </motion.div>
 
-      {tab === 'casa-fora' ? (
+      {tab === 'forma' ? (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="card-bet overflow-hidden"
+        >
+          <div className="p-4 border-b border-border flex items-center gap-2">
+            <span className="text-sm">🔥</span>
+            <h2 className="text-sm font-semibold">Forma Recente — Temporada 2026</h2>
+          </div>
+          <div className="overflow-auto">
+            <table className="table-bet text-sm">
+              <thead className="sticky top-0 bg-card z-10">
+                <tr>
+                  <th className="w-10">#</th>
+                  <th>Time</th>
+                  <th className="text-center">J</th>
+                  <th className="text-center">V</th>
+                  <th className="text-center">E</th>
+                  <th className="text-center">D</th>
+                  <th className="text-center">Gols P/C</th>
+                  <th className="text-center">Esc.</th>
+                  <th>Forma</th>
+                  <th className="text-center">Pts 5</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamForms?.map((t: StatsTeamForm, i: number) => (
+                  <tr key={t.team_id} className={i < 3 ? 'bg-primary/[0.03]' : ''}>
+                    <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
+                    <td className="font-medium text-sm">{t.team_nome}</td>
+                    <td className="text-center font-mono text-sm">{t.jogos}</td>
+                    <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
+                    <td className="text-center font-mono text-sm text-yellow-400">{t.empates}</td>
+                    <td className="text-center font-mono text-sm text-destructive">{t.derrotas}</td>
+                    <td className="text-center font-mono text-xs">{t.media_gols_pro.toFixed(1)} / {t.media_gols_contra.toFixed(1)}</td>
+                    <td className={`text-center font-mono text-sm ${t.media_escanteios >= 10 ? 'text-bet-green font-bold' : ''}`}>{t.media_escanteios.toFixed(1)}</td>
+                    <td>
+                      <div className="flex gap-0.5">
+                        {t.forma_5jogos.split('').map((c, ci) => {
+                          const color = c === 'W' ? 'bg-bet-green' : c === 'L' ? 'bg-destructive' : 'bg-yellow-500';
+                          return <span key={ci} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold text-white ${color}`}>{c}</span>;
+                        })}
+                      </div>
+                    </td>
+                    <td className="text-center font-mono text-sm font-bold">{t.pontos_ultimos5}</td>
+                    <td>
+                      <Link to={`/times/${t.team_id}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      ) : tab === 'casa-fora' ? (
         <CasaForaStats />
       ) : (
       <>
