@@ -22,6 +22,12 @@ export default function Confronto() {
     enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
   });
 
+  const { data: h2hEnhanced } = useQuery({
+    queryKey: ['h2h-enhanced', timeAId, timeBId],
+    queryFn: () => fetchStatsH2HEnhanced(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+
   const { data: casaFora } = useQuery({
     queryKey: ['stats-casa-fora'],
     queryFn: fetchStatsCasaFora,
