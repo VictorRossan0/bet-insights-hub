@@ -250,6 +250,46 @@ export default function Confronto() {
               </p>
             </motion.div>
           )}
+
+          {/* H2H Enhanced (SQL View) */}
+          {h2hEnhanced && h2hEnhanced.length > 0 && (
+            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.45 }}
+              className="card-bet p-5"
+            >
+              <h3 className="text-sm font-semibold mb-4">📈 Análise Avançada (SQL)</h3>
+              {h2hEnhanced.map((row, idx) => (
+                <div key={idx} className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div className="bg-secondary/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">O5 Cantos</p>
+                      <p className="font-mono font-bold text-bet-green">{row.pct_o5.toFixed(0)}%</p>
+                    </div>
+                    <div className="bg-secondary/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">O6 Cantos</p>
+                      <p className="font-mono font-bold">{row.pct_o6.toFixed(0)}%</p>
+                    </div>
+                    <div className="bg-secondary/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">U3.5 Gols</p>
+                      <p className="font-mono font-bold">{row.pct_u35_gols.toFixed(0)}%</p>
+                    </div>
+                    <div className="bg-secondary/50 rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">U7 Cart.</p>
+                      <p className="font-mono font-bold">{row.pct_u7_cart.toFixed(0)}%</p>
+                    </div>
+                  </div>
+                  <div className={`text-center py-2 rounded-lg text-xs font-bold tracking-wider ${
+                    row.recomendacao.startsWith('APOSTAR')
+                      ? 'bg-bet-green/15 text-bet-green'
+                      : row.recomendacao.startsWith('CAUTELOSO')
+                        ? 'bg-yellow-500/15 text-yellow-400'
+                        : 'bg-destructive/15 text-destructive'
+                  }`}>
+                    {row.recomendacao}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       )}
     </div>
