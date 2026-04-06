@@ -2,13 +2,15 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
-import { ArrowUpDown, Users } from 'lucide-react';
+import { ArrowUpDown, Users, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
-import type { StatsPorTime } from '@/types/database';
+import { fetchStatsTeamForm } from '@/services/api/stats-views.api';
+import type { StatsPorTime, StatsTeamForm } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
-type Tab = 'geral' | 'casa-fora';
+type Tab = 'geral' | 'casa-fora' | 'forma';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
@@ -26,6 +28,11 @@ export default function Times() {
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
     queryFn: fetchStatsPorTime,
+  });
+
+  const { data: teamForms } = useQuery({
+    queryKey: ['stats-team-form'],
+    queryFn: fetchStatsTeamForm,
   });
 
   const sorted = useMemo(() => {
@@ -70,7 +77,7 @@ export default function Times() {
         <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
         <div className="flex gap-2 mt-4">
-          {([['geral', 'Geral'], ['casa-fora', 'Casa / Fora']] as const).map(([key, label]) => (
+          {([['geral', 'Geral'], ['casa-fora', 'Casa / Fora'], ['forma', 'Forma']] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
