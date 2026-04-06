@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Swords, TrendingUp, AlertTriangle, Check, X, BarChart3 } from 'lucide-react';
 import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
+import { fetchStatsH2HEnhanced } from '@/services/api/stats-views.api';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
