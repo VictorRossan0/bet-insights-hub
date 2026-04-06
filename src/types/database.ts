@@ -198,3 +198,64 @@ export type MarketData = {
   percentual: number;
   classificacao: string;
 };
+
+// ── New SQL View types ────────────────────────────────────
+
+export type StatsTeamForm = {
+  team_id: number;
+  team_nome: string;
+  team_sigla: string;
+  jogos: number;
+  vitorias: number;
+  empates: number;
+  derrotas: number;
+  media_gols_pro: number;
+  media_gols_contra: number;
+  media_escanteios: number;
+  forma_5jogos: string;
+  pontos_ultimos5: number;
+};
+
+export type StatsMarketProbability = {
+  team_id: number;
+  team_nome: string;
+  team_sigla: string;
+  total_jogos: number;
+  prob_o5_cantos: number;
+  prob_o6_cantos: number;
+  prob_o7_cantos: number;
+  prob_o8_cantos: number;
+  prob_u35_gols: number;
+  prob_u25_gols: number;
+  prob_u7_cartoes: number;
+  media_esc: number;
+  media_gols: number;
+  media_cart: number;
+  prob_o5_casa: number;
+  prob_o5_fora: number;
+};
+
+export type StatsH2HEnhanced = {
+  time_a_id: number;
+  time_a_nome: string;
+  time_b_id: number;
+  time_b_nome: string;
+  total_jogos: number;
+  media_esc: number;
+  media_gols: number;
+  media_cart: number;
+  pct_o5: number;
+  pct_o6: number;
+  pct_o7: number;
+  pct_u35_gols: number;
+  pct_u7_cart: number;
+  recomendacao: string;
+};
+
+export type MarketProbabilityRow = {
+  mercado: string;
+  ocorrencias: number;
+  total_jogos: number;
+  probabilidade: number | null;
+  confianca: string;
+};
