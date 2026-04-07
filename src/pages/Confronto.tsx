@@ -16,13 +16,13 @@ export default function Confronto() {
 
   const { data: times } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
-  const { data: h2h, isLoading: h2hLoading } = useQuery({
+  const { data: h2hLegacy, isLoading: h2hLegacyLoading } = useQuery({
     queryKey: ['h2h', timeAId, timeBId],
     queryFn: () => fetchStatsH2H(timeAId!, timeBId!),
     enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
   });
 
-  const { data: h2hEnhanced } = useQuery({
+  const { data: h2hEnhanced, isLoading: h2hEnhancedLoading } = useQuery({
     queryKey: ['h2h-enhanced', timeAId, timeBId],
     queryFn: () => fetchStatsH2HEnhanced(timeAId!, timeBId!),
     enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
@@ -39,6 +39,26 @@ export default function Confronto() {
 
   const cfA = useMemo(() => casaFora?.find(c => c.nome === timeA?.nome), [casaFora, timeA]);
   const cfB = useMemo(() => casaFora?.find(c => c.nome === timeB?.nome), [casaFora, timeB]);
+
+  // Merge: prefer h2hEnhanced (SQL view) over legacy client-side h2h
+  const enhancedRow = h2hEnhanced?.[0] ?? null;
+  const h2h = useMemo(() => {
+    if (h2hLegacy) return h2hLegacy;
+    if (!enhancedRow) return null;
+    // Map enhanced view fields to legacy shape
+    return {
+      time_a_id: enhancedRow.time_a_id,
+      time_b_id: enhancedRow.time_b_id,
+      time_a_nome: enhancedRow.time_a_nome,
+      time_b_nome: enhancedRow.time_b_nome,
+      total_jogos: enhancedRow.total_jogos,
+      media_gols: enhancedRow.media_gols,
+      media_escanteios: enhancedRow.media_esc,
+      media_cartoes: enhancedRow.media_cart,
+    };
+  }, [h2hLegacy, enhancedRow]);
+
+  const h2hLoading = h2hLegacyLoading && h2hEnhancedLoading;
 
   const radarData = useMemo(() => {
     if (!h2h) return [];
