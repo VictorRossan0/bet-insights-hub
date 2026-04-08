@@ -1,9 +1,7 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Trophy, Target, CornerDownRight, CreditCard, AlertTriangle } from 'lucide-react';
 import type { StatsAcumulado } from '@/types/database';
-import { Trophy, Target, CornerDownRight, CreditCard, AlertTriangle } from 'lucide-react';
 import { SkeletonKPI } from '@/components/ui/skeleton-loaders';
-import { Trophy, Target, CornerDownRight, CreditCard, AlertTriangle } from 'lucide-react';
 
 type Props = {
   stats: StatsAcumulado | null;
