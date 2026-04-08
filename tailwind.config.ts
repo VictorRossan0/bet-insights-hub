@@ -95,6 +95,9 @@ export default {
           "0%": { width: "0%" },
           "100%": { width: "var(--bar-width)" },
         },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
