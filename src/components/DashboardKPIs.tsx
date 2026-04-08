@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Trophy, Target, CornerDownRight, CreditCard, AlertTriangle } from 'lucide-react';
 import type { StatsAcumulado } from '@/types/database';
-import { Trophy, Target, CornerDownRight, CreditCard, AlertTriangle } from 'lucide-react';
+import { SkeletonKPI } from '@/components/ui/skeleton-loaders';
 
 type Props = {
   stats: StatsAcumulado | null;
@@ -53,7 +53,7 @@ export default function DashboardKPIs({ stats, prevStats, isLoading }: Props) {
               <span className="text-xs text-muted-foreground font-medium">{kpi.label}</span>
             </div>
             {isLoading ? (
-              <div className="h-8 bg-secondary rounded animate-pulse" />
+              <SkeletonKPI />
             ) : (
               <div className="flex items-end gap-2">
                 <p className="text-2xl font-bold font-mono tabular-nums">

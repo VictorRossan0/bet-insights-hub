@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Swords, TrendingUp, AlertTriangle, Check, X, BarChart3 } from 'lucide-react';
+import { Swords, TrendingUp, AlertTriangle, Check, X } from 'lucide-react';
+import { SkeletonRadar, SkeletonTable } from '@/components/ui/skeleton-loaders';
+import EmptyState from '@/components/ui/empty-state';
+import { VerdictBadge } from '@/components/ui/confidence-badge';
 import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
 import { fetchStatsH2HEnhanced } from '@/services/api/stats-views.api';
@@ -142,29 +145,35 @@ export default function Confronto() {
 
       {/* Content */}
       {!bothSelected && (
-        <motion.div {...anim} transition={{ ...anim.transition, delay: 0.2 }}
-          className="card-bet p-8 flex flex-col items-center justify-center min-h-[250px]"
-        >
-          <Swords className="w-12 h-12 text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground text-sm">Selecione dois times para ver o confronto direto</p>
-        </motion.div>
+        <EmptyState
+          icon={Swords}
+          title="Selecione dois times"
+          description="Escolha os times acima para ver o confronto direto, estatísticas e recomendações automáticas."
+        />
       )}
 
       {bothSelected && h2hLoading && (
         <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-32 bg-secondary/50 rounded-lg animate-pulse" />
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="card-bet p-4 space-y-2">
+                <div className="h-3 w-20 bg-secondary/60 rounded animate-pulse" />
+                <div className="h-6 w-14 bg-secondary/60 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+          <div className="card-bet p-5">
+            <SkeletonRadar />
+          </div>
         </div>
       )}
 
       {bothSelected && !h2hLoading && !h2h && (
-        <motion.div {...anim} transition={{ ...anim.transition, delay: 0.2 }}
-          className="card-bet p-8 flex flex-col items-center justify-center min-h-[250px]"
-        >
-          <AlertTriangle className="w-10 h-10 text-yellow-500/60 mb-3" />
-          <p className="text-muted-foreground text-sm">Nenhum confronto encontrado entre esses times</p>
-        </motion.div>
+        <EmptyState
+          icon={AlertTriangle}
+          title="Nenhum confronto encontrado"
+          description="Não há registros de partidas entre esses dois times na base de dados."
+        />
       )}
 
       {bothSelected && h2h && (
@@ -245,14 +254,8 @@ export default function Confronto() {
                   recommendation.verdict === 'APOSTAR' ? 'text-green-500' : recommendation.verdict === 'CAUTELOSO' ? 'text-yellow-500' : 'text-red-500'
                 }`} />
                 <h3 className="text-sm font-semibold">Recomendação Automática</h3>
-                <span className={`ml-auto px-3 py-1 rounded-full text-xs font-bold tracking-wider ${
-                  recommendation.verdict === 'APOSTAR'
-                    ? 'bg-green-500/20 text-green-400'
-                    : recommendation.verdict === 'CAUTELOSO'
-                      ? 'bg-yellow-500/20 text-yellow-400'
-                      : 'bg-red-500/20 text-red-400'
-                }`}>
-                  {recommendation.verdict}
+                <span className="ml-auto">
+                  <VerdictBadge verdict={recommendation.verdict} />
                 </span>
               </div>
               <div className="space-y-2">

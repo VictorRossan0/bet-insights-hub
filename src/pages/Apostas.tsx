@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { fetchApostasSugeridas } from '@/services/supabase/statsService';
 import { useMemo, useState } from 'react';
+import { SkeletonBetCard } from '@/components/ui/skeleton-loaders';
+import EmptyState from '@/components/ui/empty-state';
+import ConfidenceBadge from '@/components/ui/confidence-badge';
 
 type FilterResult = 'todos' | 'pendente' | 'ganhou' | 'perdeu' | 'void';
 
@@ -81,22 +84,17 @@ export default function Apostas() {
       </motion.div>
 
       {isLoading ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 bg-secondary/30 rounded-xl animate-pulse" />
+            <SkeletonBetCard key={i} />
           ))}
         </div>
       ) : !apostas || apostas.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="card-bet p-8 flex flex-col items-center justify-center min-h-[300px]"
-        >
-          <TrendingUp className="w-12 h-12 text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground text-sm">Nenhuma sugestão de aposta disponível ainda</p>
-          <p className="text-muted-foreground/60 text-xs mt-1">As sugestões aparecerão aqui quando forem cadastradas no banco</p>
-        </motion.div>
+        <EmptyState
+          icon={TrendingUp}
+          title="Nenhuma sugestão disponível"
+          description="As sugestões de apostas baseadas em dados aparecerão aqui quando forem geradas pelo engine de recomendação."
+        />
       ) : (
         <>
           {/* KPI Summary */}
@@ -199,7 +197,7 @@ export default function Apostas() {
                 {/* Confiança */}
                 <div className="mb-3">
                   <p className="text-xs text-muted-foreground mb-1">Confiança</p>
-                  {getConfiancaBar(aposta.confianca ?? 0)}
+                  <ConfidenceBadge value={aposta.confianca ?? 0} />
                 </div>
 
                 {/* 3 Justification Layers */}
