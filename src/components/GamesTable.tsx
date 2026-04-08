@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
-import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Database } from 'lucide-react';
 import FormEditarJogo from '@/components/FormEditarJogo';
+import { SkeletonTable } from '@/components/ui/skeleton-loaders';
+import EmptyState from '@/components/ui/empty-state';
 
 type Props = {
   jogos: JogoComTimesRaw[];
@@ -26,21 +28,16 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
   const [editingJogo, setEditingJogo] = useState<JogoComTimesRaw | null>(null);
 
   if (isLoading) {
-    return (
-      <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-12 bg-secondary/50 rounded animate-pulse" />
-        ))}
-      </div>
-    );
+    return <SkeletonTable rows={pageSize} cols={14} />;
   }
 
   if (jogos.length === 0) {
     return (
-      <div className="text-center py-16 text-muted-foreground">
-        <p className="text-lg font-medium mb-1">Nenhum jogo encontrado</p>
-        <p className="text-sm">Ajuste os filtros ou aguarde a importação de dados.</p>
-      </div>
+      <EmptyState
+        icon={Database}
+        title="Nenhum jogo encontrado"
+        description="Ajuste os filtros ou importe dados para começar a analisar."
+      />
     );
   }
 

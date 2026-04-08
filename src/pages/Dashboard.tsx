@@ -6,6 +6,9 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import DashboardKPIs from '@/components/DashboardKPIs';
 import MarketCards from '@/components/MarketCards';
 import { fetchStatsAcumulado, fetchStatsPorRodada } from '@/services/supabase/statsService';
+import { SkeletonChart } from '@/components/ui/skeleton-loaders';
+import EmptyState from '@/components/ui/empty-state';
+import { BarChart3 } from 'lucide-react';
 
 const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
 const MAX_TEMPORADA_ID = 7;
@@ -92,7 +95,7 @@ export default function Dashboard() {
         >
           <h3 className="text-sm font-semibold mb-4">📉 Evolução por Rodada</h3>
           {loadingRodada ? (
-            <div className="h-64 bg-secondary/30 rounded animate-pulse" />
+            <SkeletonChart height={280} />
           ) : statsPorRodada && statsPorRodada.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={statsPorRodada}>
@@ -119,7 +122,7 @@ export default function Dashboard() {
         >
           <h3 className="text-sm font-semibold mb-4">📊 Over 5 vs Over 6 Cantos</h3>
           {loadingRodada ? (
-            <div className="h-64 bg-secondary/30 rounded animate-pulse" />
+            <SkeletonChart height={280} />
           ) : statsPorRodada && statsPorRodada.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={statsPorRodada}>
