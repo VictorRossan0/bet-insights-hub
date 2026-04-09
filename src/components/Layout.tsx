@@ -1,15 +1,15 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, TrendingUp } from 'lucide-react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { NavLink, Outlet } from "react-router-dom";
+import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
-  { to: '/', icon: Home, label: 'Dashboard' },
-  { to: '/jogos', icon: Trophy, label: 'Jogos' },
-  { to: '/historico', icon: History, label: 'Histórico' },
-  { to: '/times', icon: Users, label: 'Times' },
-  { to: '/confronto', icon: Swords, label: 'Confronto H2H' },
-  { to: '/apostas', icon: TrendingUp, label: 'Apostas' },
+  { to: "/", icon: Home, label: "Dashboard" },
+  { to: "/jogos", icon: Trophy, label: "Jogos" },
+  { to: "/historico", icon: History, label: "Histórico" },
+  { to: "/times", icon: Users, label: "Times" },
+  { to: "/confronto", icon: Swords, label: "Confronto H2H" },
+  // { to: '/apostas', icon: TrendingUp, label: 'Apostas' },
 ];
 
 export default function Layout() {
@@ -48,7 +48,7 @@ export default function Layout() {
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-border p-4 z-50 lg:hidden"
             >
               <div className="flex justify-end mb-2">
@@ -86,11 +86,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === "/"}
             onClick={onNavigate}
-            className={({ isActive }) =>
-              `nav-item ${isActive ? 'nav-item-active' : ''}`
-            }
+            className={({ isActive }) => `nav-item ${isActive ? "nav-item-active" : ""}`}
           >
             <Icon className="w-4 h-4" />
             {label}
@@ -99,9 +97,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="mt-auto pt-4 border-t border-border">
-        <p className="text-[10px] text-muted-foreground text-center">
-          Dados via SofaScore • Análise por IA
-        </p>
+        <p className="text-[10px] text-muted-foreground text-center">Dados via SofaScore • Análise por IA</p>
       </div>
     </>
   );
