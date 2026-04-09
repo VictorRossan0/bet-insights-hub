@@ -11,6 +11,7 @@ import CasaForaStats from '@/components/CasaForaStats';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
+type ClassSortKey = 'pontos_total' | 'vitorias' | 'saldo_gols' | 'aproveitamento' | 'media_escanteios';
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
