@@ -25,6 +25,8 @@ export default function Times() {
   const [compareA, setCompareA] = useState<string>('');
   const [compareB, setCompareB] = useState<string>('');
   const [tab, setTab] = useState<Tab>('geral');
+  const [classSortBy, setClassSortBy] = useState<ClassSortKey>('pontos_total');
+  const [classSortAsc, setClassSortAsc] = useState(false);
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
