@@ -8,7 +8,7 @@ import Jogos from "@/pages/Jogos";
 import Times from "@/pages/Times";
 import Historico from "@/pages/Historico";
 import Confronto from "@/pages/Confronto";
-import Apostas from "@/pages/Apostas";
+// import Apostas from "@/pages/Apostas";
 import TimePerfil from "@/pages/TimePerfil";
 import NotFound from "./pages/NotFound.tsx";
 
