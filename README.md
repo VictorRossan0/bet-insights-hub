@@ -1,6 +1,6 @@
 # ⚽ BetAnalytics Pro
 
-> Plataforma de análise estatística de apostas para o **Brasileirão Série A**, cobrindo a temporada 2026 e histórico de 2016 a 2025.
+> Plataforma de análise estatística de apostas para o **Brasileirão Série A**, cobrindo a temporada 2026 e histórico de 2020 a 2025.
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
@@ -35,32 +35,59 @@ O **BetAnalytics Pro** é uma aplicação web que centraliza dados estatísticos
 - Gráficos de distribuição por rodada (Recharts)
 - Filtro por temporada (2020–2026)
 - Indicadores **YoY** (Year-over-Year) com badges comparativos entre temporadas
+- **Skeleton loaders** contextuais para estados de carregamento
 - Layout responsivo otimizado para mobile (scroll horizontal snap nos KPIs, grid 2 colunas nos mercados)
 
 ### ⚽ Jogos
 - Tabela paginada de jogos com dados completos (gols, escanteios, cartões, mercados)
 - Filtros por rodada, time e temporada
+- Formulário de inserção manual de jogos com seletores de times
+- Importação CSV/JSON com validação de duplicatas
+- Formulário de edição inline de jogos existentes
 - Indicadores visuais de resultados e mercados atingidos
+- **Empty states** inteligentes quando não há dados
 
 ### 🏟️ Times
-- Listagem de todos os times da Série A
-- Perfil individual com estatísticas gerais e por mando de campo (Casa/Fora)
-- Componente `CasaForaStats` com comparação visual
+- **Classificação oficial** do Brasileirão com pontos, V/E/D, GP/GC, saldo de gols e aproveitamento (%)
+- **Zonas coloridas**: Libertadores (azul), Pré-Libertadores (azul claro), Sul-Americana (laranja), Rebaixamento (vermelho)
+- **Ordenação interativa** por colunas clicáveis (P, V, SG, %, Esc.)
+- Indicador de forma recente (últimos 5 jogos) com badges visuais W/D/L
+- Legenda visual das zonas de classificação
+- Ranking geral com gráfico de barras Top 12 (Gols, Escanteios, Cartões, Jogos)
+- Comparação radar entre dois times selecionados
+- Estatísticas Casa/Fora por equipe via `CasaForaStats`
+- Link direto para perfil individual do time
+
+### 👤 Perfil do Time
+- Estatísticas gerais e por mando de campo (Casa/Fora)
+- Forma recente via RPC `get_team_form`
+- Probabilidades de mercado via RPC `calculate_market_probability`
 
 ### ⚔️ Confronto H2H
 - Seleção de dois times para análise head-to-head
-- Estatísticas de confrontos diretos usando view `stats_h2h`
+- Estatísticas de confrontos diretos usando view `stats_h2h_enhanced`
 - Recomendação automática de apostas baseada no histórico
+- Geração de sugestões via RPC `generate_bet_suggestion`
+- **Empty states** inteligentes quando times não foram selecionados
 
 ### 📈 Histórico
-- Gráficos de tendência de 2016 a 2025
+- Gráficos de tendência de 2020 a 2025
 - Evolução de médias de gols, escanteios e cartões ao longo dos anos
 - Análise de tendências históricas do campeonato
 
 ### 🎰 Central de Apostas
 - Sugestões de apostas com mercado, odd sugerida e nível de confiança
-- Status de resultado (pendente/green/red)
-- Integração com tabela `sugestoes_apostas` no banco de dados
+- Badges de confiança visual (HIGH/MEDIUM/LOW) com cores semânticas
+- Base histórica, H2H e Casa/Fora exibidas nos cards
+- Status de resultado (pendente/green/red/void)
+- Integração com tabela `apostas_sugeridas` e view `sugestoes_apostas_view`
+
+### 🎨 UX Profissional
+- **Skeleton loaders** contextuais: KPIs, tabelas, gráficos, cards de apostas, radar
+- **Empty states** inteligentes com ícones, descrições e ações contextuais
+- **Badges de confiança** com cores semânticas e barras de progresso
+- Animações suaves com Framer Motion
+- Design system com tokens semânticos (CSS variables HSL)
 
 ---
 
@@ -80,14 +107,35 @@ O **BetAnalytics Pro** é uma aplicação web que centraliza dados estatísticos
 
 ---
 
+## 🗄️ Arquitetura de Dados
+
+### Views SQL
+| View | Descrição |
+| ---- | --------- |
+| `stats_team_form` | Forma recente dos times (V/E/D, gols, escanteios, últimos 5 jogos) |
+| `stats_market_probability` | Probabilidades de mercado por time |
+| `stats_h2h_enhanced` | Confronto direto com recomendação automática |
+| `sugestoes_apostas_view` | Sugestões com nomes dos times resolvidos |
+
+### Funções RPC
+| Função | Descrição |
+| ------ | --------- |
+| `get_team_form(team_id, last_n)` | Forma recente de um time específico |
+| `calculate_market_probability(team_id)` | Probabilidades de mercado calculadas |
+| `generate_bet_suggestion(casa_id, fora_id)` | Sugestão automática com modelo ponderado (Geral 30%, H2H 40%, Casa/Fora 30%) |
+
+---
+
 ## 📁 Estrutura do Projeto
 
 ```
 src/
 ├── components/
-│   ├── ui/                    # Componentes shadcn/ui (Button, Card, Table, etc.)
+│   ├── ui/                    # Componentes shadcn/ui + skeleton loaders, empty states, confidence badges
 │   ├── CasaForaStats.tsx      # Estatísticas Casa vs Fora
 │   ├── DashboardKPIs.tsx      # Cards de KPIs com badges YoY
+│   ├── FormNovoJogo.tsx       # Formulário de novo jogo
+│   ├── FormEditarJogo.tsx     # Formulário de edição de jogo
 │   ├── GamesTable.tsx         # Tabela de jogos paginada
 │   ├── Layout.tsx             # Layout principal com sidebar responsiva
 │   ├── MarketCards.tsx        # Cards de mercados de apostas
@@ -97,20 +145,21 @@ src/
 │   └── use-toast.ts           # Hook de notificações toast
 ├── pages/
 │   ├── Dashboard.tsx          # Dashboard principal com KPIs e gráficos
-│   ├── Jogos.tsx              # Listagem e filtros de jogos
-│   ├── Times.tsx              # Listagem de times
+│   ├── Jogos.tsx              # Listagem, filtros, importação e edição de jogos
+│   ├── Times.tsx              # Classificação, ranking, comparação e forma
 │   ├── TimePerfil.tsx         # Perfil individual do time
 │   ├── Confronto.tsx          # Análise H2H entre dois times
 │   ├── Historico.tsx          # Gráficos de tendência histórica
 │   ├── Apostas.tsx            # Central de sugestões de apostas
 │   └── NotFound.tsx           # Página 404
 ├── services/
-│   ├── api/                   # Camada de acesso a dados (Supabase)
+│   ├── api/                   # Camada de acesso a dados
 │   │   ├── games.api.ts       # CRUD e consultas de jogos
 │   │   ├── teams.api.ts       # CRUD e consultas de times
-│   │   └── bets.api.ts        # Consultas de apostas sugeridas
+│   │   ├── bets.api.ts        # Consultas de apostas sugeridas
+│   │   └── stats-views.api.ts # Interface com views SQL e RPCs
 │   ├── domain/                # Regras de negócio e transformações
-│   │   ├── stats.service.ts   # Agregação estatística (acumulado, rodada, time, H2H)
+│   │   ├── stats.service.ts   # Agregação estatística
 │   │   ├── games.service.ts   # Importação CSV, validação de duplicatas
 │   │   └── betting.service.ts # Motor de recomendação de apostas
 │   └── supabase/
@@ -154,11 +203,11 @@ A aplicação estará disponível em `http://localhost:5173`.
 | Rota           | Descrição                              |
 | -------------- | -------------------------------------- |
 | `/`            | Dashboard com KPIs e gráficos          |
-| `/jogos`       | Tabela de jogos com filtros            |
-| `/times`       | Listagem de times da Série A           |
+| `/jogos`       | Tabela de jogos com filtros e importação |
+| `/times`       | Classificação, ranking e comparação    |
 | `/times/:id`   | Perfil detalhado de um time            |
 | `/confronto`   | Análise H2H entre dois times           |
-| `/historico`   | Gráficos de tendência (2016–2025)      |
+| `/historico`   | Gráficos de tendência (2020–2025)      |
 | `/apostas`     | Central de sugestões de apostas        |
 
 ---
