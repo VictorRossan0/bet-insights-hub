@@ -117,6 +117,7 @@ export default function Times() {
                   <th className="text-center">D</th>
                   <th className="text-center">GP/GC</th>
                   <th className="text-center">SG</th>
+                  <th className="text-center">%</th>
                   <th className="text-center">Esc.</th>
                   <th>Forma</th>
                   <th></th>
@@ -125,45 +126,72 @@ export default function Times() {
               <tbody>
                 {(() => {
                   if (!teamForms) return null;
+                  const total = teamForms.length;
                   const sorted = [...teamForms]
-                    .map(t => ({
-                      ...t,
-                      pontos_total: t.vitorias * 3 + t.empates,
-                      saldo_gols: Number(((t.media_gols_pro - t.media_gols_contra) * t.jogos).toFixed(0)),
-                      gp: Number((t.media_gols_pro * t.jogos).toFixed(0)),
-                      gc: Number((t.media_gols_contra * t.jogos).toFixed(0)),
-                    }))
+                    .map(t => {
+                      const pts = t.vitorias * 3 + t.empates;
+                      const maxPts = t.jogos * 3;
+                      return {
+                        ...t,
+                        pontos_total: pts,
+                        aproveitamento: maxPts > 0 ? Math.round((pts / maxPts) * 100) : 0,
+                        saldo_gols: Number(((t.media_gols_pro - t.media_gols_contra) * t.jogos).toFixed(0)),
+                        gp: Number((t.media_gols_pro * t.jogos).toFixed(0)),
+                        gc: Number((t.media_gols_contra * t.jogos).toFixed(0)),
+                      };
+                    })
                     .sort((a, b) => b.pontos_total - a.pontos_total || b.saldo_gols - a.saldo_gols || b.vitorias - a.vitorias);
-                  return sorted.map((t, i) => (
-                    <tr key={t.team_id} className={i < 4 ? 'bg-primary/[0.04]' : i >= sorted.length - 4 ? 'bg-destructive/[0.04]' : ''}>
-                      <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
-                      <td className="font-medium text-sm">{t.team_nome}</td>
-                      <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
-                      <td className="text-center font-mono text-sm">{t.jogos}</td>
-                      <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
-                      <td className="text-center font-mono text-sm text-yellow-400">{t.empates}</td>
-                      <td className="text-center font-mono text-sm text-destructive">{t.derrotas}</td>
-                      <td className="text-center font-mono text-xs">{t.gp} / {t.gc}</td>
-                      <td className={`text-center font-mono text-sm ${t.saldo_gols > 0 ? 'text-bet-green' : t.saldo_gols < 0 ? 'text-destructive' : ''}`}>{t.saldo_gols > 0 ? '+' : ''}{t.saldo_gols}</td>
-                      <td className={`text-center font-mono text-sm ${t.media_escanteios >= 10 ? 'text-bet-green font-bold' : ''}`}>{t.media_escanteios.toFixed(1)}</td>
-                      <td>
-                        <div className="flex gap-0.5">
-                          {t.forma_5jogos.split('').map((c, ci) => {
-                            const color = c === 'W' ? 'bg-bet-green' : c === 'L' ? 'bg-destructive' : 'bg-yellow-500';
-                            return <span key={ci} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold text-white ${color}`}>{c}</span>;
-                          })}
-                        </div>
-                      </td>
-                      <td>
-                        <Link to={`/times/${t.team_id}`} className="text-muted-foreground hover:text-foreground transition-colors">
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-                      </td>
-                    </tr>
-                  ));
+
+                  const getZoneStyle = (pos: number) => {
+                    if (pos <= 4) return 'border-l-2 border-l-blue-500 bg-blue-500/[0.06]'; // Libertadores
+                    if (pos <= 6) return 'border-l-2 border-l-blue-400/60 bg-blue-400/[0.04]'; // Pré-Libertadores
+                    if (pos <= 12) return 'border-l-2 border-l-orange-400/60 bg-orange-400/[0.03]'; // Sul-Americana
+                    if (pos > total - 4) return 'border-l-2 border-l-red-500 bg-red-500/[0.06]'; // Rebaixamento
+                    return '';
+                  };
+
+                  return (
+                    <>
+                      {sorted.map((t, i) => (
+                        <tr key={t.team_id} className={getZoneStyle(i + 1)}>
+                          <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
+                          <td className="font-medium text-sm">{t.team_nome}</td>
+                          <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
+                          <td className="text-center font-mono text-sm">{t.jogos}</td>
+                          <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
+                          <td className="text-center font-mono text-sm text-yellow-400">{t.empates}</td>
+                          <td className="text-center font-mono text-sm text-destructive">{t.derrotas}</td>
+                          <td className="text-center font-mono text-xs">{t.gp} / {t.gc}</td>
+                          <td className={`text-center font-mono text-sm ${t.saldo_gols > 0 ? 'text-bet-green' : t.saldo_gols < 0 ? 'text-destructive' : ''}`}>{t.saldo_gols > 0 ? '+' : ''}{t.saldo_gols}</td>
+                          <td className="text-center font-mono text-sm">{t.aproveitamento}</td>
+                          <td className={`text-center font-mono text-sm ${t.media_escanteios >= 10 ? 'text-bet-green font-bold' : ''}`}>{t.media_escanteios.toFixed(1)}</td>
+                          <td>
+                            <div className="flex gap-0.5">
+                              {t.forma_5jogos.split('').map((c, ci) => {
+                                const color = c === 'W' ? 'bg-bet-green' : c === 'L' ? 'bg-destructive' : 'bg-yellow-500';
+                                return <span key={ci} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold text-white ${color}`}>{c}</span>;
+                              })}
+                            </div>
+                          </td>
+                          <td>
+                            <Link to={`/times/${t.team_id}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </>
+                  );
                 })()}
               </tbody>
             </table>
+            {/* Legenda das zonas */}
+            <div className="flex flex-wrap gap-4 p-4 border-t border-border text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500" /> Libertadores</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400/60" /> Pré-Libertadores</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-orange-400/60" /> Sul-Americana</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Rebaixamento</span>
+            </div>
           </div>
         </motion.div>
       ) : tab === 'casa-fora' ? (
