@@ -113,15 +113,31 @@ export default function Times() {
                 <tr>
                   <th className="w-10">#</th>
                   <th>Time</th>
-                  <th className="text-center">P</th>
-                  <th className="text-center">J</th>
-                  <th className="text-center">V</th>
-                  <th className="text-center">E</th>
-                  <th className="text-center">D</th>
-                  <th className="text-center">GP/GC</th>
-                  <th className="text-center">SG</th>
-                  <th className="text-center">%</th>
-                  <th className="text-center">Esc.</th>
+                  {([
+                    ['pontos_total', 'P'],
+                    [null, 'J'],
+                    ['vitorias', 'V'],
+                    [null, 'E'],
+                    [null, 'D'],
+                    [null, 'GP/GC'],
+                    ['saldo_gols', 'SG'],
+                    ['aproveitamento', '%'],
+                    ['media_escanteios', 'Esc.'],
+                  ] as const).map(([key, label]) => (
+                    <th key={label} className="text-center">
+                      {key ? (
+                        <button
+                          onClick={() => {
+                            if (classSortBy === key) setClassSortAsc(!classSortAsc);
+                            else { setClassSortBy(key as ClassSortKey); setClassSortAsc(false); }
+                          }}
+                          className={`inline-flex items-center gap-0.5 hover:text-foreground transition-colors ${classSortBy === key ? 'text-bet-green font-bold' : ''}`}
+                        >
+                          {label} <ArrowUpDown className="w-3 h-3" />
+                        </button>
+                      ) : label}
+                    </th>
+                  ))}
                   <th>Forma</th>
                   <th></th>
                 </tr>
@@ -130,7 +146,7 @@ export default function Times() {
                 {(() => {
                   if (!teamForms) return null;
                   const total = teamForms.length;
-                  const sorted = [...teamForms]
+                  const enriched = [...teamForms]
                     .map(t => {
                       const pts = t.vitorias * 3 + t.empates;
                       const maxPts = t.jogos * 3;
@@ -142,8 +158,13 @@ export default function Times() {
                         gp: Number((t.media_gols_pro * t.jogos).toFixed(0)),
                         gc: Number((t.media_gols_contra * t.jogos).toFixed(0)),
                       };
-                    })
-                    .sort((a, b) => b.pontos_total - a.pontos_total || b.saldo_gols - a.saldo_gols || b.vitorias - a.vitorias);
+                    });
+                  const sorted = enriched.sort((a, b) => {
+                    const dir = classSortAsc ? 1 : -1;
+                    const diff = (a[classSortBy] as number) - (b[classSortBy] as number);
+                    if (diff !== 0) return diff * dir;
+                    return (b.pontos_total - a.pontos_total) || (b.saldo_gols - a.saldo_gols) || (b.vitorias - a.vitorias);
+                  });
 
                   const getZoneStyle = (pos: number) => {
                     if (pos <= 4) return 'border-l-2 border-l-blue-500 bg-blue-500/[0.06]'; // Libertadores
