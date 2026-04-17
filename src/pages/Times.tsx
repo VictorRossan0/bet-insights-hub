@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, LineChart, Line, ReferenceLine } from 'recharts';
 import { ArrowUpDown, Users, ExternalLink, TrendingUp, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
@@ -341,6 +341,11 @@ export default function Times() {
                     labelFormatter={(l) => `Rodada ${l}`}
                   />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
+                  {/* Linhas de zona — entre as posições */}
+                  <ReferenceLine y={4.5} stroke="#3b82f6" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Libertadores', position: 'insideTopRight', fill: '#3b82f6', fontSize: 9 }} />
+                  <ReferenceLine y={6.5} stroke="#60a5fa" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: 'Pré-Lib.', position: 'insideTopRight', fill: '#60a5fa', fontSize: 9 }} />
+                  <ReferenceLine y={12.5} stroke="#fb923c" strokeDasharray="4 4" strokeOpacity={0.5} label={{ value: 'Sul-Americana', position: 'insideTopRight', fill: '#fb923c', fontSize: 9 }} />
+                  <ReferenceLine y={16.5} stroke="#ef4444" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Rebaixamento', position: 'insideTopRight', fill: '#ef4444', fontSize: 9 }} />
                   {evolutionTeams.map((team, idx) => (
                     <Line
                       key={team}
