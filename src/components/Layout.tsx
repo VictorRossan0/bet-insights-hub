@@ -1,7 +1,8 @@
-import { NavLink, Outlet } from "react-router-dom";
-import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, TrendingUp } from "lucide-react";
+import { NavLink, Outlet, Link } from "react-router-dom";
+import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { to: "/", icon: Home, label: "Dashboard" },
@@ -9,7 +10,6 @@ const navItems = [
   { to: "/historico", icon: History, label: "Histórico" },
   { to: "/times", icon: Users, label: "Times" },
   { to: "/confronto", icon: Swords, label: "Confronto H2H" },
-  // { to: '/apostas', icon: TrendingUp, label: 'Apostas' },
 ];
 
 export default function Layout() {
@@ -17,12 +17,10 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-sidebar p-4 gap-2 fixed h-screen">
         <SidebarContent />
       </aside>
 
-      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar border-b border-border flex items-center px-4">
         <button onClick={() => setMobileOpen(true)} className="text-foreground">
           <Menu className="w-5 h-5" />
@@ -33,7 +31,6 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -62,7 +59,6 @@ export default function Layout() {
         )}
       </AnimatePresence>
 
-      {/* Main */}
       <main className="flex-1 min-w-0 lg:ml-64 mt-14 lg:mt-0 overflow-x-hidden overflow-y-auto h-[calc(100vh-3.5rem)] lg:h-screen">
         <Outlet />
       </main>
@@ -71,6 +67,8 @@ export default function Layout() {
 }
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { user, isAdmin, signOut } = useAuth();
+
   return (
     <>
       <div className="flex items-center gap-2.5 px-3 py-4 mb-4">
@@ -94,9 +92,36 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             {label}
           </NavLink>
         ))}
+        {isAdmin && (
+          <NavLink
+            to="/admin"
+            onClick={onNavigate}
+            className={({ isActive }) => `nav-item ${isActive ? "nav-item-active" : ""}`}
+          >
+            <Shield className="w-4 h-4" />
+            Admin
+          </NavLink>
+        )}
       </nav>
 
-      <div className="mt-auto pt-4 border-t border-border">
+      <div className="mt-auto pt-4 border-t border-border space-y-2">
+        {user ? (
+          <button
+            onClick={() => { onNavigate?.(); void signOut(); }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" /> Sair
+            {isAdmin && <span className="ml-auto text-[9px] uppercase tracking-wider text-bet-green">Admin</span>}
+          </button>
+        ) : (
+          <Link
+            to="/auth"
+            onClick={onNavigate}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            <LogIn className="w-3.5 h-3.5" /> Login Admin
+          </Link>
+        )}
         <p className="text-[10px] text-muted-foreground text-center">Dados via SofaScore • Análise por IA</p>
       </div>
     </>

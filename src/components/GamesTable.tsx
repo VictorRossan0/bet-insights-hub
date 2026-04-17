@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Pencil, Database } from 'lucide-react';
 import FormEditarJogo from '@/components/FormEditarJogo';
 import { SkeletonTable } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
+import { useAuth } from '@/hooks/useAuth';
 
 type Props = {
   jogos: JogoComTimesRaw[];
