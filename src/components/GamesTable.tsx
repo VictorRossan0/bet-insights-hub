@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Pencil, Database } from 'lucide-react';
 import FormEditarJogo from '@/components/FormEditarJogo';
 import { SkeletonTable } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
+import { useAuth } from '@/hooks/useAuth';
 
 type Props = {
   jogos: JogoComTimesRaw[];
@@ -26,6 +27,7 @@ function BoolBadge({ value }: { value: boolean }) {
 export default function GamesTable({ jogos, isLoading, page, totalCount, pageSize, onPageChange, onUpdate }: Props) {
   const totalPages = Math.ceil(totalCount / pageSize);
   const [editingJogo, setEditingJogo] = useState<JogoComTimesRaw | null>(null);
+  const { isAdmin } = useAuth();
 
   if (isLoading) {
     return <SkeletonTable rows={pageSize} cols={14} />;
@@ -60,7 +62,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
               <th>U7 Cart.</th>
               <th>O8C</th>
               <th>O9C</th>
-              <th></th>
+              {isAdmin && <th></th>}
             </tr>
           </thead>
           <tbody>
@@ -83,15 +85,17 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                 <td><BoolBadge value={j.u7_cartoes} /></td>
                 <td><BoolBadge value={j.o8_cantos} /></td>
                 <td><BoolBadge value={j.o9_cantos} /></td>
-                <td>
-                  <button
-                    onClick={() => setEditingJogo(j)}
-                    className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-                    title="Editar jogo"
-                  >
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+                {isAdmin && (
+                  <td>
+                    <button
+                      onClick={() => setEditingJogo(j)}
+                      className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                      title="Editar jogo"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

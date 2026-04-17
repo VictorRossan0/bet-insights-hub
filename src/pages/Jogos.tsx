@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Upload, RefreshCw, Plus, FileText, FileJson, Download } from 'lucide-react';
+import { Search, RefreshCw, Plus, FileText, FileJson, Download } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
 import FormNovoJogo from '@/components/FormNovoJogo';
 import { fetchJogosResumo, fetchRodadas } from '@/services/supabase/jogosService';
 import { importJogosValidated, parseCSV } from '@/services/supabase/importService';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
@@ -18,6 +19,7 @@ export default function Jogos() {
   const [showForm, setShowForm] = useState(false);
   const pageSize = 10;
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
 
   const { data: jogosData, isLoading } = useQuery({
@@ -106,18 +108,22 @@ export default function Jogos() {
           <button onClick={handleRefresh} className={btnCls}>
             <RefreshCw className="w-3.5 h-3.5" /> Atualizar
           </button>
-          <button onClick={() => setShowForm(true)} className={btnCls}>
-            <Plus className="w-3.5 h-3.5" /> Novo Jogo
-          </button>
-          <button onClick={() => handleImportFile('.json')} className={btnCls}>
-            <FileJson className="w-3.5 h-3.5" /> JSON
-          </button>
-          <button onClick={() => handleImportFile('.csv')} className={btnCls}>
-            <FileText className="w-3.5 h-3.5" /> CSV
-          </button>
-          <a href="/exemplo_jogos.csv" download className={btnCls}>
-            <Download className="w-3.5 h-3.5" /> Template
-          </a>
+          {isAdmin && (
+            <>
+              <button onClick={() => setShowForm(true)} className={btnCls}>
+                <Plus className="w-3.5 h-3.5" /> Novo Jogo
+              </button>
+              <button onClick={() => handleImportFile('.json')} className={btnCls}>
+                <FileJson className="w-3.5 h-3.5" /> JSON
+              </button>
+              <button onClick={() => handleImportFile('.csv')} className={btnCls}>
+                <FileText className="w-3.5 h-3.5" /> CSV
+              </button>
+              <a href="/exemplo_jogos.csv" download className={btnCls}>
+                <Download className="w-3.5 h-3.5" /> Template
+              </a>
+            </>
+          )}
         </div>
       </motion.div>
 

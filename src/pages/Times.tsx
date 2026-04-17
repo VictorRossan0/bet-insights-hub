@@ -1,17 +1,24 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
-import { ArrowUpDown, Users, ExternalLink } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, LineChart, Line } from 'recharts';
+import { ArrowUpDown, Users, ExternalLink, TrendingUp, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
-import { fetchStatsTeamForm } from '@/services/api/stats-views.api';
-import type { StatsPorTime, StatsTeamForm } from '@/types/database';
+import { fetchAllJogos } from '@/services/api/games.api';
+import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
+import { buildStandings, buildPositionEvolution } from '@/lib/standings';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
 type ClassSortKey = 'pontos_total' | 'vitorias' | 'saldo_gols' | 'aproveitamento' | 'media_escanteios';
+
+// Paleta para gráfico de evolução (10 cores semânticas-friendly)
+const LINE_COLORS = [
+  '#00ff87', '#60a5fa', '#fbbf24', '#f87171', '#c084fc',
+  '#34d399', '#fb923c', '#f472b6', '#a3e635', '#22d3ee',
+];
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
@@ -27,16 +34,50 @@ export default function Times() {
   const [tab, setTab] = useState<Tab>('geral');
   const [classSortBy, setClassSortBy] = useState<ClassSortKey>('pontos_total');
   const [classSortAsc, setClassSortAsc] = useState(false);
+  const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
+  const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
     queryFn: fetchStatsPorTime,
   });
 
-  const { data: teamForms } = useQuery({
-    queryKey: ['stats-team-form'],
-    queryFn: fetchStatsTeamForm,
+  // Buscar todos os jogos da temporada atual (id=1 = 2026) para calcular standings dinâmicos
+  const { data: allJogos } = useQuery({
+    queryKey: ['all-jogos', 1],
+    queryFn: () => fetchAllJogos(1),
   });
+
+  const allRounds = useMemo(() => {
+    if (!allJogos) return [];
+    return Array.from(new Set(allJogos.map(j => j.rodada))).sort((a, b) => a - b);
+  }, [allJogos]);
+
+  const standings = useMemo(() => {
+    if (!allJogos) return [];
+    return buildStandings(allJogos, untilRodada);
+  }, [allJogos, untilRodada]);
+
+  const evolution = useMemo(() => {
+    if (!allJogos) return { rounds: [], series: {} };
+    return buildPositionEvolution(allJogos);
+  }, [allJogos]);
+
+  // Dados formatados para o LineChart: [{ rodada, [time]: posicao, ... }]
+  const evolutionChartData = useMemo(() => {
+    if (!evolution.rounds.length || !evolutionTeams.length) return [];
+    return evolution.rounds.map(r => {
+      const row: Record<string, number> = { rodada: r };
+      for (const team of evolutionTeams) {
+        const point = evolution.series[team]?.find(p => p.rodada === r);
+        if (point) row[team] = point.posicao;
+      }
+      return row;
+    });
+  }, [evolution, evolutionTeams]);
+
+  const allTeamNames = useMemo(() => Object.keys(evolution.series).sort(), [evolution]);
+
 
   const sorted = useMemo(() => {
     if (!times) return [];
@@ -97,127 +138,226 @@ export default function Times() {
       </motion.div>
 
       {tab === 'forma' ? (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="card-bet overflow-hidden"
-        >
-          <div className="p-4 border-b border-border flex items-center gap-2">
-            <span className="text-sm">🔥</span>
-            <h2 className="text-sm font-semibold">Classificação — Brasileirão 2026</h2>
-          </div>
-          <div className="overflow-auto">
-            <table className="table-bet text-sm">
-              <thead className="sticky top-0 bg-card z-10">
-                <tr>
-                  <th className="w-10">#</th>
-                  <th>Time</th>
-                  {([
-                    ['pontos_total', 'P'],
-                    [null, 'J'],
-                    ['vitorias', 'V'],
-                    [null, 'E'],
-                    [null, 'D'],
-                    [null, 'GP/GC'],
-                    ['saldo_gols', 'SG'],
-                    ['aproveitamento', '%'],
-                    ['media_escanteios', 'Esc.'],
-                  ] as const).map(([key, label]) => (
-                    <th key={label} className="text-center">
-                      {key ? (
-                        <button
-                          onClick={() => {
-                            if (classSortBy === key) setClassSortAsc(!classSortAsc);
-                            else { setClassSortBy(key as ClassSortKey); setClassSortAsc(false); }
-                          }}
-                          className={`inline-flex items-center gap-0.5 hover:text-foreground transition-colors ${classSortBy === key ? 'text-bet-green font-bold' : ''}`}
-                        >
-                          {label} <ArrowUpDown className="w-3 h-3" />
-                        </button>
-                      ) : label}
-                    </th>
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="card-bet overflow-hidden"
+          >
+            <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">🔥</span>
+                <h2 className="text-sm font-semibold">
+                  Classificação — Brasileirão 2026
+                  {untilRodada != null && <span className="text-muted-foreground font-normal"> · até a rodada {untilRodada}</span>}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground">Até a rodada:</label>
+                <select
+                  value={untilRodada ?? ''}
+                  onChange={(e) => setUntilRodada(e.target.value ? Number(e.target.value) : undefined)}
+                  className="bg-secondary border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">Todas (atual)</option>
+                  {allRounds.map(r => (
+                    <option key={r} value={r}>Rodada {r}</option>
                   ))}
-                  <th>Forma</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  if (!teamForms) return null;
-                  const total = teamForms.length;
-                  const enriched = [...teamForms]
-                    .map(t => {
-                      const pts = t.vitorias * 3 + t.empates;
-                      const maxPts = t.jogos * 3;
-                      return {
-                        ...t,
-                        pontos_total: pts,
-                        aproveitamento: maxPts > 0 ? Math.round((pts / maxPts) * 100) : 0,
-                        saldo_gols: Number(((t.media_gols_pro - t.media_gols_contra) * t.jogos).toFixed(0)),
-                        gp: Number((t.media_gols_pro * t.jogos).toFixed(0)),
-                        gc: Number((t.media_gols_contra * t.jogos).toFixed(0)),
-                      };
+                </select>
+              </div>
+            </div>
+            <div className="overflow-auto">
+              <table className="table-bet text-sm">
+                <thead className="sticky top-0 bg-card z-10">
+                  <tr>
+                    <th className="w-10">#</th>
+                    <th>Time</th>
+                    {([
+                      ['pontos_total', 'P'],
+                      [null, 'J'],
+                      ['vitorias', 'V'],
+                      [null, 'E'],
+                      [null, 'D'],
+                      [null, 'GP/GC'],
+                      ['saldo_gols', 'SG'],
+                      ['aproveitamento', '%'],
+                      ['media_escanteios', 'Esc.'],
+                    ] as const).map(([key, label]) => (
+                      <th key={label} className="text-center">
+                        {key ? (
+                          <button
+                            onClick={() => {
+                              if (classSortBy === key) setClassSortAsc(!classSortAsc);
+                              else { setClassSortBy(key as ClassSortKey); setClassSortAsc(false); }
+                            }}
+                            className={`inline-flex items-center gap-0.5 hover:text-foreground transition-colors ${classSortBy === key ? 'text-bet-green font-bold' : ''}`}
+                          >
+                            {label} <ArrowUpDown className="w-3 h-3" />
+                          </button>
+                        ) : label}
+                      </th>
+                    ))}
+                    <th>Forma</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    if (!standings.length) return null;
+                    const total = standings.length;
+                    const sorted = [...standings].sort((a, b) => {
+                      const dir = classSortAsc ? 1 : -1;
+                      const diff = (a[classSortBy] as number) - (b[classSortBy] as number);
+                      if (diff !== 0) return diff * dir;
+                      return (b.pontos_total - a.pontos_total) || (b.saldo_gols - a.saldo_gols) || (b.vitorias - a.vitorias);
                     });
-                  const sorted = enriched.sort((a, b) => {
-                    const dir = classSortAsc ? 1 : -1;
-                    const diff = (a[classSortBy] as number) - (b[classSortBy] as number);
-                    if (diff !== 0) return diff * dir;
-                    return (b.pontos_total - a.pontos_total) || (b.saldo_gols - a.saldo_gols) || (b.vitorias - a.vitorias);
-                  });
 
-                  const getZoneStyle = (pos: number) => {
-                    if (pos <= 4) return 'border-l-2 border-l-blue-500 bg-blue-500/[0.06]'; // Libertadores
-                    if (pos <= 6) return 'border-l-2 border-l-blue-400/60 bg-blue-400/[0.04]'; // Pré-Libertadores
-                    if (pos <= 12) return 'border-l-2 border-l-orange-400/60 bg-orange-400/[0.03]'; // Sul-Americana
-                    if (pos > total - 4) return 'border-l-2 border-l-red-500 bg-red-500/[0.06]'; // Rebaixamento
-                    return '';
-                  };
+                    const getZoneStyle = (pos: number) => {
+                      if (pos <= 4) return 'border-l-2 border-l-blue-500 bg-blue-500/[0.06]';
+                      if (pos <= 6) return 'border-l-2 border-l-blue-400/60 bg-blue-400/[0.04]';
+                      if (pos <= 12) return 'border-l-2 border-l-orange-400/60 bg-orange-400/[0.03]';
+                      if (pos > total - 4) return 'border-l-2 border-l-red-500 bg-red-500/[0.06]';
+                      return '';
+                    };
 
-                  return (
-                    <>
-                      {sorted.map((t, i) => (
-                        <tr key={t.team_id} className={getZoneStyle(i + 1)}>
-                          <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
-                          <td className="font-medium text-sm">{t.team_nome}</td>
-                          <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
-                          <td className="text-center font-mono text-sm">{t.jogos}</td>
-                          <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
-                          <td className="text-center font-mono text-sm text-yellow-400">{t.empates}</td>
-                          <td className="text-center font-mono text-sm text-destructive">{t.derrotas}</td>
-                          <td className="text-center font-mono text-xs">{t.gp} / {t.gc}</td>
-                          <td className={`text-center font-mono text-sm ${t.saldo_gols > 0 ? 'text-bet-green' : t.saldo_gols < 0 ? 'text-destructive' : ''}`}>{t.saldo_gols > 0 ? '+' : ''}{t.saldo_gols}</td>
-                          <td className="text-center font-mono text-sm">{t.aproveitamento}</td>
-                          <td className={`text-center font-mono text-sm ${t.media_escanteios >= 10 ? 'text-bet-green font-bold' : ''}`}>{t.media_escanteios.toFixed(1)}</td>
-                          <td>
-                            <div className="flex gap-0.5">
-                              {t.forma_5jogos.split('').map((c, ci) => {
-                                const color = c === 'W' ? 'bg-bet-green' : c === 'L' ? 'bg-destructive' : 'bg-yellow-500';
-                                return <span key={ci} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold text-white ${color}`}>{c}</span>;
-                              })}
-                            </div>
-                          </td>
-                          <td>
-                            <Link to={`/times/${t.team_id}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                    const teamIdByName = new Map((times ?? []).map((t: StatsPorTime) => [t.nome, t.time_id]));
+
+                    return sorted.map((t, i) => (
+                      <tr key={t.team_sigla} className={getZoneStyle(i + 1)}>
+                        <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
+                        <td className="font-medium text-sm">{t.team_nome}</td>
+                        <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
+                        <td className="text-center font-mono text-sm">{t.jogos}</td>
+                        <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
+                        <td className="text-center font-mono text-sm text-yellow-400">{t.empates}</td>
+                        <td className="text-center font-mono text-sm text-destructive">{t.derrotas}</td>
+                        <td className="text-center font-mono text-xs">{t.gp} / {t.gc}</td>
+                        <td className={`text-center font-mono text-sm ${t.saldo_gols > 0 ? 'text-bet-green' : t.saldo_gols < 0 ? 'text-destructive' : ''}`}>{t.saldo_gols > 0 ? '+' : ''}{t.saldo_gols}</td>
+                        <td className="text-center font-mono text-sm">{t.aproveitamento}</td>
+                        <td className={`text-center font-mono text-sm ${t.media_escanteios >= 10 ? 'text-bet-green font-bold' : ''}`}>{t.media_escanteios.toFixed(1)}</td>
+                        <td>
+                          <div className="flex gap-0.5">
+                            {t.forma_5jogos.split('').map((c, ci) => {
+                              const color = c === 'W' ? 'bg-bet-green' : c === 'L' ? 'bg-destructive' : c === 'D' ? 'bg-yellow-500' : 'bg-muted';
+                              return <span key={ci} className={`w-5 h-5 flex items-center justify-center rounded text-[9px] font-bold text-white ${color}`}>{c === '-' ? '' : c}</span>;
+                            })}
+                          </div>
+                        </td>
+                        <td>
+                          {teamIdByName.get(t.team_nome) != null && (
+                            <Link to={`/times/${teamIdByName.get(t.team_nome)}`} className="text-muted-foreground hover:text-foreground transition-colors">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </>
-                  );
-                })()}
-              </tbody>
-            </table>
-            {/* Legenda das zonas */}
-            <div className="flex flex-wrap gap-4 p-4 border-t border-border text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500" /> Libertadores</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400/60" /> Pré-Libertadores</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-orange-400/60" /> Sul-Americana</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Rebaixamento</span>
+                          )}
+                        </td>
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+              </table>
+              <div className="flex flex-wrap gap-4 p-4 border-t border-border text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500" /> Libertadores</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400/60" /> Pré-Libertadores</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-orange-400/60" /> Sul-Americana</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Rebaixamento</span>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          {/* Gráfico de Evolução de Posição */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.5 }}
+            className="card-bet p-5"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="w-4 h-4 text-bet-green" />
+              <h2 className="text-sm font-semibold">Evolução de Posição por Rodada</h2>
+            </div>
+
+            <div className="mb-4">
+              <label className="text-xs text-muted-foreground mb-2 block">
+                Selecione times para comparar ({evolutionTeams.length} selecionados — máx. 10)
+              </label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {evolutionTeams.map(team => (
+                  <button
+                    key={team}
+                    onClick={() => setEvolutionTeams(evolutionTeams.filter(t => t !== team))}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-bet-green/15 text-bet-green text-xs hover:bg-bet-green/25 transition-colors"
+                  >
+                    {team} <X className="w-3 h-3" />
+                  </button>
+                ))}
+              </div>
+              <select
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v && !evolutionTeams.includes(v) && evolutionTeams.length < 10) {
+                    setEvolutionTeams([...evolutionTeams, v]);
+                  }
+                }}
+                className="bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                <option value="">+ Adicionar time...</option>
+                {allTeamNames.filter(t => !evolutionTeams.includes(t)).map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {evolutionTeams.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <TrendingUp className="w-8 h-8 mb-2 opacity-40" />
+                <p className="text-sm">Selecione 2-10 times para ver a evolução</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={360}>
+                <LineChart data={evolutionChartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
+                  <XAxis
+                    dataKey="rodada"
+                    tick={{ fontSize: 11, fill: 'hsl(0 0% 55%)' }}
+                    label={{ value: 'Rodada', position: 'insideBottom', offset: -2, style: { fontSize: 10, fill: 'hsl(0 0% 55%)' } }}
+                  />
+                  <YAxis
+                    reversed
+                    domain={[1, 20]}
+                    ticks={[1, 4, 6, 12, 16, 20]}
+                    tick={{ fontSize: 11, fill: 'hsl(0 0% 55%)' }}
+                    label={{ value: 'Posição', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: 'hsl(0 0% 55%)' } }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'hsl(0 0% 7%)',
+                      border: '1px solid hsl(0 0% 14%)',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                    }}
+                    formatter={(val: number) => [`${val}º`, '']}
+                    labelFormatter={(l) => `Rodada ${l}`}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} />
+                  {evolutionTeams.map((team, idx) => (
+                    <Line
+                      key={team}
+                      type="monotone"
+                      dataKey={team}
+                      stroke={LINE_COLORS[idx % LINE_COLORS.length]}
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      activeDot={{ r: 5 }}
+                      connectNulls
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </motion.div>
+        </div>
       ) : tab === 'casa-fora' ? (
         <CasaForaStats />
       ) : (
