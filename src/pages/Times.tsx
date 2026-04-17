@@ -30,20 +30,54 @@ const sortLabels: Record<SortKey, string> = {
 export default function Times() {
   const [sortBy, setSortBy] = useState<SortKey>('media_gols_jogo');
   const [compareA, setCompareA] = useState<string>('');
-  const [compareB, setCompareB] = useState<string>('');
+  const [compareB, setCompareB] = useState<string>('');>
   const [tab, setTab] = useState<Tab>('geral');
   const [classSortBy, setClassSortBy] = useState<ClassSortKey>('pontos_total');
   const [classSortAsc, setClassSortAsc] = useState(false);
+  const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
+  const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time'],
     queryFn: fetchStatsPorTime,
   });
 
-  const { data: teamForms } = useQuery({
-    queryKey: ['stats-team-form'],
-    queryFn: fetchStatsTeamForm,
+  // Buscar todos os jogos da temporada atual (id=1 = 2026) para calcular standings dinâmicos
+  const { data: allJogos } = useQuery({
+    queryKey: ['all-jogos', 1],
+    queryFn: () => fetchAllJogos(1),
   });
+
+  const allRounds = useMemo(() => {
+    if (!allJogos) return [];
+    return Array.from(new Set(allJogos.map(j => j.rodada))).sort((a, b) => a - b);
+  }, [allJogos]);
+
+  const standings = useMemo(() => {
+    if (!allJogos) return [];
+    return buildStandings(allJogos, untilRodada);
+  }, [allJogos, untilRodada]);
+
+  const evolution = useMemo(() => {
+    if (!allJogos) return { rounds: [], series: {} };
+    return buildPositionEvolution(allJogos);
+  }, [allJogos]);
+
+  // Dados formatados para o LineChart: [{ rodada, [time]: posicao, ... }]
+  const evolutionChartData = useMemo(() => {
+    if (!evolution.rounds.length || !evolutionTeams.length) return [];
+    return evolution.rounds.map(r => {
+      const row: Record<string, number> = { rodada: r };
+      for (const team of evolutionTeams) {
+        const point = evolution.series[team]?.find(p => p.rodada === r);
+        if (point) row[team] = point.posicao;
+      }
+      return row;
+    });
+  }, [evolution, evolutionTeams]);
+
+  const allTeamNames = useMemo(() => Object.keys(evolution.series).sort(), [evolution]);
+
 
   const sorted = useMemo(() => {
     if (!times) return [];
