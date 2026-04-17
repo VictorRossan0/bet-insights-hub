@@ -1,17 +1,24 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
-import { ArrowUpDown, Users, ExternalLink } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, LineChart, Line } from 'recharts';
+import { ArrowUpDown, Users, ExternalLink, TrendingUp, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { fetchStatsPorTime } from '@/services/supabase/statsService';
-import { fetchStatsTeamForm } from '@/services/api/stats-views.api';
-import type { StatsPorTime, StatsTeamForm } from '@/types/database';
+import { fetchAllJogos } from '@/services/api/games.api';
+import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
+import { buildStandings, buildPositionEvolution } from '@/lib/standings';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
 type ClassSortKey = 'pontos_total' | 'vitorias' | 'saldo_gols' | 'aproveitamento' | 'media_escanteios';
+
+// Paleta para gráfico de evolução (10 cores semânticas-friendly)
+const LINE_COLORS = [
+  '#00ff87', '#60a5fa', '#fbbf24', '#f87171', '#c084fc',
+  '#34d399', '#fb923c', '#f472b6', '#a3e635', '#22d3ee',
+];
 
 const sortLabels: Record<SortKey, string> = {
   media_gols_jogo: 'Gols',
