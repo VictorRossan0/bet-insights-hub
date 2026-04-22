@@ -47,15 +47,15 @@ function enrichJogo(j: JogoInput): JogoInput {
   const cartoes = j.cartoes_total ?? 0;
   const resultado = j.resultado ?? (gols_casa > gols_fora ? 'casa' : gols_fora > gols_casa ? 'fora' : 'empate');
 
+  const { gols_total: _gt, escanteios_total: _et, ...rest } = j;
   return {
-    ...j,
+    ...rest,
     gols_casa,
     gols_fora,
-    gols_total: gols_total,
+    // gols_total e escanteios_total são GERADAS no banco — não enviar
     resultado,
     escanteios_casa: esc_casa,
     escanteios_fora: esc_fora,
-    escanteios_total: esc_total,
     cartoes_total: cartoes,
     o5_cantos: j.o5_cantos ?? esc_total > 5,
     o6_cantos: j.o6_cantos ?? esc_total > 6,

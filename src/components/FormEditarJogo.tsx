@@ -37,11 +37,10 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
         data_jogo: form.data_jogo,
         gols_casa: form.gols_casa,
         gols_fora: form.gols_fora,
-        gols_total: golsTotal,
+        // gols_total e escanteios_total são colunas GERADAS no banco — não enviar
         resultado: resultado as 'casa' | 'fora' | 'empate',
         escanteios_casa: form.escanteios_casa,
         escanteios_fora: form.escanteios_fora,
-        escanteios_total: escTotal,
         cartoes_total: form.cartoes_total,
         o5_cantos: escTotal > 5,
         o6_cantos: escTotal > 6,
