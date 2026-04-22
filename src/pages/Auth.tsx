@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus, Shield } from 'lucide-react';
+import { LogIn, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -15,7 +15,6 @@ const schema = z.object({
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -33,24 +32,13 @@ export default function Auth() {
     }
     setSubmitting(true);
     try {
-      if (mode === 'signup') {
-        const redirectUrl = `${window.location.origin}/`;
-        const { error } = await supabase.auth.signUp({
-          email: parsed.data.email,
-          password: parsed.data.password,
-          options: { emailRedirectTo: redirectUrl },
-        });
-        if (error) throw error;
-        toast.success('Conta criada! Verifique seu email para confirmar.');
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: parsed.data.email,
-          password: parsed.data.password,
-        });
-        if (error) throw error;
-        toast.success('Login realizado');
-        navigate('/', { replace: true });
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email: parsed.data.email,
+        password: parsed.data.password,
+      });
+      if (error) throw error;
+      toast.success('Login realizado');
+      navigate('/', { replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erro de autenticação';
       toast.error(msg);
@@ -104,18 +92,15 @@ export default function Auth() {
             disabled={submitting}
             className="w-full flex items-center justify-center gap-2 bg-bet-green text-background font-semibold rounded-lg px-4 py-2.5 text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {mode === 'login' ? <LogIn className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-            {submitting ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar conta'}
+            <LogIn className="w-4 h-4" />
+            {submitting ? 'Aguarde...' : 'Entrar'}
           </button>
         </form>
 
         <div className="mt-6 pt-6 border-t border-border text-center">
-          <button
-            onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {mode === 'login' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
-          </button>
+          <p className="text-xs text-muted-foreground">
+            Acesso restrito ao administrador do sistema.
+          </p>
         </div>
 
         <div className="mt-4 text-center">
