@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { LogIn, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { supabase as externalSupabase } from '@/services/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -37,6 +38,17 @@ export default function Auth() {
         password: parsed.data.password,
       });
       if (error) throw error;
+
+      // Login simultâneo no projeto externo (jogos/times) usando as mesmas credenciais
+      const { error: extError } = await externalSupabase.auth.signInWithPassword({
+        email: parsed.data.email,
+        password: parsed.data.password,
+      });
+      if (extError) {
+        console.warn('Falha ao logar no projeto externo:', extError.message);
+        toast.warning('Logado no Lovable Cloud, mas falhou no banco externo. Edições de jogos podem não funcionar.');
+      }
+
       toast.success('Login realizado');
       navigate('/', { replace: true });
     } catch (err) {
