@@ -62,7 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
+    await Promise.all([
+      supabase.auth.signOut(),
+      externalSupabase.auth.signOut(),
+    ]);
   }
 
   return (
