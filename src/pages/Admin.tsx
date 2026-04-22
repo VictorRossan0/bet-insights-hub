@@ -63,14 +63,9 @@ export default function Admin() {
                 </p>
               </div>
             </div>
-            <div className="text-xs text-muted-foreground space-y-2">
-              <p className="font-semibold text-foreground">Para se tornar admin, execute no banco:</p>
-              <pre className="p-3 rounded-lg bg-secondary text-[11px] overflow-x-auto font-mono">
-{`INSERT INTO public.user_roles (user_id, role)
-VALUES ('${user.id}', 'admin');`}
-              </pre>
-              <p>Depois recarregue a página.</p>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Entre em contato com o administrador do sistema para solicitar acesso.
+            </p>
           </div>
         )}
       </div>
