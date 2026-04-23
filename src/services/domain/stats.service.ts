@@ -79,8 +79,14 @@ export async function computeStatsPorRodada(temporada_id: number = DEFAULT_TEMPO
 // ── Stats per Team ────────────────────────────────────────
 
 export async function computeStatsPorTime(): Promise<StatsPorTime[]> {
-  const jogos = await fetchAllJogos(DEFAULT_TEMPORADA);
+  const [jogos, allTimes] = await Promise.all([
+    fetchAllJogos(DEFAULT_TEMPORADA),
+    fetchTimes(),
+  ]);
   if (jogos.length === 0) return [];
+
+  // Map nome -> id real do time
+  const idByName = new Map(allTimes.map(t => [t.nome, t.id]));
 
   const teamMap = new Map<string, { nome: string; sigla: string; gols: number; esc: number; cart: number; jogos: number; o5: number; o6: number; u35: number }>();
 
@@ -103,7 +109,7 @@ export async function computeStatsPorTime(): Promise<StatsPorTime[]> {
 
   return [...teamMap.values()]
     .map(t => ({
-      time_id: 0,
+      time_id: idByName.get(t.nome) ?? 0,
       nome: t.nome,
       sigla: t.sigla,
       total_jogos: t.jogos,
