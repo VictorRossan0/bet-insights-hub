@@ -53,19 +53,12 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
         time_fora_id: Number(form.time_fora_id),
         gols_casa: form.gols_casa,
         gols_fora: form.gols_fora,
-        // gols_total e escanteios_total são GERADAS no banco — não enviar
+        // gols_total, escanteios_total e flags (o5/o6/o7/o8/o9_cantos, u35/u25_gols, u7_cartoes)
+        // são colunas GERADAS no banco — não enviar
         resultado: resultado as 'casa' | 'fora' | 'empate',
         escanteios_casa: form.escanteios_casa,
         escanteios_fora: form.escanteios_fora,
         cartoes_total: form.cartoes_total,
-        o5_cantos: escTotal > 5,
-        o6_cantos: escTotal > 6,
-        o7_cantos: escTotal > 7,
-        o8_cantos: escTotal > 8,
-        o9_cantos: escTotal > 9,
-        u35_gols: golsTotal < 3.5,
-        u25_gols: golsTotal < 2.5,
-        u7_cartoes: form.cartoes_total < 7,
       });
       toast.success('Jogo adicionado com sucesso');
       onSuccess();

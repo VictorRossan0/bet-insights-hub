@@ -40,31 +40,35 @@ export function parseCSV(text: string): JogoInput[] {
 function enrichJogo(j: JogoInput): JogoInput {
   const gols_casa = j.gols_casa ?? 0;
   const gols_fora = j.gols_fora ?? 0;
-  const gols_total = j.gols_total ?? gols_casa + gols_fora;
   const esc_casa = j.escanteios_casa ?? 0;
   const esc_fora = j.escanteios_fora ?? 0;
-  const esc_total = j.escanteios_total ?? esc_casa + esc_fora;
   const cartoes = j.cartoes_total ?? 0;
   const resultado = j.resultado ?? (gols_casa > gols_fora ? 'casa' : gols_fora > gols_casa ? 'fora' : 'empate');
 
-  const { gols_total: _gt, escanteios_total: _et, ...rest } = j;
+  // Remover colunas GERADAS no banco — não devem ser enviadas:
+  // gols_total, escanteios_total, o5/o6/o7/o8/o9_cantos, u35/u25_gols, u7_cartoes
+  const {
+    gols_total: _gt,
+    escanteios_total: _et,
+    o5_cantos: _o5,
+    o6_cantos: _o6,
+    o7_cantos: _o7,
+    o8_cantos: _o8,
+    o9_cantos: _o9,
+    u35_gols: _u35,
+    u25_gols: _u25,
+    u7_cartoes: _u7,
+    ...rest
+  } = j;
+
   return {
     ...rest,
     gols_casa,
     gols_fora,
-    // gols_total e escanteios_total são GERADAS no banco — não enviar
     resultado,
     escanteios_casa: esc_casa,
     escanteios_fora: esc_fora,
     cartoes_total: cartoes,
-    o5_cantos: j.o5_cantos ?? esc_total > 5,
-    o6_cantos: j.o6_cantos ?? esc_total > 6,
-    o7_cantos: j.o7_cantos ?? esc_total > 7,
-    o8_cantos: j.o8_cantos ?? esc_total > 8,
-    o9_cantos: j.o9_cantos ?? esc_total > 9,
-    u35_gols: j.u35_gols ?? gols_total < 3.5,
-    u25_gols: j.u25_gols ?? gols_total < 2.5,
-    u7_cartoes: j.u7_cartoes ?? cartoes < 7,
   };
 }
 
