@@ -3,6 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { X, Plus, Loader2 } from 'lucide-react';
 import { fetchTimes, createJogo } from '@/services/supabase/jogosService';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+import { logAudit } from '@/lib/audit';
+import RlsErrorAlert from '@/components/RlsErrorAlert';
 
 type Props = {
   temporadaId: number;
@@ -11,9 +14,11 @@ type Props = {
 };
 
 export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props) {
+  const { user } = useAuth();
   const { data: times = [] } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
   const [saving, setSaving] = useState(false);
+  const [rlsError, setRlsError] = useState<string | null>(null);
   const [form, setForm] = useState({
     rodada: 1,
     data_jogo: new Date().toISOString().slice(0, 10),
@@ -44,8 +49,9 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
     }
 
     setSaving(true);
+    setRlsError(null);
     try {
-      await createJogo({
+      const created = await createJogo({
         temporada_id: temporadaId,
         rodada: form.rodada,
         data_jogo: form.data_jogo,
@@ -53,19 +59,30 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
         time_fora_id: Number(form.time_fora_id),
         gols_casa: form.gols_casa,
         gols_fora: form.gols_fora,
-        // gols_total, escanteios_total e flags (o5/o6/o7/o8/o9_cantos, u35/u25_gols, u7_cartoes)
-        // são colunas GERADAS no banco — não enviar
+        // gols_total, escanteios_total e flags são GENERATED — não enviar
         resultado: resultado as 'casa' | 'fora' | 'empate',
         escanteios_casa: form.escanteios_casa,
         escanteios_fora: form.escanteios_fora,
         cartoes_total: form.cartoes_total,
+      });
+      const casa = times.find(t => t.id === Number(form.time_casa_id))?.nome ?? '?';
+      const fora = times.find(t => t.id === Number(form.time_fora_id))?.nome ?? '?';
+      logAudit({
+        action: 'criar_jogo',
+        user: user?.email ?? 'desconhecido',
+        target: `#${created?.id ?? 'novo'} ${casa} vs ${fora}`,
       });
       toast.success('Jogo adicionado com sucesso');
       onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao adicionar jogo');
+      const msg = err instanceof Error ? err.message : 'Erro ao adicionar jogo';
+      if (/RLS|row-level|0 rows|bloqueada/i.test(msg)) {
+        setRlsError(msg);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setSaving(false);
     }
@@ -75,12 +92,14 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
   const labelCls = 'text-xs font-medium text-muted-foreground mb-1 block';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" data-testid="form-novo-jogo">
       <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Novo Jogo</h2>
-          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-accent"><X className="w-4 h-4" /></button>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-accent" aria-label="Fechar"><X className="w-4 h-4" /></button>
         </div>
+
+        {rlsError && <RlsErrorAlert message={rlsError} operation="INSERT" />}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
