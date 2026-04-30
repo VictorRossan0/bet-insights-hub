@@ -134,14 +134,25 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
           <p>Over 5 cantos: {escTotal > 5 ? '✅' : '❌'} · Under 3.5 gols: {golsTotal < 3.5 ? '✅' : '❌'} · Under 7 cartões: {form.cartoes_total < 7 ? '✅' : '❌'}</p>
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-        >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? 'Salvando...' : 'Salvar Alterações'}
-        </button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            type="submit"
+            disabled={saving || deleting}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? 'Salvando...' : 'Salvar Alterações'}
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={saving || deleting}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+          >
+            {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+            {deleting ? 'Excluindo...' : 'Excluir'}
+          </button>
+        </div>
       </form>
     </div>
   );
