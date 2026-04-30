@@ -50,9 +50,27 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao atualizar jogo');
+      const msg = err instanceof Error ? err.message : 'Erro ao atualizar jogo';
+      toast.error(msg);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Excluir o jogo ${jogo.time_casa?.nome ?? ''} vs ${jogo.time_fora?.nome ?? ''}? Esta ação não pode ser desfeita.`)) return;
+    setDeleting(true);
+    try {
+      await deleteJogo(jogo.id);
+      toast.success('Jogo excluído com sucesso');
+      onSuccess();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : 'Erro ao excluir jogo';
+      toast.error(msg);
+    } finally {
+      setDeleting(false);
     }
   };
 
