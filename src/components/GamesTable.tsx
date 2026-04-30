@@ -67,7 +67,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
           </thead>
           <tbody>
             {jogos.map((j) => (
-              <tr key={j.id}>
+              <tr key={j.id} data-testid={`row-jogo-${j.id}`}>
                 <td className="font-mono text-xs text-muted-foreground">{j.rodada}</td>
                 <td className="whitespace-nowrap">
                   <span className="font-medium text-sm">{j.time_casa?.nome ?? '—'}</span>
@@ -91,6 +91,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                       onClick={() => setEditingJogo(j)}
                       className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                       title="Editar jogo"
+                      data-testid={`btn-editar-${j.id}`}
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
