@@ -85,6 +85,7 @@ export default function Auth() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               placeholder="seu@email.com"
+              data-testid="auth-email"
             />
           </div>
           <div>
@@ -96,6 +97,7 @@ export default function Auth() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               placeholder="••••••••"
+              data-testid="auth-password"
             />
           </div>
 
@@ -103,6 +105,7 @@ export default function Auth() {
             type="submit"
             disabled={submitting}
             className="w-full flex items-center justify-center gap-2 bg-bet-green text-background font-semibold rounded-lg px-4 py-2.5 text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+            data-testid="auth-submit"
           >
             <LogIn className="w-4 h-4" />
             {submitting ? 'Aguarde...' : 'Entrar'}
