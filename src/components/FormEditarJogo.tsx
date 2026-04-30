@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { X, Save, Loader2 } from 'lucide-react';
-import { updateJogo } from '@/services/supabase/jogosService';
+import { X, Save, Loader2, Trash2 } from 'lucide-react';
+import { updateJogo, deleteJogo } from '@/services/supabase/jogosService';
 import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
 import { toast } from 'sonner';
 
@@ -12,6 +12,7 @@ type Props = {
 
 export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState({
     rodada: jogo.rodada,
     data_jogo: jogo.data_jogo?.slice(0, 10) ?? '',
