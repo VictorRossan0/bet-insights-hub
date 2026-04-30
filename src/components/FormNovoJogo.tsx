@@ -3,6 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { X, Plus, Loader2 } from 'lucide-react';
 import { fetchTimes, createJogo } from '@/services/supabase/jogosService';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+import { logAudit } from '@/lib/audit';
+import RlsErrorAlert from '@/components/RlsErrorAlert';
 
 type Props = {
   temporadaId: number;
@@ -11,9 +14,11 @@ type Props = {
 };
 
 export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props) {
+  const { user } = useAuth();
   const { data: times = [] } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
   const [saving, setSaving] = useState(false);
+  const [rlsError, setRlsError] = useState<string | null>(null);
   const [form, setForm] = useState({
     rodada: 1,
     data_jogo: new Date().toISOString().slice(0, 10),
