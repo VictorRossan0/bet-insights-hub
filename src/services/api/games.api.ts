@@ -128,9 +128,22 @@ export async function createJogo(jogo: Partial<Jogo>) {
 
 /** Update a single game */
 export async function updateJogo(id: number, updates: Partial<Jogo>) {
-  const { data, error } = await supabase.from('jogos').update(updates).eq('id', id).select().single();
+  const { data, error } = await supabase.from('jogos').update(updates).eq('id', id).select();
   if (error) throw error;
-  return data as Jogo;
+  if (!data || data.length === 0) {
+    throw new Error('Atualização bloqueada pelo banco (RLS). Verifique as políticas de UPDATE da tabela jogos no Supabase externo.');
+  }
+  return data[0] as Jogo;
+}
+
+/** Delete a single game */
+export async function deleteJogo(id: number) {
+  const { data, error } = await supabase.from('jogos').delete().eq('id', id).select();
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error('Exclusão bloqueada pelo banco (RLS). Verifique as políticas de DELETE da tabela jogos no Supabase externo.');
+  }
+  return true;
 }
 
 /** Bulk insert games */
