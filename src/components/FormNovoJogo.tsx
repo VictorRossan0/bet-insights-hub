@@ -49,8 +49,9 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
     }
 
     setSaving(true);
+    setRlsError(null);
     try {
-      await createJogo({
+      const created = await createJogo({
         temporada_id: temporadaId,
         rodada: form.rodada,
         data_jogo: form.data_jogo,
@@ -58,19 +59,30 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
         time_fora_id: Number(form.time_fora_id),
         gols_casa: form.gols_casa,
         gols_fora: form.gols_fora,
-        // gols_total, escanteios_total e flags (o5/o6/o7/o8/o9_cantos, u35/u25_gols, u7_cartoes)
-        // são colunas GERADAS no banco — não enviar
+        // gols_total, escanteios_total e flags são GENERATED — não enviar
         resultado: resultado as 'casa' | 'fora' | 'empate',
         escanteios_casa: form.escanteios_casa,
         escanteios_fora: form.escanteios_fora,
         cartoes_total: form.cartoes_total,
+      });
+      const casa = times.find(t => t.id === Number(form.time_casa_id))?.nome ?? '?';
+      const fora = times.find(t => t.id === Number(form.time_fora_id))?.nome ?? '?';
+      logAudit({
+        action: 'criar_jogo',
+        user: user?.email ?? 'desconhecido',
+        target: `#${created?.id ?? 'novo'} ${casa} vs ${fora}`,
       });
       toast.success('Jogo adicionado com sucesso');
       onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao adicionar jogo');
+      const msg = err instanceof Error ? err.message : 'Erro ao adicionar jogo';
+      if (/RLS|row-level|0 rows|bloqueada/i.test(msg)) {
+        setRlsError(msg);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setSaving(false);
     }
