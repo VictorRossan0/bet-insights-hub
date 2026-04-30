@@ -110,7 +110,7 @@ export default function Jogos() {
           </button>
           {isAdmin && (
             <>
-              <button onClick={() => setShowForm(true)} className={btnCls}>
+              <button onClick={() => setShowForm(true)} className={btnCls} data-testid="btn-novo-jogo">
                 <Plus className="w-3.5 h-3.5" /> Novo Jogo
               </button>
               <button onClick={() => handleImportFile('.json')} className={btnCls}>
