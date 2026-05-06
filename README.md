@@ -1,6 +1,6 @@
 # ⚽ BetAnalytics Pro
 
-> Plataforma de análise estatística de apostas para o **Brasileirão Série A**, cobrindo a temporada 2026 e histórico de 2020 a 2025.
+> Plataforma de análise de dados do Brasileirão Série A com automação, processamento estatístico e geração de insights para apostas esportivas.
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
@@ -102,7 +102,7 @@ O **BetAnalytics Pro** é uma aplicação web que centraliza dados estatísticos
 | **Gráficos**  | Recharts                                                       |
 | **Animações** | Framer Motion                                                  |
 | **Roteamento**| React Router DOM v6                                            |
-| **Backend**   | Lovable Cloud (Supabase)                                       |
+| **Backend**   | Supabase                                                       |
 | **Testes**    | Vitest + Playwright                                            |
 
 ---
