@@ -9,9 +9,16 @@
 
 ---
 
+## 🔗 Preview
+
+**Aplicação online:** https://analyticsbrasileirao.lovable.app/
+
+---
+
 ## 📋 Índice
 
 - [Visão Geral](#-visão-geral)
+- [Objetivos Técnicos](#-objetivos-técnicos)
 - [Funcionalidades](#-funcionalidades)
 - [Tech Stack](#-tech-stack)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
@@ -24,6 +31,16 @@
 ## 🎯 Visão Geral
 
 O **BetAnalytics Pro** é uma aplicação web que centraliza dados estatísticos do Brasileirão Série A para apoiar decisões em apostas esportivas. A plataforma oferece dashboards interativos, filtros por temporada, análise de confrontos diretos (H2H), estatísticas por mando de campo e sugestões automatizadas de apostas.
+
+---
+
+## 🎯 Objetivos Técnicos
+
+- Centralizar dados estatísticos do Brasileirão Série A em uma aplicação web organizada
+- Estruturar consultas, views e funções RPC para análise de desempenho, mercados e confrontos
+- Aplicar boas práticas de frontend com React, TypeScript e componentização
+- Utilizar Supabase/PostgreSQL como base de dados para processamento e consulta das informações
+- Criar uma arquitetura modular preparada para evolução contínua, novas métricas e futuras automações
 
 ---
 
@@ -93,17 +110,17 @@ O **BetAnalytics Pro** é uma aplicação web que centraliza dados estatísticos
 
 ## 🛠️ Tech Stack
 
-| Camada        | Tecnologia                                                     |
-| ------------- | -------------------------------------------------------------- |
-| **Framework** | React 18 + TypeScript 5                                        |
-| **Build**     | Vite 5                                                         |
-| **Estilo**    | Tailwind CSS 3 + shadcn/ui (Radix UI)                          |
-| **Estado**    | TanStack React Query v5                                        |
-| **Gráficos**  | Recharts                                                       |
-| **Animações** | Framer Motion                                                  |
-| **Roteamento**| React Router DOM v6                                            |
-| **Backend**   | Supabase                                                       |
-| **Testes**    | Vitest + Playwright                                            |
+| Camada              | Tecnologia                                                     |
+| ------------------- | -------------------------------------------------------------- |
+| **Framework**       | React 18 + TypeScript 5                                        |
+| **Build**           | Vite 5                                                         |
+| **Estilo**          | Tailwind CSS 3 + shadcn/ui (Radix UI)                          |
+| **Estado**          | TanStack React Query v5                                        |
+| **Gráficos**        | Recharts                                                       |
+| **Animações**       | Framer Motion                                                  |
+| **Roteamento**      | React Router DOM v6                                            |
+| **Backend / Banco** | Supabase / PostgreSQL                                          |
+| **Testes**          | Vitest + Playwright                                            |
 
 ---
 
