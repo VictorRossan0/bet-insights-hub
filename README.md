@@ -215,6 +215,32 @@ A aplicação estará disponível em `http://localhost:5173`.
 
 ---
 
+## ⚙️ Configuração local (`.env.local`)
+
+Para rodar fora do ambiente Lovable, é necessário criar um `.env.local` com as
+credenciais do Supabase. O arquivo está no `.gitignore` e **nunca** deve ser versionado.
+
+```bash
+# Geração interativa (recomendado): pede os valores no terminal
+npm run setup:env
+
+# Depois:
+npm install
+npm run dev
+```
+
+Variáveis obrigatórias:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PROJECT_ID`
+
+Se alguma estiver faltando, a aplicação exibe um overlay de erro no boot listando o que falta.
+
+📖 Passo a passo completo, alternativas manuais e onde encontrar cada valor: **[SETUP_LOCAL.md](./SETUP_LOCAL.md)**.
+
+---
+
 ## 💡 Uso
 
 | Rota           | Descrição                              |
