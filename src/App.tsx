@@ -12,6 +12,7 @@ import Confronto from "@/pages/Confronto";
 import TimePerfil from "@/pages/TimePerfil";
 import Auth from "@/pages/Auth";
 import Admin from "@/pages/Admin";
+import Health from "@/pages/Health";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient({
@@ -32,6 +33,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/health" element={<Health />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/jogos" element={<Jogos />} />
