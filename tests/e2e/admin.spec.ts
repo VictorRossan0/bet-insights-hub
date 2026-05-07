@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '../playwright-fixture';
+import { test, expect, type Page } from '../../playwright-fixture';
 
 /**
  * Suíte E2E — Perfil Admin
