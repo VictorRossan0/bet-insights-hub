@@ -14,6 +14,8 @@
  */
 import type { JogoComTimesRaw } from '@/services/api/games.api';
 
+export type TiebreakerKind = 'none' | 'h2h' | 'criteria' | 'unresolved';
+
 export type StandingRow = {
   team_nome: string;
   team_sigla: string;
@@ -28,6 +30,12 @@ export type StandingRow = {
   aproveitamento: number;
   media_escanteios: number;
   forma_5jogos: string;
+  /** Critério de desempate aplicado para resolver a posição deste time. */
+  tiebreaker: TiebreakerKind;
+  /** Siglas dos times empatados nos 4 critérios principais (incluindo este). */
+  tiedWith: string[];
+  /** Texto pronto para tooltip/legenda. */
+  tiebreakerLabel: string;
 };
 
 type Acc = {
