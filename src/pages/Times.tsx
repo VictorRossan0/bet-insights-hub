@@ -223,10 +223,32 @@ export default function Times() {
 
                     const teamIdByName = new Map((times ?? []).map((t: StatsPorTime) => [t.nome, t.time_id]));
 
-                    return sorted.map((t, i) => (
+                    return sorted.map((t, i) => {
+                      const tbColor =
+                        t.tiebreaker === 'h2h' ? 'bg-bet-green/15 text-bet-green border-bet-green/30' :
+                        t.tiebreaker === 'criteria' ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30' :
+                        t.tiebreaker === 'unresolved' ? 'bg-destructive/15 text-destructive border-destructive/30' :
+                        '';
+                      const tbShort =
+                        t.tiebreaker === 'h2h' ? 'H2H' :
+                        t.tiebreaker === 'criteria' ? 'Critérios' :
+                        t.tiebreaker === 'unresolved' ? '=' : '';
+                      return (
                       <tr key={t.team_sigla} className={getZoneStyle(i + 1)}>
                         <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
-                        <td className="font-medium text-sm">{t.team_nome}</td>
+                        <td className="font-medium text-sm">
+                          <div className="flex items-center gap-1.5">
+                            <span>{t.team_nome}</span>
+                            {tbShort && (
+                              <span
+                                title={t.tiebreakerLabel}
+                                className={`inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded border ${tbColor}`}
+                              >
+                                {tbShort}
+                              </span>
+                            )}
+                          </div>
+                        </td>
                         <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
                         <td className="text-center font-mono text-sm">{t.jogos}</td>
                         <td className="text-center font-mono text-sm text-bet-green">{t.vitorias}</td>
