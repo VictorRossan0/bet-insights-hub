@@ -141,6 +141,9 @@ export function getBrasileiraoStandings(jogos: JogoComTimesRaw[], untilRodada?: 
       aproveitamento: maxPts > 0 ? Math.round((pontos / maxPts) * 100) : 0,
       media_escanteios: a.jogos > 0 ? a.esc / a.jogos : 0,
       forma_5jogos: last5.padEnd(5, '-'),
+      tiebreaker: 'none' as TiebreakerKind,
+      tiedWith: [] as string[],
+      tiebreakerLabel: 'Sem empate',
     };
   });
 
@@ -169,18 +172,39 @@ export function getBrasileiraoStandings(jogos: JogoComTimesRaw[], untilRodada?: 
       const A = rows[i];
       const B = rows[i + 1];
       const h = h2hPoints(filtered, A.team_nome, B.team_nome);
-      // Ordena pelo H2H: pontos, depois SG, depois GP no confronto direto.
-      // Se o B vence o critério, troca posições.
-      const bWins =
-        (h.b - h.a) > 0 ||
-        ((h.b === h.a) && (h.sgB - h.sgA) > 0) ||
-        ((h.b === h.a) && (h.sgB === h.sgA) && (h.gpB - h.gpA) > 0);
-      if (bWins) {
+      const diff =
+        (h.b - h.a) ||
+        (h.sgB - h.sgA) ||
+        (h.gpB - h.gpA);
+      if (diff > 0) {
         rows[i] = B;
         rows[i + 1] = A;
       }
+      const tied = [rows[i].team_sigla, rows[i + 1].team_sigla];
+      if (diff !== 0) {
+        const label = `Confronto direto aplicado vs ${tied.filter(s => s !== rows[i].team_sigla || s !== rows[i + 1].team_sigla).join(', ') || tied.join(' x ')}`;
+        rows[i].tiebreaker = 'h2h';
+        rows[i + 1].tiebreaker = 'h2h';
+        rows[i].tiedWith = tied;
+        rows[i + 1].tiedWith = tied;
+        rows[i].tiebreakerLabel = `Confronto direto aplicado (${tied.join(' x ')})`;
+        rows[i + 1].tiebreakerLabel = `Confronto direto aplicado (${tied.join(' x ')})`;
+      } else {
+        rows[i].tiebreaker = 'unresolved';
+        rows[i + 1].tiebreaker = 'unresolved';
+        rows[i].tiedWith = tied;
+        rows[i + 1].tiedWith = tied;
+        rows[i].tiebreakerLabel = `Empate persistente no confronto direto (${tied.join(' x ')})`;
+        rows[i + 1].tiebreakerLabel = `Empate persistente no confronto direto (${tied.join(' x ')})`;
+      }
+    } else if (groupSize >= 3) {
+      const tied = rows.slice(i, j).map(r => r.team_sigla);
+      for (let k = i; k < j; k++) {
+        rows[k].tiebreaker = 'criteria';
+        rows[k].tiedWith = tied;
+        rows[k].tiebreakerLabel = `Sem confronto direto — empate de ${groupSize} clubes (${tied.join(', ')})`;
+      }
     }
-    // Para grupos de 3+ empatados, mantém ordem dos critérios anteriores (sem H2H).
     i = j;
   }
 
