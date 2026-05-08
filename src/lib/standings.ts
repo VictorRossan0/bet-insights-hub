@@ -1,6 +1,16 @@
 /**
  * Calcula a tabela de classificação a partir de jogos brutos,
  * filtrando até uma rodada máxima.
+ *
+ * Critérios oficiais (simplificados) do Brasileirão:
+ *   1) Pontos          DESC
+ *   2) Vitórias        DESC
+ *   3) Saldo de gols   DESC
+ *   4) Gols pró        DESC
+ *   5) Confronto direto — APENAS quando exatamente 2 clubes seguem empatados
+ *      em todos os critérios acima. Empates de 3+ clubes não usam H2H.
+ *
+ * Cartões NÃO entram na ordenação (dado atual é total do jogo, não por time).
  */
 import type { JogoComTimesRaw } from '@/services/api/games.api';
 
@@ -33,7 +43,38 @@ type Acc = {
   results: { rodada: number; r: 'W' | 'D' | 'L' }[];
 };
 
-export function buildStandings(jogos: JogoComTimesRaw[], untilRodada?: number): StandingRow[] {
+/**
+ * Pontos no confronto direto entre dois times (apenas jogos entre eles).
+ */
+function h2hPoints(jogos: JogoComTimesRaw[], teamA: string, teamB: string): { a: number; b: number; sgA: number; sgB: number; gpA: number; gpB: number } {
+  let a = 0, b = 0, sgA = 0, sgB = 0, gpA = 0, gpB = 0;
+  for (const j of jogos) {
+    if (j.gols_casa == null || j.gols_fora == null) continue;
+    if (!j.time_casa || !j.time_fora) continue;
+    const casa = j.time_casa.nome;
+    const fora = j.time_fora.nome;
+    const isAvsB = (casa === teamA && fora === teamB) || (casa === teamB && fora === teamA);
+    if (!isAvsB) continue;
+
+    const aIsCasa = casa === teamA;
+    const golsA = aIsCasa ? j.gols_casa : j.gols_fora;
+    const golsB = aIsCasa ? j.gols_fora : j.gols_casa;
+
+    gpA += golsA; gpB += golsB;
+    sgA += golsA - golsB;
+    sgB += golsB - golsA;
+
+    if (golsA > golsB) a += 3;
+    else if (golsA < golsB) b += 3;
+    else { a += 1; b += 1; }
+  }
+  return { a, b, sgA, sgB, gpA, gpB };
+}
+
+/**
+ * Função única e oficial de classificação. Use em todas as telas.
+ */
+export function getBrasileiraoStandings(jogos: JogoComTimesRaw[], untilRodada?: number): StandingRow[] {
   const map = new Map<string, Acc>();
 
   const filtered = untilRodada != null
@@ -51,7 +92,6 @@ export function buildStandings(jogos: JogoComTimesRaw[], untilRodada?: number): 
 
   for (const j of filtered) {
     if (!j.time_casa || !j.time_fora) continue;
-    // só considera jogos com placar definido
     if (j.gols_casa == null || j.gols_fora == null) continue;
     const casa = ensure(j.time_casa.nome, j.time_casa.sigla);
     const fora = ensure(j.time_fora.nome, j.time_fora.sigla);
@@ -96,20 +136,54 @@ export function buildStandings(jogos: JogoComTimesRaw[], untilRodada?: number): 
     };
   });
 
-  // Ordenação padrão: pontos > SG > vitórias > GP
+  // 1) Ordenação base oficial: pontos > vitórias > SG > GP
   rows.sort((a, b) =>
     (b.pontos_total - a.pontos_total) ||
-    (b.saldo_gols - a.saldo_gols) ||
     (b.vitorias - a.vitorias) ||
+    (b.saldo_gols - a.saldo_gols) ||
     (b.gp - a.gp)
   );
+
+  // 2) Confronto direto: apenas para grupos com EXATAMENTE 2 times empatados
+  //    em todos os 4 critérios acima.
+  const sameKey = (x: StandingRow, y: StandingRow) =>
+    x.pontos_total === y.pontos_total &&
+    x.vitorias === y.vitorias &&
+    x.saldo_gols === y.saldo_gols &&
+    x.gp === y.gp;
+
+  let i = 0;
+  while (i < rows.length) {
+    let j = i + 1;
+    while (j < rows.length && sameKey(rows[i], rows[j])) j++;
+    const groupSize = j - i;
+    if (groupSize === 2) {
+      const A = rows[i];
+      const B = rows[i + 1];
+      const h = h2hPoints(filtered, A.team_nome, B.team_nome);
+      // Ordena pelo H2H: pontos, depois SG, depois GP no confronto direto.
+      // Se o B vence o critério, troca posições.
+      const bWins =
+        (h.b - h.a) > 0 ||
+        ((h.b === h.a) && (h.sgB - h.sgA) > 0) ||
+        ((h.b === h.a) && (h.sgB === h.sgA) && (h.gpB - h.gpA) > 0);
+      if (bWins) {
+        rows[i] = B;
+        rows[i + 1] = A;
+      }
+    }
+    // Para grupos de 3+ empatados, mantém ordem dos critérios anteriores (sem H2H).
+    i = j;
+  }
 
   return rows;
 }
 
+/** Backward-compatible alias. */
+export const buildStandings = getBrasileiraoStandings;
+
 /**
  * Retorna posição de cada time em cada rodada (para gráfico de evolução).
- * { [team_nome]: [{ rodada, posicao }] }
  */
 export function buildPositionEvolution(jogos: JogoComTimesRaw[]): {
   rounds: number[];
@@ -119,7 +193,7 @@ export function buildPositionEvolution(jogos: JogoComTimesRaw[]): {
   const series: Record<string, Array<{ rodada: number; posicao: number; pontos: number }>> = {};
 
   for (const r of allRounds) {
-    const standings = buildStandings(jogos, r);
+    const standings = getBrasileiraoStandings(jogos, r);
     standings.forEach((s, idx) => {
       if (!series[s.team_nome]) series[s.team_nome] = [];
       series[s.team_nome].push({ rodada: r, posicao: idx + 1, pontos: s.pontos_total });

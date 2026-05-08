@@ -210,7 +210,7 @@ export default function Times() {
                       const dir = classSortAsc ? 1 : -1;
                       const diff = (a[classSortBy] as number) - (b[classSortBy] as number);
                       if (diff !== 0) return diff * dir;
-                      return (b.pontos_total - a.pontos_total) || (b.saldo_gols - a.saldo_gols) || (b.vitorias - a.vitorias);
+                      return (b.pontos_total - a.pontos_total) || (b.vitorias - a.vitorias) || (b.saldo_gols - a.saldo_gols) || (b.gp - a.gp);
                     });
 
                     const getZoneStyle = (pos: number) => {
