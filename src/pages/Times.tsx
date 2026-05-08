@@ -274,7 +274,8 @@ export default function Times() {
                           )}
                         </td>
                       </tr>
-                    ));
+                      );
+                    });
                   })()}
                 </tbody>
               </table>
@@ -283,6 +284,9 @@ export default function Times() {
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400/60" /> Pré-Libertadores</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-orange-400/60" /> Sul-Americana</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Rebaixamento</span>
+                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-bet-green/15 text-bet-green border-bet-green/30 text-[9px] font-bold">H2H</span> Confronto direto aplicado</span>
+                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-yellow-500/15 text-yellow-400 border-yellow-500/30 text-[9px] font-bold">Critérios</span> Sem confronto direto (3+ empatados)</span>
+                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-destructive/15 text-destructive border-destructive/30 text-[9px] font-bold">=</span> Empate persistente após H2H</span>
               </div>
             </div>
           </motion.div>
