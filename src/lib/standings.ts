@@ -32,10 +32,12 @@ export type StandingRow = {
   forma_5jogos: string;
   /** Critério de desempate aplicado para resolver a posição deste time. */
   tiebreaker: TiebreakerKind;
-  /** Siglas dos times empatados nos 4 critérios principais (incluindo este). */
+  /** Siglas únicas dos times empatados nos 4 critérios principais (incluindo este). */
   tiedWith: string[];
-  /** Texto pronto para tooltip/legenda. */
+  /** Texto curto para legenda. */
   tiebreakerLabel: string;
+  /** Passos detalhados do desempate aplicado, em ordem. */
+  tiebreakerSteps: string[];
 };
 
 type Acc = {
@@ -54,8 +56,10 @@ type Acc = {
 /**
  * Pontos no confronto direto entre dois times (apenas jogos entre eles).
  */
-function h2hPoints(jogos: JogoComTimesRaw[], teamA: string, teamB: string): { a: number; b: number; sgA: number; sgB: number; gpA: number; gpB: number } {
-  let a = 0, b = 0, sgA = 0, sgB = 0, gpA = 0, gpB = 0;
+function h2hPoints(jogos: JogoComTimesRaw[], teamA: string, teamB: string): {
+  a: number; b: number; sgA: number; sgB: number; gpA: number; gpB: number; jogos: number;
+} {
+  let a = 0, b = 0, sgA = 0, sgB = 0, gpA = 0, gpB = 0, n = 0;
   for (const j of jogos) {
     if (j.gols_casa == null || j.gols_fora == null) continue;
     if (!j.time_casa || !j.time_fora) continue;
@@ -68,6 +72,7 @@ function h2hPoints(jogos: JogoComTimesRaw[], teamA: string, teamB: string): { a:
     const golsA = aIsCasa ? j.gols_casa : j.gols_fora;
     const golsB = aIsCasa ? j.gols_fora : j.gols_casa;
 
+    n++;
     gpA += golsA; gpB += golsB;
     sgA += golsA - golsB;
     sgB += golsB - golsA;
@@ -76,7 +81,12 @@ function h2hPoints(jogos: JogoComTimesRaw[], teamA: string, teamB: string): { a:
     else if (golsA < golsB) b += 3;
     else { a += 1; b += 1; }
   }
-  return { a, b, sgA, sgB, gpA, gpB };
+  return { a, b, sgA, sgB, gpA, gpB, jogos: n };
+}
+
+/** Dedup mantendo a primeira ocorrência. */
+function uniq<T>(arr: T[]): T[] {
+  return Array.from(new Set(arr));
 }
 
 /**
@@ -144,6 +154,7 @@ export function getBrasileiraoStandings(jogos: JogoComTimesRaw[], untilRodada?: 
       tiebreaker: 'none' as TiebreakerKind,
       tiedWith: [] as string[],
       tiebreakerLabel: 'Sem empate',
+      tiebreakerSteps: [] as string[],
     };
   });
 
@@ -168,41 +179,94 @@ export function getBrasileiraoStandings(jogos: JogoComTimesRaw[], untilRodada?: 
     let j = i + 1;
     while (j < rows.length && sameKey(rows[i], rows[j])) j++;
     const groupSize = j - i;
+
     if (groupSize === 2) {
       const A = rows[i];
       const B = rows[i + 1];
       const h = h2hPoints(filtered, A.team_nome, B.team_nome);
-      const diff =
-        (h.b - h.a) ||
-        (h.sgB - h.sgA) ||
-        (h.gpB - h.gpA);
+
+      const ptsDiff = h.b - h.a;
+      const sgDiff = h.sgB - h.sgA;
+      const gpDiff = h.gpB - h.gpA;
+      const diff = ptsDiff || sgDiff || gpDiff;
+
       if (diff > 0) {
         rows[i] = B;
         rows[i + 1] = A;
       }
-      const tied = [rows[i].team_sigla, rows[i + 1].team_sigla];
-      if (diff !== 0) {
-        const label = `Confronto direto aplicado vs ${tied.filter(s => s !== rows[i].team_sigla || s !== rows[i + 1].team_sigla).join(', ') || tied.join(' x ')}`;
+
+      const top = rows[i];
+      const bot = rows[i + 1];
+      const tied = uniq([top.team_sigla, bot.team_sigla]);
+      const pair = `${top.team_sigla} x ${bot.team_sigla}`;
+
+      const steps: string[] = [
+        `Empate em pontos (${top.pontos_total}), vitórias (${top.vitorias}), SG (${top.saldo_gols}) e GP (${top.gp}).`,
+        h.jogos === 0
+          ? 'Confronto direto: nenhum jogo registrado entre as equipes.'
+          : `Confronto direto (${h.jogos} jogo${h.jogos > 1 ? 's' : ''}): pontos ${top === A ? h.a : h.b} x ${top === A ? h.b : h.a}.`,
+      ];
+
+      if (ptsDiff !== 0) {
         rows[i].tiebreaker = 'h2h';
         rows[i + 1].tiebreaker = 'h2h';
+        const label = `Confronto direto aplicado (${pair})`;
+        rows[i].tiebreakerLabel = label;
+        rows[i + 1].tiebreakerLabel = label;
         rows[i].tiedWith = tied;
         rows[i + 1].tiedWith = tied;
-        rows[i].tiebreakerLabel = `Confronto direto aplicado (${tied.join(' x ')})`;
-        rows[i + 1].tiebreakerLabel = `Confronto direto aplicado (${tied.join(' x ')})`;
+        rows[i].tiebreakerSteps = steps;
+        rows[i + 1].tiebreakerSteps = steps;
+      } else if (sgDiff !== 0) {
+        steps.push(`SG no confronto direto: ${top === A ? h.sgA : h.sgB} x ${top === A ? h.sgB : h.sgA}.`);
+        const label = `Confronto direto (SG) aplicado (${pair})`;
+        rows[i].tiebreaker = 'h2h';
+        rows[i + 1].tiebreaker = 'h2h';
+        rows[i].tiebreakerLabel = label;
+        rows[i + 1].tiebreakerLabel = label;
+        rows[i].tiedWith = tied;
+        rows[i + 1].tiedWith = tied;
+        rows[i].tiebreakerSteps = steps;
+        rows[i + 1].tiebreakerSteps = steps;
+      } else if (gpDiff !== 0) {
+        steps.push(
+          `SG no confronto direto igual (${h.sgA}).`,
+          `GP no confronto direto: ${top === A ? h.gpA : h.gpB} x ${top === A ? h.gpB : h.gpA}.`,
+        );
+        const label = `Confronto direto (GP) aplicado (${pair})`;
+        rows[i].tiebreaker = 'h2h';
+        rows[i + 1].tiebreaker = 'h2h';
+        rows[i].tiebreakerLabel = label;
+        rows[i + 1].tiebreakerLabel = label;
+        rows[i].tiedWith = tied;
+        rows[i + 1].tiedWith = tied;
+        rows[i].tiebreakerSteps = steps;
+        rows[i + 1].tiebreakerSteps = steps;
       } else {
+        steps.push('Pontos, SG e GP no confronto direto também empatados — desempate persistente.');
+        const label = `Empate persistente após confronto direto (${pair})`;
         rows[i].tiebreaker = 'unresolved';
         rows[i + 1].tiebreaker = 'unresolved';
+        rows[i].tiebreakerLabel = label;
+        rows[i + 1].tiebreakerLabel = label;
         rows[i].tiedWith = tied;
         rows[i + 1].tiedWith = tied;
-        rows[i].tiebreakerLabel = `Empate persistente no confronto direto (${tied.join(' x ')})`;
-        rows[i + 1].tiebreakerLabel = `Empate persistente no confronto direto (${tied.join(' x ')})`;
+        rows[i].tiebreakerSteps = steps;
+        rows[i + 1].tiebreakerSteps = steps;
       }
     } else if (groupSize >= 3) {
-      const tied = rows.slice(i, j).map(r => r.team_sigla);
+      const tied = uniq(rows.slice(i, j).map(r => r.team_sigla));
+      const label = `Sem confronto direto — empate de ${groupSize} clubes (${tied.join(', ')})`;
+      const steps = [
+        `Empate de ${groupSize} clubes em pontos, vitórias, SG e GP.`,
+        'Confronto direto não se aplica (apenas para grupos de exatamente 2 times).',
+        'Ordem mantida pelos critérios principais; desempate adicional fora do escopo automático.',
+      ];
       for (let k = i; k < j; k++) {
         rows[k].tiebreaker = 'criteria';
         rows[k].tiedWith = tied;
-        rows[k].tiebreakerLabel = `Sem confronto direto — empate de ${groupSize} clubes (${tied.join(', ')})`;
+        rows[k].tiebreakerLabel = label;
+        rows[k].tiebreakerSteps = steps;
       }
     }
     i = j;

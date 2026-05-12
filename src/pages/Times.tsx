@@ -9,6 +9,7 @@ import { fetchAllJogos } from '@/services/api/games.api';
 import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
 import { buildStandings, buildPositionEvolution } from '@/lib/standings';
+import { TiebreakerBadge, TiebreakerLegend } from '@/components/standings/TiebreakerBadge';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
@@ -224,29 +225,18 @@ export default function Times() {
                     const teamIdByName = new Map((times ?? []).map((t: StatsPorTime) => [t.nome, t.time_id]));
 
                     return sorted.map((t, i) => {
-                      const tbColor =
-                        t.tiebreaker === 'h2h' ? 'bg-bet-green/15 text-bet-green border-bet-green/30' :
-                        t.tiebreaker === 'criteria' ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30' :
-                        t.tiebreaker === 'unresolved' ? 'bg-destructive/15 text-destructive border-destructive/30' :
-                        '';
-                      const tbShort =
-                        t.tiebreaker === 'h2h' ? 'H2H' :
-                        t.tiebreaker === 'criteria' ? 'Critérios' :
-                        t.tiebreaker === 'unresolved' ? '=' : '';
                       return (
                       <tr key={t.team_sigla} className={getZoneStyle(i + 1)}>
                         <td className="font-mono text-xs text-muted-foreground text-center">{i + 1}</td>
                         <td className="font-medium text-sm">
                           <div className="flex items-center gap-1.5">
                             <span>{t.team_nome}</span>
-                            {tbShort && (
-                              <span
-                                title={t.tiebreakerLabel}
-                                className={`inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded border ${tbColor}`}
-                              >
-                                {tbShort}
-                              </span>
-                            )}
+                            <TiebreakerBadge
+                              kind={t.tiebreaker}
+                              label={t.tiebreakerLabel}
+                              steps={t.tiebreakerSteps}
+                              tiedWith={t.tiedWith}
+                            />
                           </div>
                         </td>
                         <td className="text-center font-mono text-sm font-bold">{t.pontos_total}</td>
@@ -284,9 +274,7 @@ export default function Times() {
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-400/60" /> Pré-Libertadores</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-orange-400/60" /> Sul-Americana</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> Rebaixamento</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-bet-green/15 text-bet-green border-bet-green/30 text-[9px] font-bold">H2H</span> Confronto direto aplicado</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-yellow-500/15 text-yellow-400 border-yellow-500/30 text-[9px] font-bold">Critérios</span> Sem confronto direto (3+ empatados)</span>
-                <span className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 rounded border bg-destructive/15 text-destructive border-destructive/30 text-[9px] font-bold">=</span> Empate persistente após H2H</span>
+                <TiebreakerLegend />
               </div>
             </div>
           </motion.div>
