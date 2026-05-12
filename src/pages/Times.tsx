@@ -9,6 +9,7 @@ import { fetchAllJogos } from '@/services/api/games.api';
 import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/CasaForaStats';
 import { buildStandings, buildPositionEvolution } from '@/lib/standings';
+import { TiebreakerBadge, TiebreakerLegend } from '@/components/standings/TiebreakerBadge';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
