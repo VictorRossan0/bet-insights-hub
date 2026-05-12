@@ -34,12 +34,13 @@ function game(
 
 describe('getBrasileiraoStandings', () => {
   it('aplica confronto direto quando exatamente 2 clubes ficam empatados', () => {
-    // A e B ficam ambos com 3pts (1V 1D), GP1, SG0. C fica com 6pts (2V).
-    // Só A e B empatam em todos os 4 critérios → H2H decide.
+    // Cenário: A e B ficam empatados em 3pts, 1V, SG0, GP1. C tem 6pts; D tem 0pts.
+    // Apenas A e B empatam em todos os 4 critérios → H2H decide (A venceu B).
     const jogos = [
-      game(1, 'A', 'B', 1, 0), // A vence H2H
-      game(2, 'A', 'C', 0, 1),
-      game(3, 'B', 'C', 0, 1),
+      game(1, 'A', 'B', 1, 0), // A vence o confronto direto
+      game(2, 'C', 'A', 1, 0), // A perde para C
+      game(3, 'B', 'D', 1, 0), // B vence D
+      game(4, 'C', 'D', 1, 0), // C vence D (eleva C para 6pts; D fica com 0pts)
     ];
     const s = getBrasileiraoStandings(jogos);
     const a = s.find(r => r.team_nome === 'A')!;
