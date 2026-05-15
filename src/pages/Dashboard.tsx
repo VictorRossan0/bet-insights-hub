@@ -42,6 +42,11 @@ export default function Dashboard() {
 
   return (
     <div className="page-container space-y-5 sm:space-y-8">
+      <SEO
+        title={`Dashboard Brasileirão ${ano}`}
+        description={`Visão geral, KPIs e tendências do Brasileirão Série A ${ano}: gols, escanteios, cartões e mercados.`}
+        path="/"
+      />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
