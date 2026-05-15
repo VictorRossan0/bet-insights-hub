@@ -45,6 +45,7 @@ export default function Historico() {
 
   return (
     <div className="page-container space-y-8">
+      <SEO title="Histórico do Brasileirão" description="Tendências e variações ano a ano dos mercados do Brasileirão Série A entre 2016 e 2026." path="/historico" />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

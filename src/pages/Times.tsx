@@ -114,6 +114,7 @@ export default function Times() {
 
   return (
     <div className="page-container space-y-8">
+      <SEO title="Times do Brasileirão" description="Classificação, forma recente, comparação H2H e estatísticas casa/fora dos clubes do Brasileirão Série A." path="/times" />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}

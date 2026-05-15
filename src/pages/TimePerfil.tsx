@@ -57,6 +57,7 @@ export default function TimePerfil() {
 
   return (
     <div className="page-container space-y-6">
+      <SEO title={team?.team_nome ?? `Time #${teamId}`} description={`Perfil estatístico de ${team?.team_nome ?? "time"} no Brasileirão Série A: forma, mercados e últimos jogos.`} path={`/times/${teamId}`} />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
