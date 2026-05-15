@@ -22,7 +22,7 @@ export default function Layout() {
       </aside>
 
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar border-b border-border flex items-center px-4">
-        <button onClick={() => setMobileOpen(true)} className="text-foreground">
+        <button onClick={() => setMobileOpen(true)} className="text-foreground" aria-label="Abrir menu de navegação">
           <Menu className="w-5 h-5" />
         </button>
         <div className="ml-3 flex items-center gap-2">
