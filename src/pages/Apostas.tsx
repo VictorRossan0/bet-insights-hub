@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';

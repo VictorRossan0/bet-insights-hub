@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
