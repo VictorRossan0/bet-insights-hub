@@ -49,7 +49,7 @@ export default function Layout() {
               className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-border p-4 z-50 lg:hidden"
             >
               <div className="flex justify-end mb-2">
-                <button onClick={() => setMobileOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => setMobileOpen(false)} className="text-muted-foreground hover:text-foreground" aria-label="Fechar menu de navegação">
                   <X className="w-5 h-5" />
                 </button>
               </div>
