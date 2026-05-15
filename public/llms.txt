@@ -1,0 +1,11 @@
+# BetAnalytics
+
+> Análise estatística avançada de apostas esportivas do Brasileirão Série A 2026: estatísticas de jogos, times, confrontos diretos e mercados.
+
+## Pages
+
+- [Dashboard](/): Visão geral da temporada, KPIs e tendências.
+- [Jogos](/jogos): Lista de partidas com filtros por rodada e mercados (gols, escanteios, cartões).
+- [Times](/times): Classificação, forma recente e estatísticas casa/fora.
+- [Confronto H2H](/confronto): Comparação histórica entre dois clubes.
+- [Histórico](/historico): Tendências e variações ano a ano (2016–2026).
