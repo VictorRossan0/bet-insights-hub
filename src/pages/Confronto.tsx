@@ -194,7 +194,7 @@ export default function Confronto() {
           >
             <h2 className="text-sm font-semibold mb-4">
               📊 Perfil do Confronto
-            </h3>
+            </h2>
             <div className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
@@ -217,7 +217,7 @@ export default function Confronto() {
             <motion.div {...anim} transition={{ ...anim.transition, delay: 0.35 }}
               className="card-bet p-5"
             >
-              <h2 className="text-sm font-semibold mb-4">🏠 Mando de Campo</h3>
+              <h2 className="text-sm font-semibold mb-4">🏠 Mando de Campo</h2>
               <div className="overflow-x-auto">
                 <table className="table-bet text-sm">
                   <thead>
@@ -253,7 +253,7 @@ export default function Confronto() {
                 <TrendingUp className={`w-5 h-5 ${
                   recommendation.verdict === 'APOSTAR' ? 'text-green-500' : recommendation.verdict === 'CAUTELOSO' ? 'text-yellow-500' : 'text-red-500'
                 }`} />
-                <h2 className="text-sm font-semibold">Recomendação Automática</h3>
+                <h2 className="text-sm font-semibold">Recomendação Automática</h2>
                 <span className="ml-auto">
                   <VerdictBadge verdict={recommendation.verdict} />
                 </span>
@@ -279,7 +279,7 @@ export default function Confronto() {
             <motion.div {...anim} transition={{ ...anim.transition, delay: 0.45 }}
               className="card-bet p-5"
             >
-              <h2 className="text-sm font-semibold mb-4">📈 Análise Avançada (SQL)</h3>
+              <h2 className="text-sm font-semibold mb-4">📈 Análise Avançada (SQL)</h2>
               {h2hEnhanced.map((row, idx) => (
                 <div key={idx} className="space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">

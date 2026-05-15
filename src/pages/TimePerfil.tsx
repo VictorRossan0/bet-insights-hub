@@ -114,7 +114,7 @@ export default function TimePerfil() {
           className="card-bet p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold">🔥 Forma Recente (Últimos 5)</h3>
+            <h2 className="text-sm font-semibold">🔥 Forma Recente (Últimos 5)</h2>
             <span className="text-xs text-muted-foreground font-mono">{team.pontos_ultimos5} pts</span>
           </div>
           <FormaBadge forma={team.forma_5jogos} />
@@ -128,7 +128,7 @@ export default function TimePerfil() {
         transition={{ delay: 0.2, duration: 0.5, ease }}
         className="card-bet p-5"
       >
-        <h2 className="text-sm font-semibold mb-4">📊 Probabilidades por Mercado</h3>
+        <h2 className="text-sm font-semibold mb-4">📊 Probabilidades por Mercado</h2>
         {loadingMarket ? (
           <div className="space-y-3">
             {Array.from({ length: 7 }).map((_, i) => (
@@ -166,7 +166,7 @@ export default function TimePerfil() {
           className="card-bet overflow-hidden"
         >
           <div className="p-4 border-b border-border">
-            <h2 className="text-sm font-semibold">📋 Últimos Jogos</h3>
+            <h2 className="text-sm font-semibold">📋 Últimos Jogos</h2>
           </div>
           <div className="overflow-auto max-h-[400px]">
             <table className="table-bet text-sm">
