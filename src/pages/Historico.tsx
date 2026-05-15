@@ -152,7 +152,7 @@ export default function Historico() {
             transition={{ delay: 0.3, duration: 0.5, ease }}
             className="card-bet p-5"
           >
-            <h3 className="text-sm font-semibold mb-4">📉 Médias por Temporada</h2>
+            <h2 className="text-sm font-semibold mb-4">📉 Médias por Temporada</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
@@ -181,7 +181,7 @@ export default function Historico() {
             transition={{ delay: 0.4, duration: 0.5, ease }}
             className="card-bet p-5"
           >
-            <h3 className="text-sm font-semibold mb-4">📊 Mercados por Temporada</h2>
+            <h2 className="text-sm font-semibold mb-4">📊 Mercados por Temporada</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
@@ -212,7 +212,7 @@ export default function Historico() {
             className="card-bet overflow-hidden"
           >
             <div className="p-4 border-b border-border">
-              <h3 className="text-sm font-semibold">📋 Resumo por Temporada</h2>
+              <h2 className="text-sm font-semibold">📋 Resumo por Temporada</h2>
             </div>
             <div className="overflow-auto scrollbar-thin">
               <table className="table-bet">
