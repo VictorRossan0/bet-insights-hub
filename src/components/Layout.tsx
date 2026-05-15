@@ -74,7 +74,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="flex items-center gap-2.5 px-3 py-4 mb-4">
         <BarChart3 className="w-7 h-7 text-bet-green" />
         <div>
-          <h1 className="font-display text-xl tracking-wide leading-tight">BetAnalytics</h1>
+          <div className="font-display text-xl tracking-wide leading-tight">BetAnalytics</div>
           <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Brasileirão 2026</p>
         </div>
       </div>
