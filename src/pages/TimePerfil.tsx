@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -56,6 +57,7 @@ export default function TimePerfil() {
 
   return (
     <div className="page-container space-y-6">
+      <SEO title={team?.team_nome ?? `Time #${teamId}`} description={`Perfil estatístico de ${team?.team_nome ?? "time"} no Brasileirão Série A: forma, mercados e últimos jogos.`} path={`/times/${teamId}`} />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -114,7 +116,7 @@ export default function TimePerfil() {
           className="card-bet p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold">🔥 Forma Recente (Últimos 5)</h3>
+            <h2 className="text-sm font-semibold">🔥 Forma Recente (Últimos 5)</h2>
             <span className="text-xs text-muted-foreground font-mono">{team.pontos_ultimos5} pts</span>
           </div>
           <FormaBadge forma={team.forma_5jogos} />
@@ -128,7 +130,7 @@ export default function TimePerfil() {
         transition={{ delay: 0.2, duration: 0.5, ease }}
         className="card-bet p-5"
       >
-        <h3 className="text-sm font-semibold mb-4">📊 Probabilidades por Mercado</h3>
+        <h2 className="text-sm font-semibold mb-4">📊 Probabilidades por Mercado</h2>
         {loadingMarket ? (
           <div className="space-y-3">
             {Array.from({ length: 7 }).map((_, i) => (
@@ -166,7 +168,7 @@ export default function TimePerfil() {
           className="card-bet overflow-hidden"
         >
           <div className="p-4 border-b border-border">
-            <h3 className="text-sm font-semibold">📋 Últimos Jogos</h3>
+            <h2 className="text-sm font-semibold">📋 Últimos Jogos</h2>
           </div>
           <div className="overflow-auto max-h-[400px]">
             <table className="table-bet text-sm">

@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
@@ -44,6 +45,7 @@ export default function Historico() {
 
   return (
     <div className="page-container space-y-8">
+      <SEO title="Histórico do Brasileirão" description="Tendências e variações ano a ano dos mercados do Brasileirão Série A entre 2016 e 2026." path="/historico" />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -125,7 +127,7 @@ export default function Historico() {
             transition={{ delay: 0.2, duration: 0.5, ease }}
             className="card-bet p-5"
           >
-            <h3 className="text-sm font-semibold mb-4">📈 Evolução — {metricLabels[selectedMetric]}</h3>
+            <h2 className="text-sm font-semibold mb-4">📈 Evolução — {metricLabels[selectedMetric]}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
@@ -152,7 +154,7 @@ export default function Historico() {
             transition={{ delay: 0.3, duration: 0.5, ease }}
             className="card-bet p-5"
           >
-            <h3 className="text-sm font-semibold mb-4">📉 Médias por Temporada</h3>
+            <h2 className="text-sm font-semibold mb-4">📉 Médias por Temporada</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
@@ -181,7 +183,7 @@ export default function Historico() {
             transition={{ delay: 0.4, duration: 0.5, ease }}
             className="card-bet p-5"
           >
-            <h3 className="text-sm font-semibold mb-4">📊 Mercados por Temporada</h3>
+            <h2 className="text-sm font-semibold mb-4">📊 Mercados por Temporada</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" />
@@ -212,7 +214,7 @@ export default function Historico() {
             className="card-bet overflow-hidden"
           >
             <div className="p-4 border-b border-border">
-              <h3 className="text-sm font-semibold">📋 Resumo por Temporada</h3>
+              <h2 className="text-sm font-semibold">📋 Resumo por Temporada</h2>
             </div>
             <div className="overflow-auto scrollbar-thin">
               <table className="table-bet">

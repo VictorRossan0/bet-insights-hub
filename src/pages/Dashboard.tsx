@@ -9,6 +9,7 @@ import { fetchStatsAcumulado, fetchStatsPorRodada } from '@/services/supabase/st
 import { SkeletonChart } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
 import { BarChart3 } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
 const MAX_TEMPORADA_ID = 7;
@@ -41,6 +42,11 @@ export default function Dashboard() {
 
   return (
     <div className="page-container space-y-5 sm:space-y-8">
+      <SEO
+        title={`Dashboard Brasileirão ${ano}`}
+        description={`Visão geral, KPIs e tendências do Brasileirão Série A ${ano}: gols, escanteios, cartões e mercados.`}
+        path="/"
+      />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}

@@ -22,7 +22,7 @@ export default function Layout() {
       </aside>
 
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-sidebar border-b border-border flex items-center px-4">
-        <button onClick={() => setMobileOpen(true)} className="text-foreground">
+        <button onClick={() => setMobileOpen(true)} className="text-foreground" aria-label="Abrir menu de navegação">
           <Menu className="w-5 h-5" />
         </button>
         <div className="ml-3 flex items-center gap-2">
@@ -49,7 +49,7 @@ export default function Layout() {
               className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-border p-4 z-50 lg:hidden"
             >
               <div className="flex justify-end mb-2">
-                <button onClick={() => setMobileOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => setMobileOpen(false)} className="text-muted-foreground hover:text-foreground" aria-label="Fechar menu de navegação">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -74,7 +74,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="flex items-center gap-2.5 px-3 py-4 mb-4">
         <BarChart3 className="w-7 h-7 text-bet-green" />
         <div>
-          <h1 className="font-display text-xl tracking-wide leading-tight">BetAnalytics</h1>
+          <div className="font-display text-xl tracking-wide leading-tight">BetAnalytics</div>
           <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Brasileirão 2026</p>
         </div>
       </div>

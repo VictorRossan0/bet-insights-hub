@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
@@ -74,6 +75,7 @@ export default function Apostas() {
 
   return (
     <div className="page-container space-y-8">
+      <SEO title="Central de Apostas" description="Apostas sugeridas e gestão das recomendações do Brasileirão Série A." path="/apostas" />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
