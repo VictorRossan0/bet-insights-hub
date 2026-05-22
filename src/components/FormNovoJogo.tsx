@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit } from '@/lib/audit';
 import RlsErrorAlert from '@/components/RlsErrorAlert';
+import { extractErrorMessage, isRlsError } from '@/lib/errors';
 
 type Props = {
   temporadaId: number;
@@ -77,8 +78,8 @@ export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props)
       onClose();
     } catch (err) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao adicionar jogo';
-      if (/RLS|row-level|0 rows|bloqueada/i.test(msg)) {
+      const msg = extractErrorMessage(err, 'Erro ao adicionar jogo');
+      if (isRlsError(err)) {
         setRlsError(msg);
       } else {
         toast.error(msg);

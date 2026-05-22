@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit, calcDiff } from '@/lib/audit';
 import RlsErrorAlert from '@/components/RlsErrorAlert';
+import { extractErrorMessage, isRlsError as detectRls } from '@/lib/errors';
 
 type Props = {
   jogo: JogoComTimesRaw;
@@ -38,7 +39,7 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
   const resultado = form.gols_casa > form.gols_fora ? 'casa' : form.gols_fora > form.gols_casa ? 'fora' : 'empate';
   const targetLabel = `#${jogo.id} ${jogo.time_casa?.nome ?? '—'} vs ${jogo.time_fora?.nome ?? '—'}`;
 
-  const isRlsError = (msg: string) => /RLS|row-level|0 rows|bloqueada/i.test(msg);
+  const isRlsError = (err: unknown) => detectRls(err);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +69,8 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
       onClose();
     } catch (err) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao atualizar jogo';
-      if (isRlsError(msg)) {
+      const msg = extractErrorMessage(err, 'Erro ao atualizar jogo');
+      if (isRlsError(err)) {
         setRlsError({ message: msg, operation: 'UPDATE' });
       } else {
         toast.error(msg);
@@ -96,8 +97,8 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
       onClose();
     } catch (err) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao excluir jogo';
-      if (isRlsError(msg)) {
+      const msg = extractErrorMessage(err, 'Erro ao excluir jogo');
+      if (isRlsError(err)) {
         setRlsError({ message: msg, operation: 'DELETE' });
       } else {
         toast.error(msg);
