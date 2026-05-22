@@ -97,8 +97,8 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
       onClose();
     } catch (err) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao excluir jogo';
-      if (isRlsError(msg)) {
+      const msg = extractErrorMessage(err, 'Erro ao excluir jogo');
+      if (isRlsError(err)) {
         setRlsError({ message: msg, operation: 'DELETE' });
       } else {
         toast.error(msg);
