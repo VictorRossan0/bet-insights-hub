@@ -69,8 +69,8 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
       onClose();
     } catch (err) {
       console.error(err);
-      const msg = err instanceof Error ? err.message : 'Erro ao atualizar jogo';
-      if (isRlsError(msg)) {
+      const msg = extractErrorMessage(err, 'Erro ao atualizar jogo');
+      if (isRlsError(err)) {
         setRlsError({ message: msg, operation: 'UPDATE' });
       } else {
         toast.error(msg);
