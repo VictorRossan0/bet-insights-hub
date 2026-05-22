@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit, calcDiff } from '@/lib/audit';
 import RlsErrorAlert from '@/components/RlsErrorAlert';
+import { extractErrorMessage, isRlsError as detectRls } from '@/lib/errors';
 
 type Props = {
   jogo: JogoComTimesRaw;
