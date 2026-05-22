@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit } from '@/lib/audit';
 import RlsErrorAlert from '@/components/RlsErrorAlert';
+import { extractErrorMessage, isRlsError } from '@/lib/errors';
 
 type Props = {
   temporadaId: number;
