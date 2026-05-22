@@ -39,7 +39,7 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
   const resultado = form.gols_casa > form.gols_fora ? 'casa' : form.gols_fora > form.gols_casa ? 'fora' : 'empate';
   const targetLabel = `#${jogo.id} ${jogo.time_casa?.nome ?? '—'} vs ${jogo.time_fora?.nome ?? '—'}`;
 
-  const isRlsError = (msg: string) => /RLS|row-level|0 rows|bloqueada/i.test(msg);
+  const isRlsError = (err: unknown) => detectRls(err);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
