@@ -10,6 +10,7 @@ const navItems = [
   { to: "/historico", icon: History, label: "Histórico" },
   { to: "/times", icon: Users, label: "Times" },
   { to: "/confronto", icon: Swords, label: "Confronto H2H" },
+  { to: "/backtesting", icon: FlaskConical, label: "Backtesting" },
 ];
 
 export default function Layout() {
