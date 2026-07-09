@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn } from "lucide-react";
+import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn, FlaskConical } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
