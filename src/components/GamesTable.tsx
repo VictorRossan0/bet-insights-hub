@@ -25,6 +25,25 @@ function BoolBadge({ value }: { value: boolean }) {
   );
 }
 
+function StatusBadge({ status }: { status: string | null | undefined }) {
+  if (status === 'ao_vivo') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-500">
+        <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+        AO VIVO
+      </span>
+    );
+  }
+  if (status === 'agendado') {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+        Agendado
+      </span>
+    );
+  }
+  return null;
+}
+
 export default function GamesTable({ jogos, isLoading, page, totalCount, pageSize, onPageChange, onUpdate }: Props) {
   const totalPages = Math.ceil(totalCount / pageSize);
   const [editingJogo, setEditingJogo] = useState<JogoComTimesRaw | null>(null);
