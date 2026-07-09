@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
-import { ChevronLeft, ChevronRight, Pencil, Database } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Database, Info } from 'lucide-react';
 import FormEditarJogo from '@/components/FormEditarJogo';
 import { SkeletonTable } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
 import { useAuth } from '@/hooks/useAuth';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 type Props = {
   jogos: JogoComTimesRaw[];
