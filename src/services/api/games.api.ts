@@ -3,7 +3,33 @@
  * No business logic here, only Supabase communication.
  */
 import { supabase } from '@/services/supabase/client';
+import { supabase as cloudSupabase } from '@/integrations/supabase/client';
 import type { Jogo } from '@/types/database';
+
+/**
+ * Client-side defense-in-depth: block mutations unless the current Lovable Cloud
+ * user has the `admin` role. The authoritative check must live in the external
+ * Supabase RLS policies (see docs) — this only prevents accidental calls from
+ * the app. Server-side RLS on the external project MUST also enforce admin.
+ */
+async function assertAdmin(): Promise<void> {
+  const { data: { user } } = await cloudSupabase.auth.getUser();
+  if (!user) {
+    throw new Error('Você precisa estar autenticado para executar esta ação.');
+  }
+  const { data, error } = await cloudSupabase
+    .from('user_roles' as never)
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('role', 'admin')
+    .maybeSingle();
+  if (error) {
+    throw new Error('Não foi possível validar suas permissões.');
+  }
+  if (!data) {
+    throw new Error('Ação restrita a administradores.');
+  }
+}
 
 export type JogosFilters = {
   rodada?: number;
@@ -125,6 +151,7 @@ export async function fetchRodadas(temporada_id: number = DEFAULT_TEMPORADA): Pr
 
 /** Create a single game */
 export async function createJogo(jogo: Partial<Jogo>) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').insert(jogo).select().single();
   if (error) throw error;
   return data as Jogo;
@@ -132,26 +159,29 @@ export async function createJogo(jogo: Partial<Jogo>) {
 
 /** Update a single game */
 export async function updateJogo(id: number, updates: Partial<Jogo>) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').update(updates).eq('id', id).select();
   if (error) throw error;
   if (!data || data.length === 0) {
-    throw new Error('Atualização bloqueada pelo banco (RLS). Verifique as políticas de UPDATE da tabela jogos no Supabase externo.');
+    throw new Error('Atualização bloqueada pelo banco. Verifique suas permissões.');
   }
   return data[0] as Jogo;
 }
 
 /** Delete a single game */
 export async function deleteJogo(id: number) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').delete().eq('id', id).select();
   if (error) throw error;
   if (!data || data.length === 0) {
-    throw new Error('Exclusão bloqueada pelo banco (RLS). Verifique as políticas de DELETE da tabela jogos no Supabase externo.');
+    throw new Error('Exclusão bloqueada pelo banco. Verifique suas permissões.');
   }
   return true;
 }
 
 /** Bulk insert games */
 export async function insertJogosBulk(jogos: Partial<Jogo>[]) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').insert(jogos).select();
   if (error) throw error;
   return data as Jogo[];
