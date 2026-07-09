@@ -30,6 +30,9 @@ export type Jogo = {
   cartoes_vermelhos: number;
   cartoes_total: number;
   cartoes_total_manual?: number;
+  status?: 'agendado' | 'ao_vivo' | 'finalizado';
+  espn_event_id?: string;
+  stats_sincronizados?: boolean;
   o5_cantos: boolean;
   o6_cantos: boolean;
   o7_cantos: boolean;

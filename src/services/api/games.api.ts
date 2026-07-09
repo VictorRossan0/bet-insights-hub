@@ -26,6 +26,9 @@ export type JogoComTimesRaw = {
   escanteios_fora: number;
   escanteios_total: number;
   cartoes_total: number;
+  status: string | null;
+  cartoes_amarelos: number;
+  cartoes_vermelhos: number;
   o5_cantos: boolean;
   o6_cantos: boolean;
   o7_cantos: boolean;
@@ -42,7 +45,8 @@ const JOGOS_SELECT = `
   id, rodada, data_jogo, temporada_id,
   gols_casa, gols_fora, gols_total, resultado,
   escanteios_casa, escanteios_fora, escanteios_total,
-  cartoes_total,
+  cartoes_total, status,
+  cartoes_amarelos, cartoes_vermelhos,
   o5_cantos, o6_cantos, o7_cantos, o8_cantos, o9_cantos,
   u35_gols, u25_gols, u7_cartoes,
   time_casa:times!jogos_time_casa_id_fkey(nome, sigla),
