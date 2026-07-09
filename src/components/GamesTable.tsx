@@ -69,7 +69,19 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
         <table className="table-bet">
           <thead>
             <tr className="bg-secondary/30">
-              <th>Rod.</th>
+              <th>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex items-center gap-1 cursor-help">
+                      Rod.
+                      <Info className="w-3 h-3 text-muted-foreground" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    Rodada calculada automaticamente por data. Pode conter pequenas imprecisões em temporadas com jogos remarcados (ex: 2020, 2021, 2024, 2025).
+                  </TooltipContent>
+                </Tooltip>
+              </th>
               <th>Jogo</th>
               <th>Gols</th>
               <th>Esc.</th>
@@ -92,11 +104,18 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                 <td className="whitespace-nowrap">
                   <span className="font-medium text-sm">{j.time_casa?.nome ?? '—'}</span>
                   <span className="badge-score mx-2">{j.gols_casa}x{j.gols_fora}</span>
+                  <StatusBadge status={j.status} />
                   <span className="font-medium text-sm">{j.time_fora?.nome ?? '—'}</span>
                 </td>
                 <td className="font-mono text-sm">{j.gols_total}</td>
                 <td className="font-mono text-sm">{j.escanteios_total}</td>
-                <td className="font-mono text-sm">{j.cartoes_total}</td>
+                <td className="font-mono text-sm">
+                  {j.cartoes_amarelos != null && j.cartoes_vermelhos != null ? (
+                    <span>🟨{j.cartoes_amarelos} 🟥{j.cartoes_vermelhos}</span>
+                  ) : (
+                    j.cartoes_total
+                  )}
+                </td>
                 <td><BoolBadge value={j.o5_cantos} /></td>
                 <td><BoolBadge value={j.o6_cantos} /></td>
                 <td><BoolBadge value={j.o7_cantos} /></td>
