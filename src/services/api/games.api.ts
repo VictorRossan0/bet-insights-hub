@@ -151,6 +151,7 @@ export async function fetchRodadas(temporada_id: number = DEFAULT_TEMPORADA): Pr
 
 /** Create a single game */
 export async function createJogo(jogo: Partial<Jogo>) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').insert(jogo).select().single();
   if (error) throw error;
   return data as Jogo;
@@ -158,20 +159,22 @@ export async function createJogo(jogo: Partial<Jogo>) {
 
 /** Update a single game */
 export async function updateJogo(id: number, updates: Partial<Jogo>) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').update(updates).eq('id', id).select();
   if (error) throw error;
   if (!data || data.length === 0) {
-    throw new Error('Atualização bloqueada pelo banco (RLS). Verifique as políticas de UPDATE da tabela jogos no Supabase externo.');
+    throw new Error('Atualização bloqueada pelo banco. Verifique suas permissões.');
   }
   return data[0] as Jogo;
 }
 
 /** Delete a single game */
 export async function deleteJogo(id: number) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').delete().eq('id', id).select();
   if (error) throw error;
   if (!data || data.length === 0) {
-    throw new Error('Exclusão bloqueada pelo banco (RLS). Verifique as políticas de DELETE da tabela jogos no Supabase externo.');
+    throw new Error('Exclusão bloqueada pelo banco. Verifique suas permissões.');
   }
   return true;
 }
