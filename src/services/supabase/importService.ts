@@ -119,9 +119,10 @@ export async function importJogosValidated(rawJogos: JogoInput[]): Promise<{ ins
   const { unique, duplicates } = await filterDuplicates(enriched);
 
   if (unique.length > 0) {
-    const { error } = await supabase.from('jogos').insert(unique).select();
-    if (error) throw error;
+    const { insertJogosBulk } = await import('@/services/api/games.api');
+    await insertJogosBulk(unique);
   }
 
   return { inserted: unique.length, duplicates };
 }
+
