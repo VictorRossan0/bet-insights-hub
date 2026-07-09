@@ -12,6 +12,7 @@ import Confronto from "@/pages/Confronto";
 import TimePerfil from "@/pages/TimePerfil";
 import Auth from "@/pages/Auth";
 import Admin from "@/pages/Admin";
+import Backtesting from "@/pages/Backtesting";
 import Health from "@/pages/Health";
 import NotFound from "./pages/NotFound.tsx";
 
