@@ -181,6 +181,7 @@ export async function deleteJogo(id: number) {
 
 /** Bulk insert games */
 export async function insertJogosBulk(jogos: Partial<Jogo>[]) {
+  await assertAdmin();
   const { data, error } = await supabase.from('jogos').insert(jogos).select();
   if (error) throw error;
   return data as Jogo[];
