@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn } from "lucide-react";
+import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn, FlaskConical } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,6 +10,7 @@ const navItems = [
   { to: "/historico", icon: History, label: "Histórico" },
   { to: "/times", icon: Users, label: "Times" },
   { to: "/confronto", icon: Swords, label: "Confronto H2H" },
+  { to: "/backtesting", icon: FlaskConical, label: "Backtesting" },
 ];
 
 export default function Layout() {

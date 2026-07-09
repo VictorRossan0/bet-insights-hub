@@ -12,6 +12,7 @@ import Confronto from "@/pages/Confronto";
 import TimePerfil from "@/pages/TimePerfil";
 import Auth from "@/pages/Auth";
 import Admin from "@/pages/Admin";
+import Backtesting from "@/pages/Backtesting";
 import Health from "@/pages/Health";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/times" element={<Times />} />
               <Route path="/times/:id" element={<TimePerfil />} />
               <Route path="/confronto" element={<Confronto />} />
+              <Route path="/backtesting" element={<Backtesting />} />
               <Route path="/admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
