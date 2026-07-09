@@ -50,6 +50,7 @@ function getConfidenceLevel(confidence: number): ConfidenceLevel {
   return 'LOW';
 }
 
+// DEPRECATED: sem edge real, ver backtest (Over 5 Cantos ocorre em 92.7% dos jogos do Brasileirão)
 /** Generate H2H-based recommendation (existing logic, now modular) */
 export function calculateH2HRecommendation(
   h2h: StatsH2H,
