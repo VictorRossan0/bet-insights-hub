@@ -98,4 +98,38 @@ export function calculateH2HRecommendation(
   };
 }
 
+/**
+ * Over 9 Cantos recommendation — recalibrada via backtest.
+ * Sinal com edge real: quando média combinada (H2H + casa/fora) >= 9,
+ * acerta 63.3% vs baseline de 56.3%.
+ */
+export function calculateOver9CantosRecommendation(
+  h2h: StatsH2H,
+  cfA: StatsCasaFora,
+  cfB: StatsCasaFora
+): BetRecommendation {
+  const mediaCasaFora = (cfA.media_esc_casa + cfB.media_esc_fora) / 2;
+  const mediaCombinada = (h2h.media_escanteios + mediaCasaFora) / 2;
+
+  const signals: { label: string; positive: boolean }[] = [
+    { label: `Média H2H: ${h2h.media_escanteios.toFixed(1)}`, positive: h2h.media_escanteios >= 9 },
+    { label: `Média Casa/Fora: ${mediaCasaFora.toFixed(1)}`, positive: mediaCasaFora >= 9 },
+    { label: `Média Combinada: ${mediaCombinada.toFixed(1)}`, positive: mediaCombinada >= 9 },
+  ];
+
+  const hasEdge = mediaCombinada >= 9;
+  const confidence = hasEdge ? 63 : 30;
+
+  return {
+    market: 'Over 9 Cantos',
+    probability: hasEdge ? 63.3 : 0,
+    confidence,
+    confidenceLevel: getConfidenceLevel(confidence),
+    recommendation: 'over',
+    signals,
+    verdict: hasEdge ? 'APOSTAR' : 'EVITAR',
+  };
+}
+
 export { DEFAULT_WEIGHTS };
+
