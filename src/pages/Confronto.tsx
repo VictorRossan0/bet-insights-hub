@@ -38,11 +38,36 @@ export default function Confronto() {
     enabled: !!timeAId && !!timeBId,
   });
 
+  // Forma recente (RPCs) — para o filtro de confirmação do Over 9 Cantos
+  const { data: h2hEscRecente } = useQuery({
+    queryKey: ['h2h-esc-recente', timeAId, timeBId],
+    queryFn: () => rpcGetH2HEscanteiosRecente(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+  const { data: formaEscCasaA } = useQuery({
+    queryKey: ['forma-esc-recente', timeAId, 'casa'],
+    queryFn: () => rpcGetFormaEscanteiosRecente(timeAId!, 'casa'),
+    enabled: !!timeAId,
+  });
+  const { data: formaEscForaB } = useQuery({
+    queryKey: ['forma-esc-recente', timeBId, 'fora'],
+    queryFn: () => rpcGetFormaEscanteiosRecente(timeBId!, 'fora'),
+    enabled: !!timeBId,
+  });
+
   const timeA = useMemo(() => times?.find(t => t.id === timeAId), [times, timeAId]);
   const timeB = useMemo(() => times?.find(t => t.id === timeBId), [times, timeBId]);
 
-  const cfA = useMemo(() => casaFora?.find(c => c.nome === timeA?.nome), [casaFora, timeA]);
-  const cfB = useMemo(() => casaFora?.find(c => c.nome === timeB?.nome), [casaFora, timeB]);
+  const cfA = useMemo(() => {
+    const base = casaFora?.find(c => c.nome === timeA?.nome);
+    if (!base) return base;
+    return { ...base, media_esc_recente: formaEscCasaA ?? undefined };
+  }, [casaFora, timeA, formaEscCasaA]);
+  const cfB = useMemo(() => {
+    const base = casaFora?.find(c => c.nome === timeB?.nome);
+    if (!base) return base;
+    return { ...base, media_esc_recente: formaEscForaB ?? undefined };
+  }, [casaFora, timeB, formaEscForaB]);
 
   // Merge: prefer h2hEnhanced (SQL view) over legacy client-side h2h
   const enhancedRow = h2hEnhanced?.[0] ?? null;
