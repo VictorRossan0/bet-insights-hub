@@ -159,6 +159,8 @@ export type StatsH2H = {
   media_gols: number;
   media_escanteios: number;
   media_cartoes: number;
+  /** Média ponderada dos escanteios nos últimos H2H (RPC get_h2h_escanteios_recente) */
+  media_escanteios_recente?: number;
 };
 
 export type ApostaSugerida = {
