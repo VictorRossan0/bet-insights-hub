@@ -72,20 +72,23 @@ export default function Confronto() {
   // Merge: prefer h2hEnhanced (SQL view) over legacy client-side h2h
   const enhancedRow = h2hEnhanced?.[0] ?? null;
   const h2h = useMemo(() => {
-    if (h2hLegacy) return h2hLegacy;
-    if (!enhancedRow) return null;
-    // Map enhanced view fields to legacy shape
-    return {
-      time_a_id: enhancedRow.time_a_id,
-      time_b_id: enhancedRow.time_b_id,
-      time_a_nome: enhancedRow.time_a_nome,
-      time_b_nome: enhancedRow.time_b_nome,
-      total_jogos: enhancedRow.total_jogos,
-      media_gols: enhancedRow.media_gols,
-      media_escanteios: enhancedRow.media_esc,
-      media_cartoes: enhancedRow.media_cart,
-    };
-  }, [h2hLegacy, enhancedRow]);
+    const base = h2hLegacy
+      ? h2hLegacy
+      : enhancedRow
+        ? {
+            time_a_id: enhancedRow.time_a_id,
+            time_b_id: enhancedRow.time_b_id,
+            time_a_nome: enhancedRow.time_a_nome,
+            time_b_nome: enhancedRow.time_b_nome,
+            total_jogos: enhancedRow.total_jogos,
+            media_gols: enhancedRow.media_gols,
+            media_escanteios: enhancedRow.media_esc,
+            media_cartoes: enhancedRow.media_cart,
+          }
+        : null;
+    if (!base) return null;
+    return { ...base, media_escanteios_recente: h2hEscRecente ?? undefined };
+  }, [h2hLegacy, enhancedRow, h2hEscRecente]);
 
   const h2hLoading = h2hLegacyLoading && h2hEnhancedLoading;
 
