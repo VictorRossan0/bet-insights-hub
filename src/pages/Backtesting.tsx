@@ -15,31 +15,33 @@ const BASELINES: { linha: number; label: string; taxaReal: number }[] = [
   { linha: 12, label: 'Over 12 Cantos', taxaReal: 25.3 },
 ];
 
-type BacktestRow = {
-  taxa_acerto?: number | null;
-  taxa_over?: number | null;
+type BacktestSummary = {
+  linha?: number | null;
   total_jogos?: number | null;
   jogos_sinalizados?: number | null;
-  linha?: number | null;
+  taxa_acerto?: number | null;
+  taxa_acerto_quando_over?: number | null;
+  taxa_acerto_quando_under?: number | null;
+  taxa_over_real_baseline?: number | null;
 };
 
 async function fetchBacktestCantos9() {
   const { data, error } = await supabase
-    .from('backtest_cantos')
+    .from('backtest_cantos_summary')
     .select('*')
     .eq('linha', 9)
-    .maybeSingle();
+    .single();
   if (error) throw error;
-  return data as BacktestRow | null;
+  return data as BacktestSummary;
 }
 
 async function fetchBacktestOver5() {
   const { data, error } = await supabase
-    .from('backtest_over5_cantos')
+    .from('backtest_over5_summary')
     .select('*')
-    .maybeSingle();
+    .single();
   if (error) throw error;
-  return data as BacktestRow | null;
+  return data as BacktestSummary;
 }
 
 export default function Backtesting() {
@@ -52,10 +54,19 @@ export default function Backtesting() {
     queryFn: fetchBacktestOver5,
   });
 
-  const taxa9 = over9?.taxa_acerto ?? 63.3;
-  const taxa5 = over5?.taxa_acerto ?? over5?.taxa_over ?? 92.7;
-  const baseline9 = 56.3;
+  const taxa9 = over9?.taxa_acerto ?? 0;
+  const baseline9 = over9?.taxa_over_real_baseline ?? 0;
   const edge9 = taxa9 - baseline9;
+
+  const taxa5 = over5?.taxa_acerto ?? 0;
+  const baseline5 = over5?.taxa_over_real_baseline ?? 0;
+  const edge5 = taxa5 - baseline5;
+  const under5 = over5?.taxa_acerto_quando_under ?? 0;
+
+  const coverage9 =
+    over9?.total_jogos && over9.total_jogos > 0
+      ? ((over9?.jogos_sinalizados ?? 0) / over9.total_jogos) * 100
+      : 0;
 
   return (
     <div className="page-container space-y-8">
@@ -97,7 +108,8 @@ export default function Backtesting() {
               <span className="text-bet-green font-semibold">+{edge9.toFixed(1)} p.p.</span>
             </p>
             <p className="text-xs text-muted-foreground mt-2">
-              Cobertura: ~7% dos jogos {over9?.jogos_sinalizados ? `(${over9.jogos_sinalizados} jogos sinalizados)` : ''}
+              Cobertura: {coverage9.toFixed(1)}% dos jogos{' '}
+              {over9?.jogos_sinalizados !== undefined ? `(${over9.jogos_sinalizados} jogos sinalizados)` : ''}
             </p>
           </div>
         </div>
@@ -118,7 +130,13 @@ export default function Backtesting() {
               {loading5 ? '…' : `${taxa5.toFixed(1)}%`}
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              Baseline real: 92.7% — <span className="text-bet-red">sem edge</span>
+              Baseline real: {baseline5.toFixed(1)}% —{' '}
+              <span className={edge5 > 0 ? 'text-bet-green' : 'text-bet-red'}>
+                {edge5 > 0 ? '+' : ''}{edge5.toFixed(1)} p.p.
+              </span>
+            </div>
+            <div className="text-xs text-bet-red mt-1">
+              Quando recomenda under: só {under5.toFixed(1)}% de acerto — evite seguir esse sinal
             </div>
             {err5 && <div className="text-xs text-bet-red mt-1">Erro ao carregar backtest.</div>}
           </div>
@@ -129,7 +147,9 @@ export default function Backtesting() {
             </div>
             <div className="text-xs text-muted-foreground mt-1">
               Baseline real: {baseline9.toFixed(1)}% —{' '}
-              <span className="text-bet-green">+{edge9.toFixed(1)} p.p.</span>
+              <span className={edge9 > 0 ? 'text-bet-green' : 'text-bet-red'}>
+                {edge9 > 0 ? '+' : ''}{edge9.toFixed(1)} p.p.
+              </span>
             </div>
             {err9 && <div className="text-xs text-bet-red mt-1">Erro ao carregar backtest.</div>}
           </div>
