@@ -132,7 +132,10 @@ export type StatsCasaFora = {
   media_gols_fora: number;
   media_esc_fora: number;
   media_cart_fora: number;
+  /** Média ponderada dos escanteios nos últimos jogos naquele mando (RPC get_forma_escanteios_recente) */
+  media_esc_recente?: number;
 };
+
 
 export type StatsPorTemporada = {
   ano: number;
@@ -156,6 +159,8 @@ export type StatsH2H = {
   media_gols: number;
   media_escanteios: number;
   media_cartoes: number;
+  /** Média ponderada dos escanteios nos últimos H2H (RPC get_h2h_escanteios_recente) */
+  media_escanteios_recente?: number;
 };
 
 export type ApostaSugerida = {

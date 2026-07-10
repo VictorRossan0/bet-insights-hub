@@ -8,7 +8,7 @@ import EmptyState from '@/components/ui/empty-state';
 import { VerdictBadge } from '@/components/ui/confidence-badge';
 import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
-import { fetchStatsH2HEnhanced } from '@/services/api/stats-views.api';
+import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
@@ -38,29 +38,57 @@ export default function Confronto() {
     enabled: !!timeAId && !!timeBId,
   });
 
+  // Forma recente (RPCs) — para o filtro de confirmação do Over 9 Cantos
+  const { data: h2hEscRecente } = useQuery({
+    queryKey: ['h2h-esc-recente', timeAId, timeBId],
+    queryFn: () => rpcGetH2HEscanteiosRecente(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+  const { data: formaEscCasaA } = useQuery({
+    queryKey: ['forma-esc-recente', timeAId, 'casa'],
+    queryFn: () => rpcGetFormaEscanteiosRecente(timeAId!, 'casa'),
+    enabled: !!timeAId,
+  });
+  const { data: formaEscForaB } = useQuery({
+    queryKey: ['forma-esc-recente', timeBId, 'fora'],
+    queryFn: () => rpcGetFormaEscanteiosRecente(timeBId!, 'fora'),
+    enabled: !!timeBId,
+  });
+
   const timeA = useMemo(() => times?.find(t => t.id === timeAId), [times, timeAId]);
   const timeB = useMemo(() => times?.find(t => t.id === timeBId), [times, timeBId]);
 
-  const cfA = useMemo(() => casaFora?.find(c => c.nome === timeA?.nome), [casaFora, timeA]);
-  const cfB = useMemo(() => casaFora?.find(c => c.nome === timeB?.nome), [casaFora, timeB]);
+  const cfA = useMemo(() => {
+    const base = casaFora?.find(c => c.nome === timeA?.nome);
+    if (!base) return base;
+    return { ...base, media_esc_recente: formaEscCasaA ?? undefined };
+  }, [casaFora, timeA, formaEscCasaA]);
+  const cfB = useMemo(() => {
+    const base = casaFora?.find(c => c.nome === timeB?.nome);
+    if (!base) return base;
+    return { ...base, media_esc_recente: formaEscForaB ?? undefined };
+  }, [casaFora, timeB, formaEscForaB]);
 
   // Merge: prefer h2hEnhanced (SQL view) over legacy client-side h2h
   const enhancedRow = h2hEnhanced?.[0] ?? null;
   const h2h = useMemo(() => {
-    if (h2hLegacy) return h2hLegacy;
-    if (!enhancedRow) return null;
-    // Map enhanced view fields to legacy shape
-    return {
-      time_a_id: enhancedRow.time_a_id,
-      time_b_id: enhancedRow.time_b_id,
-      time_a_nome: enhancedRow.time_a_nome,
-      time_b_nome: enhancedRow.time_b_nome,
-      total_jogos: enhancedRow.total_jogos,
-      media_gols: enhancedRow.media_gols,
-      media_escanteios: enhancedRow.media_esc,
-      media_cartoes: enhancedRow.media_cart,
-    };
-  }, [h2hLegacy, enhancedRow]);
+    const base = h2hLegacy
+      ? h2hLegacy
+      : enhancedRow
+        ? {
+            time_a_id: enhancedRow.time_a_id,
+            time_b_id: enhancedRow.time_b_id,
+            time_a_nome: enhancedRow.time_a_nome,
+            time_b_nome: enhancedRow.time_b_nome,
+            total_jogos: enhancedRow.total_jogos,
+            media_gols: enhancedRow.media_gols,
+            media_escanteios: enhancedRow.media_esc,
+            media_cartoes: enhancedRow.media_cart,
+          }
+        : null;
+    if (!base) return null;
+    return { ...base, media_escanteios_recente: h2hEscRecente ?? undefined };
+  }, [h2hLegacy, enhancedRow, h2hEscRecente]);
 
   const h2hLoading = h2hLegacyLoading && h2hEnhancedLoading;
 

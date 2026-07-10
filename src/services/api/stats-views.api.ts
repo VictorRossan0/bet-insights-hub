@@ -66,3 +66,38 @@ export async function rpcCalculateMarketProbability(
   if (error) throw error;
   return (data as MarketProbabilityRow[]) || [];
 }
+
+/** RPC: get_h2h_escanteios_recente — média ponderada dos últimos N confrontos diretos */
+export async function rpcGetH2HEscanteiosRecente(
+  timeA: number,
+  timeB: number,
+  data: string = new Date().toISOString().slice(0, 10),
+  limit: number = 5
+): Promise<number | null> {
+  const { data: result, error } = await supabase.rpc('get_h2h_escanteios_recente' as never, {
+    p_time_a: timeA,
+    p_time_b: timeB,
+    p_data: data,
+    p_limit: limit,
+  } as never);
+  if (error) throw error;
+  return typeof result === 'number' ? result : (result as number | null);
+}
+
+/** RPC: get_forma_escanteios_recente — média ponderada dos últimos N jogos do time naquele mando */
+export async function rpcGetFormaEscanteiosRecente(
+  timeId: number,
+  mando: 'casa' | 'fora',
+  data: string = new Date().toISOString().slice(0, 10),
+  limit: number = 10
+): Promise<number | null> {
+  const { data: result, error } = await supabase.rpc('get_forma_escanteios_recente' as never, {
+    p_time_id: timeId,
+    p_mando: mando,
+    p_data: data,
+    p_limit: limit,
+  } as never);
+  if (error) throw error;
+  return typeof result === 'number' ? result : (result as number | null);
+}
+
