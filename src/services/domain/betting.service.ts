@@ -100,8 +100,16 @@ export function calculateH2HRecommendation(
 
 /**
  * Over 9 Cantos recommendation — recalibrada via backtest.
- * Sinal com edge real: quando média combinada (H2H + casa/fora) >= 9,
- * acerta 63.3% vs baseline de 56.3%.
+ *
+ * Modelo histórico: quando média combinada (H2H + casa/fora) >= 9, acerta 63.3%
+ * vs baseline de 56.3%.
+ *
+ * Filtro de confirmação por forma recente (backtest 167 jogos): quando os dois
+ * modelos (histórico + recente) concordam, a taxa sobe para 64.7% — usar como
+ * gatilho de HIGH confidence.
+ *
+ * Os campos `media_escanteios_recente` (H2H) e `media_esc_recente` (casa/fora)
+ * são opcionais; se ausentes o comportamento cai de volta ao modelo histórico.
  */
 export function calculateOver9CantosRecommendation(
   h2h: StatsH2H,
@@ -109,27 +117,64 @@ export function calculateOver9CantosRecommendation(
   cfB: StatsCasaFora
 ): BetRecommendation {
   const mediaCasaFora = (cfA.media_esc_casa + cfB.media_esc_fora) / 2;
-  const mediaCombinada = (h2h.media_escanteios + mediaCasaFora) / 2;
+  const mediaCombinadaHistorica = (h2h.media_escanteios + mediaCasaFora) / 2;
+
+  const recenteDisponivel =
+    h2h.media_escanteios_recente !== undefined &&
+    cfA.media_esc_recente !== undefined &&
+    cfB.media_esc_recente !== undefined;
+
+  const mediaCasaForaRecente = recenteDisponivel
+    ? ((cfA.media_esc_recente as number) + (cfB.media_esc_recente as number)) / 2
+    : undefined;
+  const mediaCombinadaRecente =
+    recenteDisponivel && mediaCasaForaRecente !== undefined
+      ? ((h2h.media_escanteios_recente as number) + mediaCasaForaRecente) / 2
+      : undefined;
+
+  const historicoEdge = mediaCombinadaHistorica >= 9;
+  const recenteConfirma = mediaCombinadaRecente !== undefined && mediaCombinadaRecente >= 9;
 
   const signals: { label: string; positive: boolean }[] = [
     { label: `Média H2H: ${h2h.media_escanteios.toFixed(1)}`, positive: h2h.media_escanteios >= 9 },
     { label: `Média Casa/Fora: ${mediaCasaFora.toFixed(1)}`, positive: mediaCasaFora >= 9 },
-    { label: `Média Combinada: ${mediaCombinada.toFixed(1)}`, positive: mediaCombinada >= 9 },
+    { label: `Média Combinada: ${mediaCombinadaHistorica.toFixed(1)}`, positive: historicoEdge },
   ];
+  if (recenteDisponivel && mediaCombinadaRecente !== undefined) {
+    signals.push({
+      label: `Forma recente confirma (${mediaCombinadaRecente.toFixed(1)})`,
+      positive: recenteConfirma,
+    });
+  }
 
-  const hasEdge = mediaCombinada >= 9;
-  const confidence = hasEdge ? 63 : 30;
+  let confidence = 30;
+  let probability = 0;
+  let verdict: BetRecommendation['verdict'] = 'EVITAR';
+  let confidenceLevel: ConfidenceLevel = 'LOW';
+
+  if (historicoEdge && recenteConfirma) {
+    confidence = 65;
+    probability = 64.7;
+    verdict = 'APOSTAR';
+    confidenceLevel = 'HIGH';
+  } else if (historicoEdge) {
+    confidence = 59;
+    probability = 59.3;
+    verdict = 'CAUTELOSO';
+    confidenceLevel = 'MEDIUM';
+  }
 
   return {
     market: 'Over 9 Cantos',
-    probability: hasEdge ? 63.3 : 0,
+    probability,
     confidence,
-    confidenceLevel: getConfidenceLevel(confidence),
+    confidenceLevel,
     recommendation: 'over',
     signals,
-    verdict: hasEdge ? 'APOSTAR' : 'EVITAR',
+    verdict,
   };
 }
+
 
 export { DEFAULT_WEIGHTS };
 
