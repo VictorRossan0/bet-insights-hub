@@ -204,7 +204,20 @@ export default function Confronto() {
         </select>
       </motion.div>
 
+      {bothSelected && duploZ4 && (
+        <motion.div {...anim}
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-300 flex items-start gap-2"
+          role="alert"
+        >
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>
+            <strong>Duelo direto na zona de rebaixamento</strong> — historicamente: −14% gols, +12% escanteios nesse cenário.
+          </span>
+        </motion.div>
+      )}
+
       {/* Content */}
+
       {!bothSelected && (
         <EmptyState
           icon={Swords}
