@@ -56,6 +56,20 @@ export default function Confronto() {
     enabled: !!timeBId,
   });
 
+  // Poisson: Gols e Cartões (timeA como casa, timeB como fora)
+  const { data: poissonGols } = useQuery({
+    queryKey: ['poisson-gols', timeAId, timeBId],
+    queryFn: () => getProbabilidadeOver25Gols(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+  const { data: poissonCartoes } = useQuery({
+    queryKey: ['poisson-cartoes', timeAId, timeBId],
+    queryFn: () => getProbabilidadeOver7Cartoes(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+
+
+
   const timeA = useMemo(() => times?.find(t => t.id === timeAId), [times, timeAId]);
   const timeB = useMemo(() => times?.find(t => t.id === timeBId), [times, timeBId]);
 
