@@ -9,6 +9,7 @@ import { VerdictBadge } from '@/components/ui/confidence-badge';
 import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
+import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes } from '@/services/domain/poisson.service';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
