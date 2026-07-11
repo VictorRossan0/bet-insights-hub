@@ -39,3 +39,12 @@ export async function getProbabilidadeOver7Cartoes(
   if (e2 || prob == null) return null;
   return { lambda: lambda as number, probabilidade: (prob as number) * 100 };
 }
+
+export async function getPosicaoAtual(timeId: number, temporadaId: number): Promise<number | null> {
+  const { data, error } = await supabase.rpc('get_posicao_atual' as never, {
+    p_time_id: timeId,
+    p_temporada_id: temporadaId,
+  } as never);
+  if (error || data == null) return null;
+  return data as number;
+}
