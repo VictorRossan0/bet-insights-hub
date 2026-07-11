@@ -233,6 +233,30 @@ export default function Confronto() {
             <StatCard label="Média Cartões" value={h2h.media_cartoes.toFixed(1)} />
           </motion.div>
 
+          {/* Poisson Markets */}
+          {(poissonGols || poissonCartoes) && (
+            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.25 }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+            >
+              {poissonGols && (
+                <div className="card-bet p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Over 2.5 Gols (Poisson)</p>
+                  <p className="text-xl font-mono font-bold text-bet-green">{poissonGols.probabilidade.toFixed(1)}%</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">λ = {poissonGols.lambda.toFixed(2)} gols esperados</p>
+                </div>
+              )}
+              {poissonCartoes && (
+                <div className="card-bet p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Over 7 Cartões (Poisson)</p>
+                  <p className="text-xl font-mono font-bold text-bet-green">{poissonCartoes.probabilidade.toFixed(1)}%</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">λ = {poissonCartoes.lambda.toFixed(2)} cartões esperados</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+
+
           {/* Radar Chart */}
           <motion.div {...anim} transition={{ ...anim.transition, delay: 0.3 }}
             className="card-bet p-5"
