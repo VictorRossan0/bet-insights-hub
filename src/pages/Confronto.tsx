@@ -279,6 +279,11 @@ export default function Confronto() {
                   <p className="text-xs text-muted-foreground mb-1">Over 7 Cartões (Poisson)</p>
                   <p className="text-xl font-mono font-bold text-bet-green">{poissonCartoes.probabilidade.toFixed(1)}%</p>
                   <p className="text-[11px] text-muted-foreground mt-1">λ = {poissonCartoes.lambda.toFixed(2)} cartões esperados</p>
+                  {poissonCartoes.arbitro && (
+                    <p className="text-[11px] text-amber-400/90 mt-1">
+                      Árbitro confirmado: {poissonCartoes.arbitro} (ajustado ao seu histórico)
+                    </p>
+                  )}
                 </div>
               )}
             </motion.div>
