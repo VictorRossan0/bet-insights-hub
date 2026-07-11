@@ -9,6 +9,7 @@ import { VerdictBadge } from '@/components/ui/confidence-badge';
 import { fetchTimes } from '@/services/supabase/jogosService';
 import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
+import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes } from '@/services/domain/poisson.service';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
@@ -54,6 +55,20 @@ export default function Confronto() {
     queryFn: () => rpcGetFormaEscanteiosRecente(timeBId!, 'fora'),
     enabled: !!timeBId,
   });
+
+  // Poisson: Gols e Cartões (timeA como casa, timeB como fora)
+  const { data: poissonGols } = useQuery({
+    queryKey: ['poisson-gols', timeAId, timeBId],
+    queryFn: () => getProbabilidadeOver25Gols(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+  const { data: poissonCartoes } = useQuery({
+    queryKey: ['poisson-cartoes', timeAId, timeBId],
+    queryFn: () => getProbabilidadeOver7Cartoes(timeAId!, timeBId!),
+    enabled: !!timeAId && !!timeBId && timeAId !== timeBId,
+  });
+
+
 
   const timeA = useMemo(() => times?.find(t => t.id === timeAId), [times, timeAId]);
   const timeB = useMemo(() => times?.find(t => t.id === timeBId), [times, timeBId]);
@@ -217,6 +232,30 @@ export default function Confronto() {
             <StatCard label="Média Escanteios" value={h2h.media_escanteios.toFixed(1)} highlight={h2h.media_escanteios >= 10} />
             <StatCard label="Média Cartões" value={h2h.media_cartoes.toFixed(1)} />
           </motion.div>
+
+          {/* Poisson Markets */}
+          {(poissonGols || poissonCartoes) && (
+            <motion.div {...anim} transition={{ ...anim.transition, delay: 0.25 }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+            >
+              {poissonGols && (
+                <div className="card-bet p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Over 2.5 Gols (Poisson)</p>
+                  <p className="text-xl font-mono font-bold text-bet-green">{poissonGols.probabilidade.toFixed(1)}%</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">λ = {poissonGols.lambda.toFixed(2)} gols esperados</p>
+                </div>
+              )}
+              {poissonCartoes && (
+                <div className="card-bet p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Over 7 Cartões (Poisson)</p>
+                  <p className="text-xl font-mono font-bold text-bet-green">{poissonCartoes.probabilidade.toFixed(1)}%</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">λ = {poissonCartoes.lambda.toFixed(2)} cartões esperados</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+
 
           {/* Radar Chart */}
           <motion.div {...anim} transition={{ ...anim.transition, delay: 0.3 }}
