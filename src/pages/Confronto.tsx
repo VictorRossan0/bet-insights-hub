@@ -6,8 +6,8 @@ import { Swords, TrendingUp, AlertTriangle, Check, X } from 'lucide-react';
 import { SkeletonRadar, SkeletonTable } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
 import { VerdictBadge } from '@/components/ui/confidence-badge';
-import { fetchTimes } from '@/services/supabase/jogosService';
-import { fetchStatsH2H, fetchStatsCasaFora } from '@/services/supabase/statsService';
+import { fetchTimes } from '@/services/api/teams.api';
+import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
 import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes, getPosicaoAtual } from '@/services/domain/poisson.service';
 

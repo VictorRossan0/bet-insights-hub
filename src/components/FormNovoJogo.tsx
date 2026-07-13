@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Plus, Loader2 } from 'lucide-react';
-import { fetchTimes, createJogo } from '@/services/supabase/jogosService';
+import { createJogo } from '@/services/api/games.api';
+import { fetchTimes } from '@/services/api/teams.api';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit } from '@/lib/audit';

@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, LineChart, Line, ReferenceLine } from 'recharts';
 import { ArrowUpDown, Users, ExternalLink, TrendingUp, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { fetchStatsPorTime } from '@/services/supabase/statsService';
+import { computeStatsPorTime as fetchStatsPorTime } from '@/services/domain/stats.service';
 import { fetchAllJogos } from '@/services/api/games.api';
 import type { StatsPorTime } from '@/types/database';
-import CasaForaStats from '@/components/CasaForaStats';
+import CasaForaStats from '@/components/times/CasaForaStats';
 import { buildStandings, buildPositionEvolution } from '@/lib/standings';
 import { TiebreakerBadge, TiebreakerLegend } from '@/components/standings/TiebreakerBadge';
 
