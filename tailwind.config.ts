@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["IBM Plex Sans", "system-ui", "sans-serif"],
-        mono: ["IBM Plex Mono", "monospace"],
-        display: ["Bebas Neue", "sans-serif"],
+        sans: ["Work Sans", "system-ui", "sans-serif"],
+        mono: ["IBM Plex Mono", "ui-monospace", "monospace"],
+        display: ["Roboto Slab", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -67,6 +67,13 @@ export default {
           red: "hsl(var(--bet-red))",
           yellow: "hsl(var(--bet-yellow))",
           blue: "hsl(var(--bet-blue))",
+          moss: "hsl(var(--bet-moss))",
+        },
+        paper: {
+          DEFAULT: "hsl(var(--paper))",
+          foreground: "hsl(var(--paper-foreground))",
+          muted: "hsl(var(--paper-muted))",
+          border: "hsl(var(--paper-border))",
         },
       },
       borderRadius: {

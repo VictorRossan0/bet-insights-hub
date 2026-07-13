@@ -75,21 +75,10 @@ export default function ConfidenceBadge({ value, showBar = true, showLabel = tru
   );
 }
 
-/** Inline verdict badge for recommendation outcomes */
-export function VerdictBadge({ verdict }: { verdict: string }) {
-  const isApostar = verdict === 'APOSTAR';
-  const isCauteloso = verdict === 'CAUTELOSO';
+/** Inline verdict badge — kept as a re-export of the new stamp component
+ *  so all existing call sites keep working with the new visual identity. */
+import VerdictStamp from '@/components/ui/verdict-stamp';
 
-  return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold tracking-wider ${
-      isApostar
-        ? 'bg-bet-green/15 text-bet-green'
-        : isCauteloso
-          ? 'bg-yellow-500/15 text-yellow-400'
-          : 'bg-destructive/15 text-destructive'
-    }`}>
-      {isApostar ? <ShieldCheck className="w-3.5 h-3.5" /> : isCauteloso ? <ShieldAlert className="w-3.5 h-3.5" /> : <ShieldX className="w-3.5 h-3.5" />}
-      {verdict}
-    </span>
-  );
+export function VerdictBadge({ verdict }: { verdict: string }) {
+  return <VerdictStamp verdict={verdict} />;
 }
