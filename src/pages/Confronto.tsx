@@ -6,6 +6,7 @@ import { Swords, TrendingUp, AlertTriangle, Check, X } from 'lucide-react';
 import { SkeletonRadar, SkeletonTable } from '@/components/ui/skeleton-loaders';
 import EmptyState from '@/components/ui/empty-state';
 import { VerdictBadge } from '@/components/ui/confidence-badge';
+import VerdictStamp from '@/components/ui/verdict-stamp';
 import { fetchTimes } from '@/services/api/teams.api';
 import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
