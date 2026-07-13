@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Search, RefreshCw, Plus, FileText, FileJson, Download } from 'lucide-react';
 import GamesTable from '@/components/GamesTable';
 import FormNovoJogo from '@/components/FormNovoJogo';
-import { fetchJogosResumo, fetchRodadas } from '@/services/api/games.api';
+import { fetchJogosPaginated as fetchJogosResumo, fetchRodadas } from '@/services/api/games.api';
 import { importJogosValidated, parseCSV } from '@/services/supabase/importService';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
