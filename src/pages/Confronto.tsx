@@ -403,14 +403,8 @@ export default function Confronto() {
                       <p className="font-mono font-bold">{row.pct_u7_cart.toFixed(0)}%</p>
                     </div>
                   </div>
-                  <div className={`text-center py-2 rounded-lg text-xs font-bold tracking-wider ${
-                    row.recomendacao.startsWith('APOSTAR')
-                      ? 'bg-bet-green/15 text-bet-green'
-                      : row.recomendacao.startsWith('CAUTELOSO')
-                        ? 'bg-yellow-500/15 text-yellow-400'
-                        : 'bg-destructive/15 text-destructive'
-                  }`}>
-                    {row.recomendacao}
+                  <div className="flex justify-center py-2">
+                    <VerdictStamp verdict={row.recomendacao} label={row.recomendacao} />
                   </div>
                 </div>
               ))}
