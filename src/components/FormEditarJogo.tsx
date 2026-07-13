@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Save, Loader2, Trash2 } from 'lucide-react';
-import { updateJogo, deleteJogo } from '@/services/supabase/jogosService';
-import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
+import { updateJogo, deleteJogo } from '@/services/api/games.api';
+import type { JogoComTimesRaw } from '@/services/api/games.api';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { logAudit, calcDiff } from '@/lib/audit';

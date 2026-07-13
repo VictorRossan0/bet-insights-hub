@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { fetchStatsPorTemporada } from '@/services/supabase/statsService';
+import { computeStatsPorTemporada as fetchStatsPorTemporada } from '@/services/domain/stats.service';
 import { useMemo, useState } from 'react';
 
 type Metric = 'media_gols' | 'media_escanteios' | 'media_cartoes' | 'pct_o5_cantos' | 'pct_o6_cantos' | 'pct_u35_gols';

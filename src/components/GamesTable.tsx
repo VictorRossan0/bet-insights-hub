@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { JogoComTimesRaw } from '@/services/supabase/jogosService';
+import type { JogoComTimesRaw } from '@/services/api/games.api';
 import { ChevronLeft, ChevronRight, Pencil, Database, Info } from 'lucide-react';
 import FormEditarJogo from '@/components/FormEditarJogo';
 import { SkeletonTable } from '@/components/ui/skeleton-loaders';

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Home, Plane } from 'lucide-react';
-import { fetchStatsCasaFora } from '@/services/supabase/statsService';
+import { computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
 import type { StatsCasaFora } from '@/types/database';
 
 type Metric = 'gols' | 'esc' | 'cart';
