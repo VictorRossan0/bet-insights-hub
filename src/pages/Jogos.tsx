@@ -139,7 +139,7 @@ export default function Jogos() {
         <select
           value={temporadaId}
           onChange={(e) => { setTemporadaId(Number(e.target.value)); setRodadaFilter(undefined); setPage(1); }}
-          className="bg-card border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
         >
           {Object.entries(TEMPORADA_ANO).map(([id, year]) => (
             <option key={id} value={id}>{year}</option>
@@ -149,7 +149,7 @@ export default function Jogos() {
         <select
           value={rodadaFilter ?? ''}
           onChange={(e) => { setRodadaFilter(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-          className="bg-card border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="">Todas as rodadas</option>
           {rodadas?.map((r) => (
@@ -164,7 +164,7 @@ export default function Jogos() {
             placeholder="Filtrar por time..."
             value={timeFilter}
             onChange={(e) => { setTimeFilter(e.target.value); setPage(1); }}
-            className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+            className="w-full bg-secondary text-secondary-foreground border border-border rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
           />
         </div>
       </motion.div>
