@@ -257,7 +257,7 @@
     pointer-events: none;
     mix-blend-mode: multiply;
   }
-  .verdict-stamp--gold  { color: hsl(47 78% 32%); }
+  .verdict-stamp--gold  { color: hsl(47 80% 26%); }
   .verdict-stamp--red   { color: hsl(5 65% 38%); }
   .verdict-stamp--moss  { color: hsl(150 45% 24%); }
 }
