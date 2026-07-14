@@ -62,7 +62,7 @@ export default function Dashboard() {
           <select
             value={temporadaId}
             onChange={(e) => setTemporadaId(Number(e.target.value))}
-            className="bg-card border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+            className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
           >
             {Object.entries(TEMPORADA_ANO).map(([id, year]) => (
               <option key={id} value={id}>{year}</option>

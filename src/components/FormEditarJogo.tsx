@@ -108,7 +108,7 @@ export default function FormEditarJogo({ jogo, onSuccess, onClose }: Props) {
     }
   };
 
-  const inputCls = 'w-full bg-card border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring';
+  const inputCls = 'w-full bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring';
   const labelCls = 'text-xs font-medium text-muted-foreground mb-1 block';
 
   return (

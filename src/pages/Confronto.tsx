@@ -181,7 +181,7 @@ export default function Confronto() {
         <select
           value={timeAId ?? ''}
           onChange={e => setTimeAId(e.target.value ? Number(e.target.value) : null)}
-          className="bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="">Selecione o Time A</option>
           {times?.filter(t => t.id !== timeBId).map(t => (
@@ -196,7 +196,7 @@ export default function Confronto() {
         <select
           value={timeBId ?? ''}
           onChange={e => setTimeBId(e.target.value ? Number(e.target.value) : null)}
-          className="bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="">Selecione o Time B</option>
           {times?.filter(t => t.id !== timeAId).map(t => (
