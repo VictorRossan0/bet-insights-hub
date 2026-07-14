@@ -134,17 +134,24 @@
     color: hsl(var(--paper-muted));
   }
 
+  /* Gold token is unreadable on aged paper — swap to the paper-safe gold
+     inside any paper surface. Keeps a single utility across the app. */
+  .card-bet .text-bet-green,
+  .table-bet .text-bet-green {
+    color: hsl(var(--bet-green-on-paper));
+  }
+
   .badge-green {
     @apply text-xs font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider;
     background: hsl(var(--primary) / 0.18);
-    color: hsl(47 80% 30%);
+    color: hsl(var(--bet-green-on-paper));
     border: 1px solid hsl(var(--primary) / 0.5);
   }
 
   .badge-red {
     @apply text-xs font-semibold px-2 py-0.5 rounded-sm uppercase tracking-wider;
     background: hsl(var(--destructive) / 0.15);
-    color: hsl(5 65% 35%);
+    color: hsl(5 65% 32%);
     border: 1px solid hsl(var(--destructive) / 0.5);
   }
 
