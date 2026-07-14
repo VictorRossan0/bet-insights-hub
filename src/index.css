@@ -54,7 +54,8 @@
 
     /* Semantic betting tokens — remapped to the Súmula palette
        (names kept for backwards compatibility with existing components) */
-    --bet-green: 47 68% 47%;       /* Gold — positive / apostar */
+    --bet-green: 47 68% 47%;       /* Gold — positive / apostar (dark surfaces) */
+    --bet-green-on-paper: 47 80% 26%; /* AA-safe gold text on aged paper */
     --bet-red: 5 59% 44%;          /* Stamp red — negative / evitar */
     --bet-yellow: 47 68% 47%;      /* Gold */
     --bet-blue: 150 39% 30%;       /* Moss — neutral / secondary */
@@ -65,7 +66,7 @@
     /* On-paper tokens — for cards that use the paper surface */
     --paper: 41 36% 88%;
     --paper-foreground: 156 17% 12%;
-    --paper-muted: 41 20% 40%;
+    --paper-muted: 41 20% 32%;     /* AA on paper (4.5:1+) */
     --paper-border: 41 25% 72%;
 
     /* Sidebar (dark chrome) */
