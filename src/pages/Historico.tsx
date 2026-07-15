@@ -52,7 +52,7 @@ export default function Historico() {
         transition={{ duration: 0.5, ease }}
       >
         <h1 className="text-2xl font-display tracking-wide">Histórico</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Tendências de 2020 a 2025 — Brasileirão Série A</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Tendências de 2022 a 2025 — Brasileirão Série A</p>
       </motion.div>
 
       {isLoading ? (
