@@ -78,7 +78,7 @@ export default function GamesTable({ jogos, isLoading, page, totalCount, pageSiz
                     </span>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-xs text-xs">
-                    Rodada calculada automaticamente por data. Pode conter pequenas imprecisões em temporadas com jogos remarcados (ex: 2020, 2021, 2024, 2025).
+                    Rodada calculada automaticamente por data. Pode conter pequenas imprecisões em temporadas com jogos remarcados (ex: 2024, 2025).
                   </TooltipContent>
                 </Tooltip>
               </th>
