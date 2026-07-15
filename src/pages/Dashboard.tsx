@@ -11,8 +11,8 @@ import EmptyState from '@/components/ui/empty-state';
 import { BarChart3 } from 'lucide-react';
 import SEO from '@/components/SEO';
 
-const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
-const MAX_TEMPORADA_ID = 7;
+const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022 };
+const MAX_TEMPORADA_ID = 5;
 
 export default function Dashboard() {
   const [temporadaId, setTemporadaId] = useState(1);
