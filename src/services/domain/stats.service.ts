@@ -185,7 +185,7 @@ export async function computeStatsH2H(idA: number, idB: number): Promise<StatsH2
 // ── Stats por Temporada (Histórico) ───────────────────────
 
 const TEMPORADA_ANO_MAP: Record<number, number> = {
-  2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020,
+  2: 2025, 3: 2024, 4: 2023, 5: 2022,
 };
 
 export async function computeStatsPorTemporada() {
