@@ -23,7 +23,5 @@ export function getTemporadas(): { id: number; ano: number }[] {
     { id: 3, ano: 2024 },
     { id: 4, ano: 2023 },
     { id: 5, ano: 2022 },
-    { id: 6, ano: 2021 },
-    { id: 7, ano: 2020 },
   ];
 }
