@@ -10,7 +10,7 @@ import { importJogosValidated, parseCSV } from '@/services/supabase/importServic
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
-const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022, 6: 2021, 7: 2020 };
+const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022 };
 
 export default function Jogos() {
   const [page, setPage] = useState(1);
