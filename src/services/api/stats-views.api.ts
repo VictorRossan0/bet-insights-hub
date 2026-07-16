@@ -101,3 +101,14 @@ export async function rpcGetFormaEscanteiosRecente(
   return typeof result === 'number' ? result : (result as number | null);
 }
 
+/** RPC: get_config_cantos_liga — indica se o sinal de escanteios está calibrado para a liga do time */
+export type CantosLigaConfig = { mostra_recomendacao: boolean; liga_nome: string };
+export async function rpcGetConfigCantosLiga(timeId: number): Promise<CantosLigaConfig | null> {
+  const { data, error } = await supabase.rpc('get_config_cantos_liga' as never, {
+    p_time_id: timeId,
+  } as never);
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row as CantosLigaConfig) ?? null;
+}
+
