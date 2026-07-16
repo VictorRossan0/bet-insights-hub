@@ -9,8 +9,9 @@ import { VerdictBadge } from '@/components/ui/confidence-badge';
 import VerdictStamp from '@/components/ui/verdict-stamp';
 import { fetchTimes } from '@/services/api/teams.api';
 import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
-import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
+import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente, rpcGetConfigCantosLiga } from '@/services/api/stats-views.api';
 import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes, getPosicaoAtual } from '@/services/domain/poisson.service';
+import { calculateOver9CantosRecommendation } from '@/services/domain/betting.service';
 
 const TEMPORADA_ATUAL = 1;
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
@@ -83,6 +84,12 @@ export default function Confronto() {
   });
 
   const duploZ4 = !!posicaoA && !!posicaoB && posicaoA > 16 && posicaoB > 16;
+
+  const { data: cantosLigaConfig } = useQuery({
+    queryKey: ['config-cantos-liga', timeAId],
+    queryFn: () => rpcGetConfigCantosLiga(timeAId!),
+    enabled: !!timeAId,
+  });
 
 
 
@@ -161,6 +168,11 @@ export default function Confronto() {
     const verdict = positives >= 3 ? 'APOSTAR' : positives >= 2 ? 'CAUTELOSO' : 'EVITAR';
 
     return { signals, verdict, positives, total: signals.length };
+  }, [h2h, cfA, cfB]);
+
+  const over9Reco = useMemo(() => {
+    if (!h2h || !cfA || !cfB) return null;
+    return calculateOver9CantosRecommendation(h2h, cfA, cfB);
   }, [h2h, cfA, cfB]);
 
   const bothSelected = timeAId && timeBId && timeAId !== timeBId;
@@ -340,6 +352,45 @@ export default function Confronto() {
                 </table>
               </div>
             </motion.div>
+          )}
+
+          {/* Over 9 Cantos — recomendação recalibrada com gate por liga */}
+          {over9Reco && (
+            cantosLigaConfig && cantosLigaConfig.mostra_recomendacao === false ? (
+              <motion.div {...anim} transition={{ ...anim.transition, delay: 0.38 }}
+                className="card-bet p-4 border border-dashed border-border/60 text-xs text-muted-foreground"
+              >
+                Sinal de escanteios ainda não calibrado com confiança pra {cantosLigaConfig.liga_nome}.
+              </motion.div>
+            ) : (
+              <motion.div {...anim} transition={{ ...anim.transition, delay: 0.38 }}
+                className={`card-bet p-5 border-l-4 ${
+                  over9Reco.verdict === 'APOSTAR' ? 'border-l-green-500' : 'border-l-red-500'
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUp className={`w-5 h-5 ${over9Reco.verdict === 'APOSTAR' ? 'text-green-500' : 'text-red-500'}`} />
+                  <h2 className="text-sm font-semibold">Over 9 Cantos — Recomendação (H2H)</h2>
+                  <span className="ml-auto flex items-center gap-2">
+                    <span className="text-xs font-mono text-muted-foreground">{over9Reco.confidence}% ({over9Reco.confidenceLevel})</span>
+                    <VerdictBadge verdict={over9Reco.verdict} />
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {over9Reco.signals.map((s, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      {s.positive
+                        ? <Check className="w-4 h-4 text-green-400 shrink-0" />
+                        : <X className="w-4 h-4 text-red-400 shrink-0" />}
+                      <span className="text-muted-foreground">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Baseado apenas na média de escanteios do H2H direto (amostra maior, generaliza melhor entre ligas).
+                </p>
+              </motion.div>
+            )
           )}
 
           {/* Recommendation */}
