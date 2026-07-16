@@ -9,8 +9,9 @@ import { VerdictBadge } from '@/components/ui/confidence-badge';
 import VerdictStamp from '@/components/ui/verdict-stamp';
 import { fetchTimes } from '@/services/api/teams.api';
 import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
-import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente } from '@/services/api/stats-views.api';
+import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente, rpcGetConfigCantosLiga } from '@/services/api/stats-views.api';
 import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes, getPosicaoAtual } from '@/services/domain/poisson.service';
+import { calculateOver9CantosRecommendation } from '@/services/domain/betting.service';
 
 const TEMPORADA_ATUAL = 1;
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
