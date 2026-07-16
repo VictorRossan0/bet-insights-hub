@@ -85,6 +85,12 @@ export default function Confronto() {
 
   const duploZ4 = !!posicaoA && !!posicaoB && posicaoA > 16 && posicaoB > 16;
 
+  const { data: cantosLigaConfig } = useQuery({
+    queryKey: ['config-cantos-liga', timeAId],
+    queryFn: () => rpcGetConfigCantosLiga(timeAId!),
+    enabled: !!timeAId,
+  });
+
 
 
 
