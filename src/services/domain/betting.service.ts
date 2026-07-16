@@ -99,31 +99,35 @@ export function calculateH2HRecommendation(
 }
 
 /**
- * Over 9 Cantos recommendation — recalibrada via backtest.
+ * Over 9 Cantos recommendation — recalibrada (v3).
  *
- * Modelo histórico: quando média combinada (H2H + casa/fora) >= 9, acerta 63.3%
- * vs baseline de 56.3%.
+ * Nova evidência: o sinal H2H puro (`h2h.media_escanteios`) é mais confiável
+ * que o sinal combinado H2H+casa/fora que era usado antes — amostra 5-15x
+ * maior e generaliza melhor entre ligas.
  *
- * Filtro de confirmação por forma recente (backtest 167 jogos): quando os dois
- * modelos (histórico + recente) concordam, a taxa sobe para 64.7% — usar como
- * gatilho de HIGH confidence.
- *
- * Os campos `media_escanteios_recente` (H2H) e `media_esc_recente` (casa/fora)
- * são opcionais; se ausentes o comportamento cai de volta ao modelo histórico.
+ * - Recomendação `over` quando `h2h.media_escanteios >= 9`.
+ * - Confiança pela distância até 9: `min(95, max(50, 50 + |media - 9| * 10))`.
+ * - Verdict binário: APOSTAR (over) / EVITAR (não recomendamos "under").
+ * - Forma recente e média casa/fora permanecem como sinais informativos,
+ *   mas NÃO alteram verdict/confidence.
  */
 export function calculateOver9CantosRecommendation(
   h2h: StatsH2H,
   cfA: StatsCasaFora,
   cfB: StatsCasaFora
 ): BetRecommendation {
-  const mediaCasaFora = (cfA.media_esc_casa + cfB.media_esc_fora) / 2;
-  const mediaCombinadaHistorica = (h2h.media_escanteios + mediaCasaFora) / 2;
+  const mediaH2H = h2h.media_escanteios;
+  const shouldBet = mediaH2H >= 9;
 
+  const confidence = Math.min(95, Math.max(50, 50 + Math.abs(mediaH2H - 9) * 10));
+  const confidenceLevel: ConfidenceLevel =
+    confidence >= 80 ? 'HIGH' : confidence >= 60 ? 'MEDIUM' : 'LOW';
+
+  const mediaCasaFora = (cfA.media_esc_casa + cfB.media_esc_fora) / 2;
   const recenteDisponivel =
     h2h.media_escanteios_recente !== undefined &&
     cfA.media_esc_recente !== undefined &&
     cfB.media_esc_recente !== undefined;
-
   const mediaCasaForaRecente = recenteDisponivel
     ? ((cfA.media_esc_recente as number) + (cfB.media_esc_recente as number)) / 2
     : undefined;
@@ -132,46 +136,25 @@ export function calculateOver9CantosRecommendation(
       ? ((h2h.media_escanteios_recente as number) + mediaCasaForaRecente) / 2
       : undefined;
 
-  const historicoEdge = mediaCombinadaHistorica >= 9;
-  const recenteConfirma = mediaCombinadaRecente !== undefined && mediaCombinadaRecente >= 9;
-
   const signals: { label: string; positive: boolean }[] = [
-    { label: `Média H2H: ${h2h.media_escanteios.toFixed(1)}`, positive: h2h.media_escanteios >= 9 },
-    { label: `Média Casa/Fora: ${mediaCasaFora.toFixed(1)}`, positive: mediaCasaFora >= 9 },
-    { label: `Média Combinada: ${mediaCombinadaHistorica.toFixed(1)}`, positive: historicoEdge },
+    { label: `Média Escanteios H2H: ${mediaH2H.toFixed(1)}`, positive: shouldBet },
+    { label: `Média Casa/Fora (informativo): ${mediaCasaFora.toFixed(1)}`, positive: mediaCasaFora >= 9 },
   ];
-  if (recenteDisponivel && mediaCombinadaRecente !== undefined) {
+  if (mediaCombinadaRecente !== undefined) {
     signals.push({
       label: `Forma recente confirma (${mediaCombinadaRecente.toFixed(1)})`,
-      positive: recenteConfirma,
+      positive: mediaCombinadaRecente >= 9,
     });
-  }
-
-  let confidence = 30;
-  let probability = 0;
-  let verdict: BetRecommendation['verdict'] = 'EVITAR';
-  let confidenceLevel: ConfidenceLevel = 'LOW';
-
-  if (historicoEdge && recenteConfirma) {
-    confidence = 65;
-    probability = 64.7;
-    verdict = 'APOSTAR';
-    confidenceLevel = 'HIGH';
-  } else if (historicoEdge) {
-    confidence = 59;
-    probability = 59.3;
-    verdict = 'CAUTELOSO';
-    confidenceLevel = 'MEDIUM';
   }
 
   return {
     market: 'Over 9 Cantos',
-    probability,
-    confidence,
+    probability: shouldBet ? Math.min(95, 50 + (mediaH2H - 9) * 5) : 0,
+    confidence: Math.round(confidence),
     confidenceLevel,
     recommendation: 'over',
     signals,
-    verdict,
+    verdict: shouldBet ? 'APOSTAR' : 'EVITAR',
   };
 }
 
