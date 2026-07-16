@@ -170,6 +170,11 @@ export default function Confronto() {
     return { signals, verdict, positives, total: signals.length };
   }, [h2h, cfA, cfB]);
 
+  const over9Reco = useMemo(() => {
+    if (!h2h || !cfA || !cfB) return null;
+    return calculateOver9CantosRecommendation(h2h, cfA, cfB);
+  }, [h2h, cfA, cfB]);
+
   const bothSelected = timeAId && timeBId && timeAId !== timeBId;
 
   return (
