@@ -1,19 +1,21 @@
-import { NavLink, Outlet, Link } from "react-router-dom";
+import { NavLink, Outlet, Link, useParams } from "react-router-dom";
 import { BarChart3, Home, Trophy, Users, Menu, X, History, Swords, Shield, LogOut, LogIn, FlaskConical } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import LigaTabs from "@/components/LigaTabs";
+import SubNav from "@/components/SubNav";
 
 const navItems = [
-  { to: "/", icon: Home, label: "Dashboard" },
-  { to: "/jogos", icon: Trophy, label: "Jogos" },
-  { to: "/historico", icon: History, label: "Histórico" },
-  { to: "/times", icon: Users, label: "Times" },
-  { to: "/confronto", icon: Swords, label: "Confronto H2H" },
-  { to: "/backtesting", icon: FlaskConical, label: "Backtesting" },
+  { path: "", icon: Home, label: "Dashboard", end: true },
+  { path: "jogos", icon: Trophy, label: "Jogos" },
+  { path: "historico", icon: History, label: "Histórico" },
+  { path: "times", icon: Users, label: "Times" },
+  { path: "confronto", icon: Swords, label: "Confronto H2H" },
+  { path: "backtesting", icon: FlaskConical, label: "Backtesting" },
 ];
 
-export default function Layout() {
+export default function Layout({ showLigaNav = true }: { showLigaNav?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -61,6 +63,12 @@ export default function Layout() {
       </AnimatePresence>
 
       <main className="flex-1 min-w-0 lg:ml-64 mt-14 lg:mt-0 overflow-x-hidden overflow-y-auto h-[calc(100vh-3.5rem)] lg:h-screen">
+        {showLigaNav && (
+          <>
+            <LigaTabs />
+            <SubNav />
+          </>
+        )}
         <Outlet />
       </main>
     </div>
@@ -69,6 +77,8 @@ export default function Layout() {
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { user, isAdmin, signOut } = useAuth();
+  const { ligaSlug } = useParams();
+  const base = ligaSlug ? `/${ligaSlug}` : "/bra.1";
 
   return (
     <>
@@ -76,23 +86,26 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <BarChart3 className="w-7 h-7 text-bet-green" />
         <div>
           <div className="font-display text-xl tracking-wide leading-tight">BetAnalytics</div>
-          <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Brasileirão 2026</p>
+          <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Multi-Liga</p>
         </div>
       </div>
 
       <nav className="flex flex-col gap-1">
-        {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === "/"}
-            onClick={onNavigate}
-            className={({ isActive }) => `nav-item ${isActive ? "nav-item-active" : ""}`}
-          >
-            <Icon className="w-4 h-4" />
-            {label}
-          </NavLink>
-        ))}
+        {navItems.map(({ path, icon: Icon, label, end }) => {
+          const to = path ? `${base}/${path}` : base;
+          return (
+            <NavLink
+              key={path || "index"}
+              to={to}
+              end={end}
+              onClick={onNavigate}
+              className={({ isActive }) => `nav-item ${isActive ? "nav-item-active" : ""}`}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </NavLink>
+          );
+        })}
         {isAdmin && (
           <NavLink
             to="/admin"
