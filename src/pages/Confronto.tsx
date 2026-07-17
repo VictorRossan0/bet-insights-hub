@@ -73,14 +73,14 @@ export default function Confronto() {
   });
 
   const { data: posicaoA } = useQuery({
-    queryKey: ['posicao-atual', timeAId, TEMPORADA_ATUAL],
-    queryFn: () => getPosicaoAtual(timeAId!, TEMPORADA_ATUAL),
-    enabled: !!timeAId,
+    queryKey: ['posicao-atual', timeAId, temporadaAtualId],
+    queryFn: () => getPosicaoAtual(timeAId!, temporadaAtualId!),
+    enabled: !!timeAId && !!temporadaAtualId,
   });
   const { data: posicaoB } = useQuery({
-    queryKey: ['posicao-atual', timeBId, TEMPORADA_ATUAL],
-    queryFn: () => getPosicaoAtual(timeBId!, TEMPORADA_ATUAL),
-    enabled: !!timeBId,
+    queryKey: ['posicao-atual', timeBId, temporadaAtualId],
+    queryFn: () => getPosicaoAtual(timeBId!, temporadaAtualId!),
+    enabled: !!timeBId && !!temporadaAtualId,
   });
 
   const duploZ4 = !!posicaoA && !!posicaoB && posicaoA > 16 && posicaoB > 16;
