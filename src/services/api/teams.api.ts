@@ -15,13 +15,10 @@ export async function fetchTimeById(id: number): Promise<{ nome: string } | null
   return data;
 }
 
-/** Hardcoded temporadas (external Supabase table is empty) */
+/**
+ * @deprecated Temporadas agora vêm de `competicoes` via LigaContext + RPC `get_temporada_atual`.
+ * Este helper permanece como fallback vazio para não quebrar imports legados.
+ */
 export function getTemporadas(): { id: number; ano: number }[] {
-  return [
-    { id: 1, ano: 2026 },
-    { id: 2, ano: 2025 },
-    { id: 3, ano: 2024 },
-    { id: 4, ano: 2023 },
-    { id: 5, ano: 2022 },
-  ];
+  return [];
 }
