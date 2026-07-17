@@ -8,7 +8,9 @@ export type Liga = {
   nome: string;
   espn_slug: string;
   pais?: string | null;
+  mostra_recomendacao_cantos?: boolean | null;
 };
+
 
 type LigaContextValue = {
   ligaAtual: Liga | null;
