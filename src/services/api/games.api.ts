@@ -120,7 +120,7 @@ export async function fetchJogosPaginated(filters: JogosFilters = {}) {
 }
 
 /** Fetch ALL games for a season (for stats aggregation) */
-export async function fetchAllJogos(temporada_id: number = DEFAULT_TEMPORADA): Promise<JogoComTimesRaw[]> {
+export async function fetchAllJogos(temporada_id: number): Promise<JogoComTimesRaw[]> {
   const allData: JogoComTimesRaw[] = [];
   let from = 0;
   const batchSize = 1000;
