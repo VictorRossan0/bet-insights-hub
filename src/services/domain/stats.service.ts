@@ -81,9 +81,9 @@ export async function computeStatsPorRodada(temporada_id: number): Promise<Stats
 
 // ── Stats per Team ────────────────────────────────────────
 
-export async function computeStatsPorTime(): Promise<StatsPorTime[]> {
+export async function computeStatsPorTime(temporada_id: number): Promise<StatsPorTime[]> {
   const [jogos, allTimes] = await Promise.all([
-    fetchAllJogos(DEFAULT_TEMPORADA),
+    fetchAllJogos(requireTid(temporada_id)),
     fetchTimes(),
   ]);
   if (jogos.length === 0) return [];
