@@ -11,6 +11,7 @@ import type { StatsPorTime } from '@/types/database';
 import CasaForaStats from '@/components/times/CasaForaStats';
 import { buildStandings, buildPositionEvolution } from '@/lib/standings';
 import { TiebreakerBadge, TiebreakerLegend } from '@/components/standings/TiebreakerBadge';
+import { useLiga } from '@/contexts/LigaContext';
 
 type SortKey = 'media_gols_jogo' | 'media_escanteios_jogo' | 'media_cartoes_jogo' | 'total_jogos';
 type Tab = 'geral' | 'casa-fora' | 'forma';
