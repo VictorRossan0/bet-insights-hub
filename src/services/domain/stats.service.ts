@@ -12,7 +12,10 @@ import type {
   StatsH2H,
 } from '@/types/database';
 
-const DEFAULT_TEMPORADA = 1;
+function requireTid(temporada_id: number | null | undefined): number {
+  if (!temporada_id) throw new Error('temporada_id é obrigatório — aguarde a liga carregar.');
+  return temporada_id;
+}
 
 // ── Helpers ───────────────────────────────────────────────
 
