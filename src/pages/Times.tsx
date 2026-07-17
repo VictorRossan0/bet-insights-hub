@@ -40,15 +40,18 @@ export default function Times() {
   const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
   const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
+  const { temporadaAtualId } = useLiga();
+
   const { data: times, isLoading } = useQuery({
-    queryKey: ['stats-por-time'],
-    queryFn: fetchStatsPorTime,
+    queryKey: ['stats-por-time', temporadaAtualId],
+    queryFn: () => fetchStatsPorTime(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
-  // Buscar todos os jogos da temporada atual (id=1 = 2026) para calcular standings dinâmicos
   const { data: allJogos } = useQuery({
-    queryKey: ['all-jogos', 1],
-    queryFn: () => fetchAllJogos(1),
+    queryKey: ['all-jogos', temporadaAtualId],
+    queryFn: () => fetchAllJogos(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const allRounds = useMemo(() => {
