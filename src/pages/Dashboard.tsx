@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
@@ -7,32 +6,22 @@ import DashboardKPIs from '@/components/dashboard/DashboardKPIs';
 import MarketCards from '@/components/dashboard/MarketCards';
 import { computeStatsAcumulado as fetchStatsAcumulado, computeStatsPorRodada as fetchStatsPorRodada } from '@/services/domain/stats.service';
 import { SkeletonChart } from '@/components/ui/skeleton-loaders';
-import EmptyState from '@/components/ui/empty-state';
-import { BarChart3 } from 'lucide-react';
+import { useLiga } from '@/contexts/LigaContext';
 import SEO from '@/components/SEO';
 
-const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022 };
-const MAX_TEMPORADA_ID = 5;
-
 export default function Dashboard() {
-  const [temporadaId, setTemporadaId] = useState(1);
-  const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
-  const prevTemporadaId = temporadaId < MAX_TEMPORADA_ID ? temporadaId + 1 : null;
+  const { temporadaAtualId, ligaAtual, isLoading: ligaLoading } = useLiga();
 
   const { data: stats, isLoading: loadingStats, refetch: refetchStats } = useQuery({
-    queryKey: ['stats-acumulado', temporadaId],
-    queryFn: () => fetchStatsAcumulado(temporadaId),
-  });
-
-  const { data: prevStats } = useQuery({
-    queryKey: ['stats-acumulado', prevTemporadaId],
-    queryFn: () => fetchStatsAcumulado(prevTemporadaId!),
-    enabled: prevTemporadaId !== null,
+    queryKey: ['stats-acumulado', temporadaAtualId],
+    queryFn: () => fetchStatsAcumulado(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const { data: statsPorRodada, isLoading: loadingRodada, refetch: refetchRodada } = useQuery({
-    queryKey: ['stats-por-rodada', temporadaId],
-    queryFn: () => fetchStatsPorRodada(temporadaId),
+    queryKey: ['stats-por-rodada', temporadaAtualId],
+    queryFn: () => fetchStatsPorRodada(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const handleRefresh = () => {
@@ -40,11 +29,13 @@ export default function Dashboard() {
     refetchRodada();
   };
 
+  const ligaNome = ligaAtual?.nome ?? 'Liga';
+
   return (
     <div className="page-container space-y-5 sm:space-y-8">
       <SEO
-        title={`Dashboard Brasileirão ${ano}`}
-        description={`Visão geral, KPIs e tendências do Brasileirão Série A ${ano}: gols, escanteios, cartões e mercados.`}
+        title={`Dashboard ${ligaNome}`}
+        description={`Visão geral, KPIs e tendências de ${ligaNome}: gols, escanteios, cartões e mercados.`}
         path="/"
       />
       {/* Header */}
@@ -56,21 +47,13 @@ export default function Dashboard() {
       >
         <div>
           <h1 className="text-2xl font-display tracking-wide">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Visão geral do Brasileirão {ano}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Visão geral — {ligaNome}</p>
         </div>
         <div className="flex items-center gap-2">
-          <select
-            value={temporadaId}
-            onChange={(e) => setTemporadaId(Number(e.target.value))}
-            className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-          >
-            {Object.entries(TEMPORADA_ANO).map(([id, year]) => (
-              <option key={id} value={id}>{year}</option>
-            ))}
-          </select>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]"
+            disabled={!temporadaAtualId}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97] disabled:opacity-50"
           >
             <RefreshCw className="w-4 h-4" />
             Atualizar
@@ -78,8 +61,13 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
+      {(ligaLoading || !temporadaAtualId) && (
+        <p className="text-sm text-muted-foreground">Carregando temporada da liga…</p>
+      )}
+
       {/* KPIs */}
-      <DashboardKPIs stats={stats ?? null} prevStats={prevStats ?? null} isLoading={loadingStats} />
+      <DashboardKPIs stats={stats ?? null} prevStats={null} isLoading={loadingStats} />
+
 
       {/* Markets */}
       <motion.div
