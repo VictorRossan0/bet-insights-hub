@@ -29,8 +29,8 @@ function avg(arr: JogoComTimesRaw[], getter: (j: JogoComTimesRaw) => number): nu
 
 // ── Accumulated Stats ─────────────────────────────────────
 
-export async function computeStatsAcumulado(temporada_id: number = DEFAULT_TEMPORADA): Promise<StatsAcumulado | null> {
-  const jogos = await fetchAllJogos(temporada_id);
+export async function computeStatsAcumulado(temporada_id: number): Promise<StatsAcumulado | null> {
+  const jogos = await fetchAllJogos(requireTid(temporada_id));
   if (jogos.length === 0) return null;
 
   return {
