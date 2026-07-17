@@ -79,11 +79,17 @@ const JOGOS_SELECT = `
   time_fora:times!jogos_time_fora_id_fkey(nome, sigla)
 `.replace(/\n/g, '');
 
-const DEFAULT_TEMPORADA = 1;
+function assertTemporada(temporada_id: number | undefined): number {
+  if (!temporada_id) {
+    throw new Error('temporada_id é obrigatório — selecione uma liga/temporada antes de consultar jogos.');
+  }
+  return temporada_id;
+}
 
 /** Fetch paginated games with team joins */
 export async function fetchJogosPaginated(filters: JogosFilters = {}) {
-  const { page = 1, pageSize = 10, rodada, time, temporada_id = DEFAULT_TEMPORADA } = filters;
+  const { page = 1, pageSize = 10, rodada, time } = filters;
+  const temporada_id = assertTemporada(filters.temporada_id);
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
