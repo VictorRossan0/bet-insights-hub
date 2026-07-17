@@ -8,29 +8,30 @@ import FormNovoJogo from '@/components/FormNovoJogo';
 import { fetchJogosPaginated as fetchJogosResumo, fetchRodadas } from '@/services/api/games.api';
 import { importJogosValidated, parseCSV } from '@/services/supabase/importService';
 import { useAuth } from '@/hooks/useAuth';
+import { useLiga } from '@/contexts/LigaContext';
 import { toast } from 'sonner';
-
-const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022 };
 
 export default function Jogos() {
   const [page, setPage] = useState(1);
-  const [temporadaId, setTemporadaId] = useState(1);
   const [rodadaFilter, setRodadaFilter] = useState<number | undefined>();
   const [timeFilter, setTimeFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const pageSize = 10;
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
-  const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
+  const { temporadaAtualId, ligaAtual } = useLiga();
+  const ligaNome = ligaAtual?.nome ?? 'Liga';
 
   const { data: jogosData, isLoading } = useQuery({
-    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaId],
-    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaId }),
+    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaAtualId],
+    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaAtualId! }),
+    enabled: !!temporadaAtualId,
   });
 
   const { data: rodadas } = useQuery({
-    queryKey: ['rodadas', temporadaId],
-    queryFn: () => fetchRodadas(temporadaId),
+    queryKey: ['rodadas', temporadaAtualId],
+    queryFn: () => fetchRodadas(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const invalidateAll = useCallback(() => {
