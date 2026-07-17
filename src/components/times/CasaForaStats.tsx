@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Home, Plane } from 'lucide-react';
 import { computeStatsCasaFora as fetchStatsCasaFora } from '@/services/domain/stats.service';
+import { useLiga } from '@/contexts/LigaContext';
 import type { StatsCasaFora } from '@/types/database';
 
 type Metric = 'gols' | 'esc' | 'cart';
@@ -23,10 +24,12 @@ function getForaValue(s: StatsCasaFora, metric: Metric) {
 
 export default function CasaForaStats() {
   const [metric, setMetric] = useState<Metric>('gols');
+  const { temporadaAtualId } = useLiga();
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['stats-casa-fora'],
-    queryFn: fetchStatsCasaFora,
+    queryKey: ['stats-casa-fora', temporadaAtualId],
+    queryFn: () => fetchStatsCasaFora(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const chartData = useMemo(() => {

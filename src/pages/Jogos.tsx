@@ -8,29 +8,30 @@ import FormNovoJogo from '@/components/FormNovoJogo';
 import { fetchJogosPaginated as fetchJogosResumo, fetchRodadas } from '@/services/api/games.api';
 import { importJogosValidated, parseCSV } from '@/services/supabase/importService';
 import { useAuth } from '@/hooks/useAuth';
+import { useLiga } from '@/contexts/LigaContext';
 import { toast } from 'sonner';
-
-const TEMPORADA_ANO: Record<number, number> = { 1: 2026, 2: 2025, 3: 2024, 4: 2023, 5: 2022 };
 
 export default function Jogos() {
   const [page, setPage] = useState(1);
-  const [temporadaId, setTemporadaId] = useState(1);
   const [rodadaFilter, setRodadaFilter] = useState<number | undefined>();
   const [timeFilter, setTimeFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const pageSize = 10;
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
-  const ano = TEMPORADA_ANO[temporadaId] ?? temporadaId;
+  const { temporadaAtualId, ligaAtual } = useLiga();
+  const ligaNome = ligaAtual?.nome ?? 'Liga';
 
   const { data: jogosData, isLoading } = useQuery({
-    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaId],
-    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaId }),
+    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaAtualId],
+    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaAtualId! }),
+    enabled: !!temporadaAtualId,
   });
 
   const { data: rodadas } = useQuery({
-    queryKey: ['rodadas', temporadaId],
-    queryFn: () => fetchRodadas(temporadaId),
+    queryKey: ['rodadas', temporadaAtualId],
+    queryFn: () => fetchRodadas(temporadaAtualId!),
+    enabled: !!temporadaAtualId,
   });
 
   const invalidateAll = useCallback(() => {
@@ -68,7 +69,7 @@ export default function Jogos() {
         // Set temporada_id if missing
         jogos = jogos.map((j: Record<string, unknown>) => ({
           ...j,
-          temporada_id: j.temporada_id ?? temporadaId,
+          temporada_id: j.temporada_id ?? temporadaAtualId,
         }));
 
         const { inserted, duplicates } = await importJogosValidated(jogos);
@@ -88,7 +89,7 @@ export default function Jogos() {
       }
     };
     input.click();
-  }, [queryClient, temporadaId, invalidateAll]);
+  }, [temporadaAtualId, invalidateAll]);
 
   const btnCls = 'flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent text-xs sm:text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]';
 
@@ -104,7 +105,7 @@ export default function Jogos() {
       >
         <div>
           <h1 className="text-2xl font-display tracking-wide">Jogos</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Brasileirão Série A {ano}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{ligaNome}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={handleRefresh} className={btnCls}>
@@ -136,15 +137,6 @@ export default function Jogos() {
         transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex flex-col sm:flex-row gap-3"
       >
-        <select
-          value={temporadaId}
-          onChange={(e) => { setTemporadaId(Number(e.target.value)); setRodadaFilter(undefined); setPage(1); }}
-          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-        >
-          {Object.entries(TEMPORADA_ANO).map(([id, year]) => (
-            <option key={id} value={id}>{year}</option>
-          ))}
-        </select>
 
         <select
           value={rodadaFilter ?? ''}
@@ -187,9 +179,9 @@ export default function Jogos() {
       </motion.div>
 
       {/* Form Modal */}
-      {showForm && (
+      {showForm && temporadaAtualId && (
         <FormNovoJogo
-          temporadaId={temporadaId}
+          temporadaId={temporadaAtualId}
           onSuccess={invalidateAll}
           onClose={() => setShowForm(false)}
         />

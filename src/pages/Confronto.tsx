@@ -12,8 +12,7 @@ import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCas
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente, rpcGetConfigCantosLiga } from '@/services/api/stats-views.api';
 import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes, getPosicaoAtual } from '@/services/domain/poisson.service';
 import { calculateOver9CantosRecommendation } from '@/services/domain/betting.service';
-
-const TEMPORADA_ATUAL = 1;
+import { useLiga } from '@/contexts/LigaContext';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
@@ -22,6 +21,7 @@ const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, tr
 export default function Confronto() {
   const [timeAId, setTimeAId] = useState<number | null>(null);
   const [timeBId, setTimeBId] = useState<number | null>(null);
+  const { temporadaAtualId } = useLiga();
 
   const { data: times } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
@@ -38,9 +38,9 @@ export default function Confronto() {
   });
 
   const { data: casaFora } = useQuery({
-    queryKey: ['stats-casa-fora'],
-    queryFn: fetchStatsCasaFora,
-    enabled: !!timeAId && !!timeBId,
+    queryKey: ['stats-casa-fora', temporadaAtualId],
+    queryFn: () => fetchStatsCasaFora(temporadaAtualId!),
+    enabled: !!timeAId && !!timeBId && !!temporadaAtualId,
   });
 
   // Forma recente (RPCs) — para o filtro de confirmação do Over 9 Cantos
@@ -73,14 +73,14 @@ export default function Confronto() {
   });
 
   const { data: posicaoA } = useQuery({
-    queryKey: ['posicao-atual', timeAId, TEMPORADA_ATUAL],
-    queryFn: () => getPosicaoAtual(timeAId!, TEMPORADA_ATUAL),
-    enabled: !!timeAId,
+    queryKey: ['posicao-atual', timeAId, temporadaAtualId],
+    queryFn: () => getPosicaoAtual(timeAId!, temporadaAtualId!),
+    enabled: !!timeAId && !!temporadaAtualId,
   });
   const { data: posicaoB } = useQuery({
-    queryKey: ['posicao-atual', timeBId, TEMPORADA_ATUAL],
-    queryFn: () => getPosicaoAtual(timeBId!, TEMPORADA_ATUAL),
-    enabled: !!timeBId,
+    queryKey: ['posicao-atual', timeBId, temporadaAtualId],
+    queryFn: () => getPosicaoAtual(timeBId!, temporadaAtualId!),
+    enabled: !!timeBId && !!temporadaAtualId,
   });
 
   const duploZ4 = !!posicaoA && !!posicaoB && posicaoA > 16 && posicaoB > 16;

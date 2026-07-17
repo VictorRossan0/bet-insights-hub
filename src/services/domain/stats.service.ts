@@ -12,7 +12,10 @@ import type {
   StatsH2H,
 } from '@/types/database';
 
-const DEFAULT_TEMPORADA = 1;
+function requireTid(temporada_id: number | null | undefined): number {
+  if (!temporada_id) throw new Error('temporada_id é obrigatório — aguarde a liga carregar.');
+  return temporada_id;
+}
 
 // ── Helpers ───────────────────────────────────────────────
 
@@ -26,8 +29,8 @@ function avg(arr: JogoComTimesRaw[], getter: (j: JogoComTimesRaw) => number): nu
 
 // ── Accumulated Stats ─────────────────────────────────────
 
-export async function computeStatsAcumulado(temporada_id: number = DEFAULT_TEMPORADA): Promise<StatsAcumulado | null> {
-  const jogos = await fetchAllJogos(temporada_id);
+export async function computeStatsAcumulado(temporada_id: number): Promise<StatsAcumulado | null> {
+  const jogos = await fetchAllJogos(requireTid(temporada_id));
   if (jogos.length === 0) return null;
 
   return {
@@ -49,8 +52,8 @@ export async function computeStatsAcumulado(temporada_id: number = DEFAULT_TEMPO
 
 // ── Stats per Rodada ──────────────────────────────────────
 
-export async function computeStatsPorRodada(temporada_id: number = DEFAULT_TEMPORADA): Promise<StatsPorRodada[]> {
-  const jogos = await fetchAllJogos(temporada_id);
+export async function computeStatsPorRodada(temporada_id: number): Promise<StatsPorRodada[]> {
+  const jogos = await fetchAllJogos(requireTid(temporada_id));
   if (jogos.length === 0) return [];
 
   const grouped = new Map<number, JogoComTimesRaw[]>();
@@ -78,9 +81,9 @@ export async function computeStatsPorRodada(temporada_id: number = DEFAULT_TEMPO
 
 // ── Stats per Team ────────────────────────────────────────
 
-export async function computeStatsPorTime(): Promise<StatsPorTime[]> {
+export async function computeStatsPorTime(temporada_id: number): Promise<StatsPorTime[]> {
   const [jogos, allTimes] = await Promise.all([
-    fetchAllJogos(DEFAULT_TEMPORADA),
+    fetchAllJogos(requireTid(temporada_id)),
     fetchTimes(),
   ]);
   if (jogos.length === 0) return [];
@@ -125,8 +128,8 @@ export async function computeStatsPorTime(): Promise<StatsPorTime[]> {
 
 // ── Stats Casa/Fora ───────────────────────────────────────
 
-export async function computeStatsCasaFora(): Promise<StatsCasaFora[]> {
-  const jogos = await fetchAllJogos(DEFAULT_TEMPORADA);
+export async function computeStatsCasaFora(temporada_id: number): Promise<StatsCasaFora[]> {
+  const jogos = await fetchAllJogos(requireTid(temporada_id));
   if (jogos.length === 0) return [];
 
   const teamMap = new Map<string, { nome: string; sigla: string; gc: number; ec: number; cc: number; jc: number; gf: number; ef: number; cf: number; jf: number }>();
