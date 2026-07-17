@@ -128,8 +128,8 @@ export async function computeStatsPorTime(temporada_id: number): Promise<StatsPo
 
 // ── Stats Casa/Fora ───────────────────────────────────────
 
-export async function computeStatsCasaFora(): Promise<StatsCasaFora[]> {
-  const jogos = await fetchAllJogos(DEFAULT_TEMPORADA);
+export async function computeStatsCasaFora(temporada_id: number): Promise<StatsCasaFora[]> {
+  const jogos = await fetchAllJogos(requireTid(temporada_id));
   if (jogos.length === 0) return [];
 
   const teamMap = new Map<string, { nome: string; sigla: string; gc: number; ec: number; cc: number; jc: number; gf: number; ef: number; cf: number; jf: number }>();
