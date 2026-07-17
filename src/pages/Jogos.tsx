@@ -69,7 +69,7 @@ export default function Jogos() {
         // Set temporada_id if missing
         jogos = jogos.map((j: Record<string, unknown>) => ({
           ...j,
-          temporada_id: j.temporada_id ?? temporadaId,
+          temporada_id: j.temporada_id ?? temporadaAtualId,
         }));
 
         const { inserted, duplicates } = await importJogosValidated(jogos);
@@ -89,7 +89,7 @@ export default function Jogos() {
       }
     };
     input.click();
-  }, [queryClient, temporadaId, invalidateAll]);
+  }, [temporadaAtualId, invalidateAll]);
 
   const btnCls = 'flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent text-xs sm:text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97]';
 
