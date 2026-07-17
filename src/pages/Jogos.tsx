@@ -179,9 +179,9 @@ export default function Jogos() {
       </motion.div>
 
       {/* Form Modal */}
-      {showForm && (
+      {showForm && temporadaAtualId && (
         <FormNovoJogo
-          temporadaId={temporadaId}
+          temporadaId={temporadaAtualId}
           onSuccess={invalidateAll}
           onClose={() => setShowForm(false)}
         />
