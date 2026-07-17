@@ -76,7 +76,7 @@ export default function Dashboard() {
         transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <h2 className="text-lg font-semibold mb-4">🎯 Mercados</h2>
-        <MarketCards stats={stats ?? null} prevStats={prevStats ?? null} isLoading={loadingStats} />
+        <MarketCards stats={stats ?? null} prevStats={null} isLoading={loadingStats} />
       </motion.div>
 
       {/* Charts */}
