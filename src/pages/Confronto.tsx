@@ -12,8 +12,7 @@ import { computeStatsH2H as fetchStatsH2H, computeStatsCasaFora as fetchStatsCas
 import { fetchStatsH2HEnhanced, rpcGetH2HEscanteiosRecente, rpcGetFormaEscanteiosRecente, rpcGetConfigCantosLiga } from '@/services/api/stats-views.api';
 import { getProbabilidadeOver25Gols, getProbabilidadeOver7Cartoes, getPosicaoAtual } from '@/services/domain/poisson.service';
 import { calculateOver9CantosRecommendation } from '@/services/domain/betting.service';
-
-const TEMPORADA_ATUAL = 1;
+import { useLiga } from '@/contexts/LigaContext';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
