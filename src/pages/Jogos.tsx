@@ -137,11 +137,6 @@ export default function Jogos() {
         transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex flex-col sm:flex-row gap-3"
       >
-        <select
-          value={rodadaFilter ?? ''}
-          onChange={(e) => { setRodadaFilter(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-          className="bg-secondary text-secondary-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-        >
 
         <select
           value={rodadaFilter ?? ''}
