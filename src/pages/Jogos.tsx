@@ -105,7 +105,7 @@ export default function Jogos() {
       >
         <div>
           <h1 className="text-2xl font-display tracking-wide">Jogos</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Brasileirão Série A {ano}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{ligaNome}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={handleRefresh} className={btnCls}>
