@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import { LigaProvider } from "@/contexts/LigaContext";
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Jogos from "@/pages/Jogos";
@@ -32,21 +33,29 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/health" element={<Health />} />
-            <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/jogos" element={<Jogos />} />
-              <Route path="/historico" element={<Historico />} />
-              <Route path="/times" element={<Times />} />
-              <Route path="/times/:id" element={<TimePerfil />} />
-              <Route path="/confronto" element={<Confronto />} />
-              <Route path="/backtesting" element={<Backtesting />} />
-              <Route path="/admin" element={<Admin />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <LigaProvider>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/health" element={<Health />} />
+              <Route path="/" element={<Navigate to="/bra.1" replace />} />
+
+              <Route path="/admin" element={<Layout showLigaNav={false} />}>
+                <Route index element={<Admin />} />
+              </Route>
+
+              <Route path="/:ligaSlug" element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="jogos" element={<Jogos />} />
+                <Route path="historico" element={<Historico />} />
+                <Route path="times" element={<Times />} />
+                <Route path="times/:id" element={<TimePerfil />} />
+                <Route path="confronto" element={<Confronto />} />
+                <Route path="backtesting" element={<Backtesting />} />
+              </Route>
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </LigaProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
