@@ -144,7 +144,7 @@ export async function fetchAllJogos(temporada_id: number): Promise<JogoComTimesR
 }
 
 /** Fetch distinct rodadas for a season */
-export async function fetchRodadas(temporada_id: number = DEFAULT_TEMPORADA): Promise<number[]> {
+export async function fetchRodadas(temporada_id: number): Promise<number[]> {
   const { data, error } = await supabase
     .from('jogos')
     .select('rodada')
