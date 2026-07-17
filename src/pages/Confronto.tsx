@@ -21,6 +21,7 @@ const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, tr
 export default function Confronto() {
   const [timeAId, setTimeAId] = useState<number | null>(null);
   const [timeBId, setTimeBId] = useState<number | null>(null);
+  const { temporadaAtualId } = useLiga();
 
   const { data: times } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
@@ -37,9 +38,9 @@ export default function Confronto() {
   });
 
   const { data: casaFora } = useQuery({
-    queryKey: ['stats-casa-fora'],
-    queryFn: fetchStatsCasaFora,
-    enabled: !!timeAId && !!timeBId,
+    queryKey: ['stats-casa-fora', temporadaAtualId],
+    queryFn: () => fetchStatsCasaFora(temporadaAtualId!),
+    enabled: !!timeAId && !!timeBId && !!temporadaAtualId,
   });
 
   // Forma recente (RPCs) — para o filtro de confirmação do Over 9 Cantos
