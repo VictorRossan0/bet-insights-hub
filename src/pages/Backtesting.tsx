@@ -196,7 +196,9 @@ export default function Backtesting() {
           <h2 className="font-display text-lg">Modelos vs. baseline real</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-border bg-card text-card-foreground p-4">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">Over 5 Cantos (legado)</div>
+              <div className="text-xs uppercase tracking-wider font-semibold" style={{ color: "hsl(150 39% 30%)" }}>
+                Over 5 Cantos (legado)
+              </div>
               <div className="text-2xl font-display mt-1">{loading5 ? "…" : over5 ? `${taxa5.toFixed(1)}%` : "—"}</div>
               {over5 && (
                 <>
@@ -218,7 +220,9 @@ export default function Backtesting() {
               {err5 && <div className="text-xs text-bet-red mt-1">Erro ao carregar backtest.</div>}
             </div>
             <div className="rounded-lg border border-border bg-card text-card-foreground p-4">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">Over 9 Cantos (novo)</div>
+              <div className="text-xs uppercase tracking-wider font-semibold" style={{ color: "hsl(150 39% 30%)" }}>
+                Over 9 Cantos (novo)
+              </div>
               <div className="text-2xl font-display mt-1 text-bet-green">
                 {loading9 ? "…" : over9 ? `${taxa9.toFixed(1)}%` : "—"}
               </div>
