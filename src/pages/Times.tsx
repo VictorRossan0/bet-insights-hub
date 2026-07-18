@@ -547,7 +547,7 @@ export default function Times() {
                 <BarChart data={barChartData} layout="vertical" margin={{ left: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14%)" horizontal={false} />
                   <XAxis type="number" tick={{ fontSize: 11, fill: "hsl(0 0% 55%)" }} />
-                  <YAxis type="category" dataKey="nome" width={110} tick={{ fontSize: 11, fill: "hsl(0 0% 75%)" }} />
+                  <YAxis type="category" dataKey="nome" width={110} tick={{ fontSize: 11, fill: "hsl(160 20% 12%)" }} />
                   <Tooltip
                     contentStyle={{
                       background: "hsl(0 0% 7%)",
