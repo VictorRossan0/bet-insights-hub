@@ -3,18 +3,6 @@
  */
 import { supabase } from "@/services/supabase/client";
 
-export async function fetchTimes(): Promise<{ id: number; nome: string; sigla: string }[]> {
-  const { data, error } = await supabase.from("times").select("id, nome, sigla").order("nome");
-  if (error) throw error;
-  return data || [];
-}
-
-export async function fetchTimeById(id: number): Promise<{ nome: string } | null> {
-  const { data, error } = await supabase.from("times").select("nome").eq("id", id).single();
-  if (error) return null;
-  return data;
-}
-
 export async function fetchTimes(competicaoId?: number): Promise<{ id: number; nome: string; sigla: string }[]> {
   let query = supabase.from("times").select("id, nome, sigla").order("nome");
   if (competicaoId) {
@@ -23,6 +11,12 @@ export async function fetchTimes(competicaoId?: number): Promise<{ id: number; n
   const { data, error } = await query;
   if (error) throw error;
   return data || [];
+}
+
+export async function fetchTimeById(id: number): Promise<{ nome: string } | null> {
+  const { data, error } = await supabase.from("times").select("nome").eq("id", id).single();
+  if (error) return null;
+  return data;
 }
 
 /**
