@@ -205,7 +205,7 @@ export default function Times() {
                 <select
                   value={untilRodada ?? ""}
                   onChange={(e) => setUntilRodada(e.target.value ? Number(e.target.value) : undefined)}
-                  className="bg-secondary border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="bg-secondary text-foreground border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">Todas (atual)</option>
                   {allRounds.map((r) => (
@@ -410,7 +410,7 @@ export default function Times() {
                     setEvolutionTeams([...evolutionTeams, v]);
                   }
                 }}
-                className="bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                className="bg-secondary text-foreground border border-border rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 <option value="">+ Adicionar time...</option>
                 {allTeamNames
