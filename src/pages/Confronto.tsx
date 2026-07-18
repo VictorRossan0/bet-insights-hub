@@ -493,23 +493,21 @@ export default function Confronto() {
               {h2hEnhanced.map((row, idx) => (
                 <div key={idx} className="space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                    <div className="bg-secondary/50 rounded-lg p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">O5 Cantos</p>
-                      <p className="font-mono font-bold" style={{ color: "#34d399" }}>
-                        {row.pct_o5.toFixed(0)}%
-                      </p>
+                    <div className="bg-black/5 border border-border rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">O5 Cantos</p>
+                      <p className="font-mono font-bold text-bet-green">{row.pct_o5.toFixed(0)}%</p>
                     </div>
-                    <div className="bg-secondary/50 rounded-lg p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">O6 Cantos</p>
-                      <p className="font-mono font-bold text-white">{row.pct_o6.toFixed(0)}%</p>
+                    <div className="bg-black/5 border border-border rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">O6 Cantos</p>
+                      <p className="font-mono font-bold text-foreground">{row.pct_o6.toFixed(0)}%</p>
                     </div>
-                    <div className="bg-secondary/50 rounded-lg p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">U3.5 Gols</p>
-                      <p className="font-mono font-bold text-white">{row.pct_u35_gols.toFixed(0)}%</p>
+                    <div className="bg-black/5 border border-border rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">U3.5 Gols</p>
+                      <p className="font-mono font-bold text-foreground">{row.pct_u35_gols.toFixed(0)}%</p>
                     </div>
-                    <div className="bg-secondary/50 rounded-lg p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">U7 Cart.</p>
-                      <p className="font-mono font-bold text-white">{row.pct_u7_cart.toFixed(0)}%</p>
+                    <div className="bg-black/5 border border-border rounded-lg p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">U7 Cart.</p>
+                      <p className="font-mono font-bold text-foreground">{row.pct_u7_cart.toFixed(0)}%</p>
                     </div>
                   </div>
                   <div className="flex justify-center py-2">
