@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { rpcGetTeamForm, rpcCalculateMarketProbability, fetchStatsTeamForm } from '@/services/api/stats-views.api';
 import type { MarketProbabilityRow, StatsTeamForm } from '@/types/database';
+import { useLiga } from '@/contexts/LigaContext';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -35,6 +36,7 @@ function ConfidenceBadge({ level }: { level: string }) {
 export default function TimePerfil() {
   const { id } = useParams<{ id: string }>();
   const teamId = Number(id);
+  const { ligaAtual } = useLiga();
 
   const { data: teamForm } = useQuery({
     queryKey: ['stats-team-form'],
@@ -57,7 +59,7 @@ export default function TimePerfil() {
 
   return (
     <div className="page-container space-y-6">
-      <SEO title={team?.team_nome ?? `Time #${teamId}`} description={`Perfil estatístico de ${team?.team_nome ?? "time"} no Brasileirão Série A: forma, mercados e últimos jogos.`} path={`/times/${teamId}`} />
+      <SEO title={team?.team_nome ?? `Time #${teamId}`} description={`Perfil estatístico de ${team?.team_nome ?? "time"}${ligaAtual?.nome ? ` no ${ligaAtual.nome}` : ''}: forma, mercados e últimos jogos.`} path={`/times/${teamId}`} />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

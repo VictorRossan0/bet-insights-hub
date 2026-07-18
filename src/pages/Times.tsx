@@ -40,7 +40,7 @@ export default function Times() {
   const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
   const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
-  const { temporadaAtualId } = useLiga();
+  const { temporadaAtualId, ligaAtual } = useLiga();
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time', temporadaAtualId],
@@ -118,7 +118,7 @@ export default function Times() {
 
   return (
     <div className="page-container space-y-8">
-      <SEO title="Times do Brasileirão" description="Classificação, forma recente, comparação H2H e estatísticas casa/fora dos clubes do Brasileirão Série A." path="/times" />
+      <SEO title={`Times — ${ligaAtual?.nome ?? ''}`.trim()} description={`Classificação, forma recente, comparação H2H e estatísticas casa/fora dos clubes${ligaAtual?.nome ? ` do ${ligaAtual.nome}` : ''}.`} path="/times" />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -156,7 +156,7 @@ export default function Times() {
               <div className="flex items-center gap-2">
                 <span className="text-sm">🔥</span>
                 <h2 className="text-sm font-semibold">
-                  Classificação — Brasileirão 2026
+                  Classificação — {ligaAtual?.nome ?? '...'}
                   {untilRodada != null && <span className="text-muted-foreground font-normal"> · até a rodada {untilRodada}</span>}
                 </h2>
               </div>
@@ -264,7 +264,7 @@ export default function Times() {
                         </td>
                         <td>
                           {teamIdByName.get(t.team_nome) != null && (
-                            <Link to={`/times/${teamIdByName.get(t.team_nome)}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                            <Link to={`/${ligaAtual?.espn_slug ?? ''}/times/${teamIdByName.get(t.team_nome)}`} className="text-muted-foreground hover:text-foreground transition-colors">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </Link>
                           )}

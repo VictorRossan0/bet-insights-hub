@@ -21,7 +21,7 @@ const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, tr
 export default function Confronto() {
   const [timeAId, setTimeAId] = useState<number | null>(null);
   const [timeBId, setTimeBId] = useState<number | null>(null);
-  const { temporadaAtualId } = useLiga();
+  const { temporadaAtualId, ligaAtual } = useLiga();
 
   const { data: times } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
@@ -179,7 +179,7 @@ export default function Confronto() {
 
   return (
     <div className="page-container space-y-6">
-      <SEO title="Confronto H2H" description="Comparação histórica entre dois clubes do Brasileirão: estatísticas, mando de campo e recomendação automática." path="/confronto" />
+      <SEO title="Confronto H2H" description={`Comparação histórica entre dois clubes${ligaAtual?.nome ? ` do ${ligaAtual.nome}` : ''}: estatísticas, mando de campo e recomendação automática.`} path="/confronto" />
       {/* Header */}
       <motion.div {...anim}>
         <h1 className="text-2xl font-display tracking-wide">Confronto H2H</h1>
