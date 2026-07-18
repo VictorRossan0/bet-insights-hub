@@ -8,7 +8,9 @@ export type Liga = {
   nome: string;
   espn_slug: string;
   pais?: string | null;
+  mostra_recomendacao_cantos?: boolean | null;
 };
+
 
 type LigaContextValue = {
   ligaAtual: Liga | null;
@@ -39,8 +41,9 @@ export function LigaProvider({ children }: { children: ReactNode }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("competicoes")
-        .select("id, nome, espn_slug, pais")
+        .select("id, nome, espn_slug, pais, mostra_recomendacao_cantos")
         .order("id", { ascending: true });
+
       if (error) throw error;
       return (data || []) as Liga[];
     },
