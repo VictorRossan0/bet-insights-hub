@@ -264,7 +264,7 @@ export default function Times() {
                         </td>
                         <td>
                           {teamIdByName.get(t.team_nome) != null && (
-                            <Link to={`/times/${teamIdByName.get(t.team_nome)}`} className="text-muted-foreground hover:text-foreground transition-colors">
+                            <Link to={`/${ligaAtual?.slug ?? ''}/times/${teamIdByName.get(t.team_nome)}`} className="text-muted-foreground hover:text-foreground transition-colors">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </Link>
                           )}
