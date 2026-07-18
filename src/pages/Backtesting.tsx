@@ -217,7 +217,7 @@ export default function Backtesting() {
               )}
               {err5 && <div className="text-xs text-bet-red mt-1">Erro ao carregar backtest.</div>}
             </div>
-            <div className="rounded-lg border border-border bg-card p-4">
+            <div className="rounded-lg border border-border bg-card text-card-foreground p-4">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">Over 9 Cantos (novo)</div>
               <div className="text-2xl font-display mt-1 text-bet-green">
                 {loading9 ? "…" : over9 ? `${taxa9.toFixed(1)}%` : "—"}
