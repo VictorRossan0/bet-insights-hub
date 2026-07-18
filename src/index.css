@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700;800;900&family=Work+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700;800;900&family=Work+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -54,19 +54,19 @@
 
     /* Semantic betting tokens — remapped to the Súmula palette
        (names kept for backwards compatibility with existing components) */
-    --bet-green: 47 68% 47%;       /* Gold — positive / apostar (dark surfaces) */
+    --bet-green: 47 68% 47%; /* Gold — positive / apostar (dark surfaces) */
     --bet-green-on-paper: 47 80% 24%; /* AA-safe gold text on aged paper (incl. hover rows) */
-    --bet-red: 5 59% 44%;          /* Stamp red — negative / evitar */
-    --bet-yellow: 47 68% 47%;      /* Gold */
-    --bet-blue: 150 39% 30%;       /* Moss — neutral / secondary */
+    --bet-red: 5 59% 44%; /* Stamp red — negative / evitar */
+    --bet-yellow: 47 68% 47%; /* Gold */
+    --bet-blue: 150 39% 30%; /* Moss — neutral / secondary */
     --bet-moss: 150 39% 30%;
-    --bet-green-raw: #C9A227;
-    --bet-red-raw: #B23A2E;
+    --bet-green-raw: #c9a227;
+    --bet-red-raw: #b23a2e;
 
     /* On-paper tokens — for cards that use the paper surface */
     --paper: 41 36% 88%;
     --paper-foreground: 156 17% 12%;
-    --paper-muted: 41 20% 32%;     /* AA on paper (4.5:1+) */
+    --paper-muted: 41 20% 32%; /* AA on paper (4.5:1+) */
     --paper-border: 41 25% 72%;
 
     /* Sidebar (dark chrome) */
@@ -95,7 +95,12 @@
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display tracking-tight;
     text-wrap: balance;
   }
@@ -105,7 +110,11 @@
   }
 
   /* Tabular numerics everywhere by default — LED scoreboard feel */
-  .font-mono, code, kbd, samp, pre {
+  .font-mono,
+  code,
+  kbd,
+  samp,
+  pre {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
   }
@@ -126,8 +135,12 @@
     background-image:
       radial-gradient(hsl(41 30% 78% / 0.35) 1px, transparent 1px),
       radial-gradient(hsl(41 30% 82% / 0.25) 1px, transparent 1px);
-    background-size: 3px 3px, 7px 7px;
-    background-position: 0 0, 1px 2px;
+    background-size:
+      3px 3px,
+      7px 7px;
+    background-position:
+      0 0,
+      1px 2px;
   }
 
   .card-bet .text-muted-foreground {
@@ -212,7 +225,7 @@
   }
   .table-bet th {
     @apply text-left text-[11px] font-display font-bold uppercase tracking-widest px-3 py-3 border-b;
-    color: hsl(var(--paper-muted));
+    color: hsl(160 20% 12%);
     border-color: hsl(var(--paper-border));
   }
   .table-bet td {
@@ -233,7 +246,7 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.35rem 0.9rem;
-    font-family: 'Roboto Slab', Georgia, serif;
+    font-family: "Roboto Slab", Georgia, serif;
     font-weight: 800;
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -248,7 +261,7 @@
     filter: contrast(1.05);
   }
   .verdict-stamp::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: -3px;
     border-radius: inherit;
@@ -257,15 +270,27 @@
     pointer-events: none;
     mix-blend-mode: multiply;
   }
-  .verdict-stamp--gold  { color: hsl(47 80% 24%); }
-  .verdict-stamp--red   { color: hsl(5 65% 38%); }
-  .verdict-stamp--moss  { color: hsl(150 45% 24%); }
+  .verdict-stamp--gold {
+    color: hsl(47 80% 24%);
+  }
+  .verdict-stamp--red {
+    color: hsl(5 65% 38%);
+  }
+  .verdict-stamp--moss {
+    color: hsl(150 45% 24%);
+  }
 }
 
 @layer utilities {
-  .text-bet-green { color: hsl(var(--bet-green)); }
-  .text-bet-red   { color: hsl(var(--bet-red)); }
-  .bg-bet-green   { background-color: hsl(var(--bet-green)); }
+  .text-bet-green {
+    color: hsl(var(--bet-green));
+  }
+  .text-bet-red {
+    color: hsl(var(--bet-red));
+  }
+  .bg-bet-green {
+    background-color: hsl(var(--bet-green));
+  }
 
   .scrollbar-thin {
     scrollbar-width: thin;
@@ -273,7 +298,7 @@
   }
 
   .font-scoreboard {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     letter-spacing: 0.02em;
