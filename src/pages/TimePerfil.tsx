@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { rpcGetTeamForm, rpcCalculateMarketProbability, fetchStatsTeamForm } from '@/services/api/stats-views.api';
 import type { MarketProbabilityRow, StatsTeamForm } from '@/types/database';
+import { useLiga } from '@/contexts/LigaContext';
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
