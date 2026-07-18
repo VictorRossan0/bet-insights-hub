@@ -156,7 +156,7 @@ export default function Times() {
               <div className="flex items-center gap-2">
                 <span className="text-sm">🔥</span>
                 <h2 className="text-sm font-semibold">
-                  Classificação — Brasileirão 2026
+                  Classificação — {ligaAtual?.nome ?? '...'}
                   {untilRodada != null && <span className="text-muted-foreground font-normal"> · até a rodada {untilRodada}</span>}
                 </h2>
               </div>
