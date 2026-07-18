@@ -40,7 +40,7 @@ export default function Times() {
   const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
   const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
-  const { temporadaAtualId } = useLiga();
+  const { temporadaAtualId, ligaAtual } = useLiga();
 
   const { data: times, isLoading } = useQuery({
     queryKey: ['stats-por-time', temporadaAtualId],
