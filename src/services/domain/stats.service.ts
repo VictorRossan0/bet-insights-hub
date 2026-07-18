@@ -3,6 +3,8 @@
  * Receives raw data from api/ layer, transforms and returns domain objects.
  */
 import { fetchAllJogos, fetchH2HGames, type JogoComTimesRaw } from '@/services/api/games.api';
+import { supabase } from '@/services/supabase/client';
+
 import { fetchTimeById, fetchTimes } from '@/services/api/teams.api';
 import type {
   StatsAcumulado,
