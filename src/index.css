@@ -237,7 +237,7 @@
     @apply transition-colors duration-150;
   }
   .table-bet tr:hover {
-    background: hsl(41 30% 82%);
+    background: hsl(150 14% 16%);
   }
 
   /* VerdictStamp — rubber-stamp look. Variants: gold/red/moss */
