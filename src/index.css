@@ -225,7 +225,7 @@
   }
   .table-bet th {
     @apply text-left text-[11px] font-display font-bold uppercase tracking-widest px-3 py-3 border-b;
-    color: hsl(160 20% 12%);
+    color: white;
     border-color: hsl(var(--paper-border));
   }
   .table-bet td {
