@@ -646,7 +646,7 @@ export default function Times() {
                 <select
                   value={compareA}
                   onChange={(e) => setCompareA(e.target.value)}
-                  className="flex-1 bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="flex-1 bg-secondary text-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">Selecionar time A</option>
                   {times?.map((t) => (
@@ -658,7 +658,7 @@ export default function Times() {
                 <select
                   value={compareB}
                   onChange={(e) => setCompareB(e.target.value)}
-                  className="flex-1 bg-secondary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="flex-1 bg-secondary text-foreground border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   <option value="">Selecionar time B</option>
                   {times?.map((t) => (
@@ -674,7 +674,7 @@ export default function Times() {
                   <ResponsiveContainer width="100%" height={260}>
                     <RadarChart data={radarData}>
                       <PolarGrid stroke="hsl(0 0% 14%)" />
-                      <PolarAngleAxis dataKey="stat" tick={{ fontSize: 11, fill: "hsl(0 0% 75%)" }} />
+                      <PolarAngleAxis dataKey="stat" tick={{ fontSize: 11, fill: "hsl(160 20% 12%)" }} />
                       <PolarRadiusAxis tick={false} axisLine={false} />
                       <Radar
                         name={teamA.nome}
