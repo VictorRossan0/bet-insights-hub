@@ -36,6 +36,7 @@ function ConfidenceBadge({ level }: { level: string }) {
 export default function TimePerfil() {
   const { id } = useParams<{ id: string }>();
   const teamId = Number(id);
+  const { ligaAtual } = useLiga();
 
   const { data: teamForm } = useQuery({
     queryKey: ['stats-team-form'],
