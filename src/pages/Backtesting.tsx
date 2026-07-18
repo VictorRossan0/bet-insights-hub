@@ -227,7 +227,7 @@ export default function Backtesting() {
                 {loading9 ? "…" : over9 ? `${taxa9.toFixed(1)}%` : "—"}
               </div>
               {over9 && (
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-xs text-muted-foreground mt-1" style={{ color: "hsl(150 39% 30%)" }}>
                   Baseline real: {baseline9.toFixed(1)}% —{" "}
                   <span className={edge9 > 0 ? "text-bet-green" : "text-bet-red"}>
                     {edge9 > 0 ? "+" : ""}
