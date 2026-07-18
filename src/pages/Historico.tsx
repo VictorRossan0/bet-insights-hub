@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { computeStatsPorTemporada as fetchStatsPorTemporada } from '@/services/domain/stats.service';
+import { fetchStatsPorTemporadaLiga } from '@/services/domain/stats.service';
+import { useLiga } from '@/contexts/LigaContext';
 import { useMemo, useState } from 'react';
 
 type Metric = 'media_gols' | 'media_escanteios' | 'media_cartoes' | 'pct_o5_cantos' | 'pct_o6_cantos' | 'pct_u35_gols';
@@ -21,11 +22,21 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 export default function Historico() {
   const [selectedMetric, setSelectedMetric] = useState<Metric>('media_gols');
+  const { ligaAtual } = useLiga();
+  const ligaId = ligaAtual?.id ?? null;
+  const ligaNome = ligaAtual?.nome ?? 'Liga';
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['stats-por-temporada'],
-    queryFn: fetchStatsPorTemporada,
+    queryKey: ['stats-por-temporada-liga', ligaId],
+    queryFn: () => fetchStatsPorTemporadaLiga(ligaId!),
+    enabled: !!ligaId,
   });
+
+  const anoInicio = stats?.[0]?.ano;
+  const anoFim = stats?.[stats.length - 1]?.ano;
+  const rangeLabel = anoInicio && anoFim
+    ? (anoInicio === anoFim ? `${anoInicio}` : `${anoInicio} a ${anoFim}`)
+    : null;
 
   const insights = useMemo(() => {
     if (!stats || stats.length < 2) return [];
@@ -45,15 +56,22 @@ export default function Historico() {
 
   return (
     <div className="page-container space-y-8">
-      <SEO title="Histórico do Brasileirão" description="Tendências e variações ano a ano dos mercados do Brasileirão Série A entre 2016 e 2026." path="/historico" />
+      <SEO
+        title={`Histórico — ${ligaNome}`}
+        description={`Tendências e variações ano a ano dos mercados de ${ligaNome}${rangeLabel ? ` entre ${rangeLabel}` : ''}.`}
+        path="/historico"
+      />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease }}
       >
         <h1 className="text-2xl font-display tracking-wide">Histórico</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Tendências de 2022 a 2025 — Brasileirão Série A</p>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {rangeLabel ? `Tendências de ${rangeLabel} — ${ligaNome}` : `Tendências — ${ligaNome}`}
+        </p>
       </motion.div>
+
 
       {isLoading ? (
         <div className="space-y-6">
