@@ -243,6 +243,10 @@
   .table-bet tr:hover {
     background: hsl(150 14% 16%);
   }
+  /* Dentro de card papel, o hover precisa ser um tom claro, não escuro */
+  .card-bet .table-bet tr:hover {
+    background: hsl(41 30% 82%);
+  }
 
   /* VerdictStamp — rubber-stamp look. Variants: gold/red/moss */
   .verdict-stamp {
