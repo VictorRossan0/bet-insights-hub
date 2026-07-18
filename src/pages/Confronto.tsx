@@ -21,7 +21,7 @@ const anim = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, tr
 export default function Confronto() {
   const [timeAId, setTimeAId] = useState<number | null>(null);
   const [timeBId, setTimeBId] = useState<number | null>(null);
-  const { temporadaAtualId } = useLiga();
+  const { temporadaAtualId, ligaAtual } = useLiga();
 
   const { data: times } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
 
