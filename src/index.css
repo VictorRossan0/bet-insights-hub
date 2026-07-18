@@ -228,6 +228,10 @@
     color: white;
     border-color: hsl(var(--paper-border));
   }
+  /* Quando a tabela está dentro de um card "papel" (fundo claro), sobrescreve pra tinta escura */
+  .card-bet .table-bet th {
+    color: hsl(160 20% 12%);
+  }
   .table-bet td {
     @apply px-3 py-3 border-b;
     border-color: hsl(var(--paper-border) / 0.5);
