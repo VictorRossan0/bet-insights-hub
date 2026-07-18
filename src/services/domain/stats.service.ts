@@ -187,31 +187,29 @@ export async function computeStatsH2H(idA: number, idB: number): Promise<StatsH2
 
 // ── Stats por Temporada (Histórico) ───────────────────────
 
-const TEMPORADA_ANO_MAP: Record<number, number> = {
-  2: 2025, 3: 2024, 4: 2023, 5: 2022,
+export type StatsPorTemporadaLiga = {
+  competicao_id: number;
+  liga: string | null;
+  temporada_id: number;
+  ano: number;
+  total_jogos: number;
+  media_gols: number;
+  media_escanteios: number;
+  media_cartoes: number;
+  pct_o5_cantos: number;
+  pct_o6_cantos: number;
+  pct_o7_cantos: number;
+  pct_u35_gols: number;
+  pct_u7_cartoes: number;
 };
 
-export async function computeStatsPorTemporada() {
-  const results = [];
-
-  for (const [tidStr, ano] of Object.entries(TEMPORADA_ANO_MAP)) {
-    const tid = Number(tidStr);
-    const jogos = await fetchAllJogos(tid);
-    if (jogos.length === 0) continue;
-
-    results.push({
-      ano,
-      total_jogos: jogos.length,
-      media_gols: avg(jogos, j => j.gols_total),
-      media_escanteios: avg(jogos, j => j.escanteios_total),
-      media_cartoes: avg(jogos, j => j.cartoes_total),
-      pct_o5_cantos: pct(jogos, j => j.o5_cantos),
-      pct_o6_cantos: pct(jogos, j => j.o6_cantos),
-      pct_o7_cantos: pct(jogos, j => j.o7_cantos),
-      pct_u35_gols: pct(jogos, j => j.u35_gols),
-      pct_u7_cartoes: pct(jogos, j => j.u7_cartoes),
-    });
-  }
-
-  return results.sort((a, b) => a.ano - b.ano);
+export async function fetchStatsPorTemporadaLiga(competicaoId: number): Promise<StatsPorTemporadaLiga[]> {
+  const { data, error } = await supabase
+    .from('stats_por_temporada_liga')
+    .select('*')
+    .eq('competicao_id', competicaoId)
+    .order('ano', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as StatsPorTemporadaLiga[];
 }
+
