@@ -495,7 +495,9 @@ export default function Confronto() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                     <div className="bg-secondary/50 rounded-lg p-3">
                       <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">O5 Cantos</p>
-                      <p className="font-mono font-bold text-emerald-400">{row.pct_o5.toFixed(0)}%</p>
+                      <p className="font-mono font-bold" style={{ color: "#34d399" }}>
+                        {row.pct_o5.toFixed(0)}%
+                      </p>
                     </div>
                     <div className="bg-secondary/50 rounded-lg p-3">
                       <p className="text-[10px] uppercase tracking-wider text-white/60 mb-1">O6 Cantos</p>
