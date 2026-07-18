@@ -95,7 +95,7 @@ export default function Jogos() {
 
   return (
     <div className="page-container space-y-6">
-      <SEO title="Jogos do Brasileirão" description="Lista de partidas do Brasileirão Série A com filtros por rodada, mercados de gols, escanteios e cartões." path="/jogos" />
+      <SEO title={`Jogos — ${ligaNome}`} description={`Lista de partidas do ${ligaNome} com filtros por rodada, mercados de gols, escanteios e cartões.`} path="/jogos" />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
