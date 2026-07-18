@@ -202,7 +202,7 @@ export default function Backtesting() {
               <div className="text-2xl font-display mt-1">{loading5 ? "…" : over5 ? `${taxa5.toFixed(1)}%` : "—"}</div>
               {over5 && (
                 <>
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-xs text-muted-foreground mt-1" style={{ color: "hsl(150 39% 30%)" }}>
                     Baseline real: {baseline5.toFixed(1)}% —{" "}
                     <span className={edge5 > 0 ? "text-bet-green" : "text-bet-red"}>
                       {edge5 > 0 ? "+" : ""}
