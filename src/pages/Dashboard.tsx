@@ -8,20 +8,22 @@ import { computeStatsAcumulado as fetchStatsAcumulado, computeStatsPorRodada as 
 import { SkeletonChart } from '@/components/ui/skeleton-loaders';
 import { useLiga } from '@/contexts/LigaContext';
 import SEO from '@/components/SEO';
+import TemporadaSelector from '@/components/TemporadaSelector';
 
 export default function Dashboard() {
-  const { temporadaAtualId, ligaAtual, isLoading: ligaLoading } = useLiga();
+  const { temporadaSelecionadaId, ligaAtual, isLoading: ligaLoading } = useLiga();
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: stats, isLoading: loadingStats, refetch: refetchStats } = useQuery({
-    queryKey: ['stats-acumulado', temporadaAtualId],
-    queryFn: () => fetchStatsAcumulado(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['stats-acumulado', temporadaId],
+    queryFn: () => fetchStatsAcumulado(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const { data: statsPorRodada, isLoading: loadingRodada, refetch: refetchRodada } = useQuery({
-    queryKey: ['stats-por-rodada', temporadaAtualId],
-    queryFn: () => fetchStatsPorRodada(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['stats-por-rodada', temporadaId],
+    queryFn: () => fetchStatsPorRodada(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const handleRefresh = () => {
