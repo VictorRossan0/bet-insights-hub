@@ -158,9 +158,13 @@ export default function Times() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3"
       >
-        <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        <div>
+          <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        </div>
+        <TemporadaSelector />
         <div className="flex gap-2 mt-4">
           {(
             [
