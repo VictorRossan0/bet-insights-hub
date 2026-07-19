@@ -66,18 +66,19 @@ export default function Times() {
   const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
   const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
-  const { temporadaAtualId, ligaAtual } = useLiga();
+  const { temporadaSelecionadaId, ligaAtual } = useLiga();
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: times, isLoading } = useQuery({
-    queryKey: ["stats-por-time", temporadaAtualId],
-    queryFn: () => fetchStatsPorTime(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ["stats-por-time", temporadaId],
+    queryFn: () => fetchStatsPorTime(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const { data: allJogos } = useQuery({
-    queryKey: ["all-jogos", temporadaAtualId],
-    queryFn: () => fetchAllJogos(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ["all-jogos", temporadaId],
+    queryFn: () => fetchAllJogos(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const allRounds = useMemo(() => {
