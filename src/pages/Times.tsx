@@ -29,6 +29,7 @@ import CasaForaStats from "@/components/times/CasaForaStats";
 import { buildStandings, buildPositionEvolution } from "@/lib/standings";
 import { TiebreakerBadge, TiebreakerLegend } from "@/components/standings/TiebreakerBadge";
 import { useLiga } from "@/contexts/LigaContext";
+import TemporadaSelector from "@/components/TemporadaSelector";
 
 type SortKey = "media_gols_jogo" | "media_escanteios_jogo" | "media_cartoes_jogo" | "total_jogos";
 type Tab = "geral" | "casa-fora" | "forma";
