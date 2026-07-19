@@ -24,12 +24,13 @@ function getForaValue(s: StatsCasaFora, metric: Metric) {
 
 export default function CasaForaStats() {
   const [metric, setMetric] = useState<Metric>("gols");
-  const { temporadaAtualId } = useLiga();
+  const { temporadaSelecionadaId } = useLiga();
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["stats-casa-fora", temporadaAtualId],
-    queryFn: () => fetchStatsCasaFora(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ["stats-casa-fora", temporadaId],
+    queryFn: () => fetchStatsCasaFora(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const chartData = useMemo(() => {
