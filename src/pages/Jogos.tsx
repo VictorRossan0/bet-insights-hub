@@ -19,19 +19,20 @@ export default function Jogos() {
   const pageSize = 10;
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
-  const { temporadaAtualId, ligaAtual } = useLiga();
+  const { temporadaAtualId, temporadaSelecionadaId, ligaAtual } = useLiga();
   const ligaNome = ligaAtual?.nome ?? 'Liga';
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: jogosData, isLoading } = useQuery({
-    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaAtualId],
-    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaAtualId! }),
-    enabled: !!temporadaAtualId,
+    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaId],
+    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaId! }),
+    enabled: !!temporadaId,
   });
 
   const { data: rodadas } = useQuery({
-    queryKey: ['rodadas', temporadaAtualId],
-    queryFn: () => fetchRodadas(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['rodadas', temporadaId],
+    queryFn: () => fetchRodadas(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const invalidateAll = useCallback(() => {
