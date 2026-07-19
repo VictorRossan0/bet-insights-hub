@@ -10,6 +10,7 @@ import { importJogosValidated, parseCSV } from '@/services/supabase/importServic
 import { useAuth } from '@/hooks/useAuth';
 import { useLiga } from '@/contexts/LigaContext';
 import { toast } from 'sonner';
+import TemporadaSelector from '@/components/TemporadaSelector';
 
 export default function Jogos() {
   const [page, setPage] = useState(1);
