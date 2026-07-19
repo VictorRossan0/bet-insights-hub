@@ -52,9 +52,10 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-0.5">Visão geral — {ligaNome}</p>
         </div>
         <div className="flex items-center gap-2">
+          <TemporadaSelector />
           <button
             onClick={handleRefresh}
-            disabled={!temporadaAtualId}
+            disabled={!temporadaId}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97] disabled:opacity-50"
           >
             <RefreshCw className="w-4 h-4" />
@@ -63,7 +64,7 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {(ligaLoading || !temporadaAtualId) && (
+      {(ligaLoading || !temporadaId) && (
         <p className="text-sm text-muted-foreground">Carregando temporada da liga…</p>
       )}
 
