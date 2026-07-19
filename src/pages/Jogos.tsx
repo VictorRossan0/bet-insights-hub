@@ -140,6 +140,9 @@ export default function Jogos() {
         className="flex flex-col sm:flex-row gap-3"
       >
 
+        <TemporadaSelector />
+
+
         <select
           value={rodadaFilter ?? ''}
           onChange={(e) => { setRodadaFilter(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
