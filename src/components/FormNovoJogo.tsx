@@ -17,7 +17,7 @@ type Props = {
 
 export default function FormNovoJogo({ temporadaId, onSuccess, onClose }: Props) {
   const { user } = useAuth();
-  const { data: times = [] } = useQuery({ queryKey: ['times'], queryFn: fetchTimes });
+  const { data: times = [] } = useQuery({ queryKey: ['times'], queryFn: () => fetchTimes() });
 
   const [saving, setSaving] = useState(false);
   const [rlsError, setRlsError] = useState<string | null>(null);

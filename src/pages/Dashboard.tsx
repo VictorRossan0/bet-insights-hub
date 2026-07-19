@@ -8,20 +8,22 @@ import { computeStatsAcumulado as fetchStatsAcumulado, computeStatsPorRodada as 
 import { SkeletonChart } from '@/components/ui/skeleton-loaders';
 import { useLiga } from '@/contexts/LigaContext';
 import SEO from '@/components/SEO';
+import TemporadaSelector from '@/components/TemporadaSelector';
 
 export default function Dashboard() {
-  const { temporadaAtualId, ligaAtual, isLoading: ligaLoading } = useLiga();
+  const { temporadaSelecionadaId, ligaAtual, isLoading: ligaLoading } = useLiga();
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: stats, isLoading: loadingStats, refetch: refetchStats } = useQuery({
-    queryKey: ['stats-acumulado', temporadaAtualId],
-    queryFn: () => fetchStatsAcumulado(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['stats-acumulado', temporadaId],
+    queryFn: () => fetchStatsAcumulado(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const { data: statsPorRodada, isLoading: loadingRodada, refetch: refetchRodada } = useQuery({
-    queryKey: ['stats-por-rodada', temporadaAtualId],
-    queryFn: () => fetchStatsPorRodada(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['stats-por-rodada', temporadaId],
+    queryFn: () => fetchStatsPorRodada(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const handleRefresh = () => {
@@ -50,9 +52,10 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-0.5">Visão geral — {ligaNome}</p>
         </div>
         <div className="flex items-center gap-2">
+          <TemporadaSelector />
           <button
             onClick={handleRefresh}
-            disabled={!temporadaAtualId}
+            disabled={!temporadaId}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-sm font-medium hover:bg-accent/80 transition-colors active:scale-[0.97] disabled:opacity-50"
           >
             <RefreshCw className="w-4 h-4" />
@@ -61,7 +64,7 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {(ligaLoading || !temporadaAtualId) && (
+      {(ligaLoading || !temporadaId) && (
         <p className="text-sm text-muted-foreground">Carregando temporada da liga…</p>
       )}
 

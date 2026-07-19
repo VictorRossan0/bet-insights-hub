@@ -10,6 +10,7 @@ import { importJogosValidated, parseCSV } from '@/services/supabase/importServic
 import { useAuth } from '@/hooks/useAuth';
 import { useLiga } from '@/contexts/LigaContext';
 import { toast } from 'sonner';
+import TemporadaSelector from '@/components/TemporadaSelector';
 
 export default function Jogos() {
   const [page, setPage] = useState(1);
@@ -19,19 +20,20 @@ export default function Jogos() {
   const pageSize = 10;
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
-  const { temporadaAtualId, ligaAtual } = useLiga();
+  const { temporadaAtualId, temporadaSelecionadaId, ligaAtual } = useLiga();
   const ligaNome = ligaAtual?.nome ?? 'Liga';
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: jogosData, isLoading } = useQuery({
-    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaAtualId],
-    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaAtualId! }),
-    enabled: !!temporadaAtualId,
+    queryKey: ['jogos', page, rodadaFilter, timeFilter, temporadaId],
+    queryFn: () => fetchJogosResumo({ page, pageSize, rodada: rodadaFilter, time: timeFilter || undefined, temporada_id: temporadaId! }),
+    enabled: !!temporadaId,
   });
 
   const { data: rodadas } = useQuery({
-    queryKey: ['rodadas', temporadaAtualId],
-    queryFn: () => fetchRodadas(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ['rodadas', temporadaId],
+    queryFn: () => fetchRodadas(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const invalidateAll = useCallback(() => {
@@ -137,6 +139,9 @@ export default function Jogos() {
         transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex flex-col sm:flex-row gap-3"
       >
+
+        <TemporadaSelector />
+
 
         <select
           value={rodadaFilter ?? ''}

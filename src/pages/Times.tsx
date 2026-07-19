@@ -29,6 +29,7 @@ import CasaForaStats from "@/components/times/CasaForaStats";
 import { buildStandings, buildPositionEvolution } from "@/lib/standings";
 import { TiebreakerBadge, TiebreakerLegend } from "@/components/standings/TiebreakerBadge";
 import { useLiga } from "@/contexts/LigaContext";
+import TemporadaSelector from "@/components/TemporadaSelector";
 
 type SortKey = "media_gols_jogo" | "media_escanteios_jogo" | "media_cartoes_jogo" | "total_jogos";
 type Tab = "geral" | "casa-fora" | "forma";
@@ -65,18 +66,19 @@ export default function Times() {
   const [untilRodada, setUntilRodada] = useState<number | undefined>(undefined);
   const [evolutionTeams, setEvolutionTeams] = useState<string[]>([]);
 
-  const { temporadaAtualId, ligaAtual } = useLiga();
+  const { temporadaSelecionadaId, ligaAtual } = useLiga();
+  const temporadaId = temporadaSelecionadaId;
 
   const { data: times, isLoading } = useQuery({
-    queryKey: ["stats-por-time", temporadaAtualId],
-    queryFn: () => fetchStatsPorTime(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ["stats-por-time", temporadaId],
+    queryFn: () => fetchStatsPorTime(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const { data: allJogos } = useQuery({
-    queryKey: ["all-jogos", temporadaAtualId],
-    queryFn: () => fetchAllJogos(temporadaAtualId!),
-    enabled: !!temporadaAtualId,
+    queryKey: ["all-jogos", temporadaId],
+    queryFn: () => fetchAllJogos(temporadaId!),
+    enabled: !!temporadaId,
   });
 
   const allRounds = useMemo(() => {
@@ -156,9 +158,13 @@ export default function Times() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3"
       >
-        <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        <div>
+          <h1 className="text-2xl font-display tracking-wide">Estatísticas por Time</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Ranking e comparação entre equipes</p>
+        </div>
+        <TemporadaSelector />
         <div className="flex gap-2 mt-4">
           {(
             [
