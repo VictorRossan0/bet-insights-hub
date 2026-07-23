@@ -47,8 +47,15 @@ export function LigaProvider({ children }: { children: ReactNode }) {
         .select("id, nome, espn_slug, pais, mostra_recomendacao_cantos")
         .order("id", { ascending: true });
 
-      if (error) throw error;
-      return (data || []) as Liga[];
+      if (!error) return (data || []) as Liga[];
+
+      // Fallback: schema may not have `mostra_recomendacao_cantos` yet.
+      const fb = await supabase
+        .from("competicoes")
+        .select("id, nome, espn_slug, pais")
+        .order("id", { ascending: true });
+      if (fb.error) throw fb.error;
+      return (fb.data || []).map((l) => ({ ...l, mostra_recomendacao_cantos: null })) as Liga[];
     },
     staleTime: 1000 * 60 * 60,
   });
@@ -96,18 +103,19 @@ export function LigaProvider({ children }: { children: ReactNode }) {
 
   const [temporadaSelecionadaId, setTemporadaSelecionadaState] = useState<number | null>(null);
 
-  // Reset selection when liga changes: pick most recent temporada of the new liga.
+  // Reset selection when liga changes: pick current temporada (RPC) or fall back
+  // to the most recent one from the temporadas list once it loads.
   useEffect(() => {
-    if (!ligaAtual?.id) return;
+    if (!ligaAtual?.id) {
+      setTemporadaSelecionadaState(null);
+      return;
+    }
     if (temporadaAtualId) {
       setTemporadaSelecionadaState(temporadaAtualId);
     } else if (temporadas.length > 0) {
       setTemporadaSelecionadaState(temporadas[0].id);
-    } else {
-      setTemporadaSelecionadaState(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ligaAtual?.id, temporadaAtualId]);
+  }, [ligaAtual?.id, temporadaAtualId, temporadas]);
 
   const changeLiga = (slug: string) => {
     const segs = location.pathname.split("/").filter(Boolean);
