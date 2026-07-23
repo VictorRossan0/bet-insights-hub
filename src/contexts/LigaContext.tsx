@@ -96,18 +96,19 @@ export function LigaProvider({ children }: { children: ReactNode }) {
 
   const [temporadaSelecionadaId, setTemporadaSelecionadaState] = useState<number | null>(null);
 
-  // Reset selection when liga changes: pick most recent temporada of the new liga.
+  // Reset selection when liga changes: pick current temporada (RPC) or fall back
+  // to the most recent one from the temporadas list once it loads.
   useEffect(() => {
-    if (!ligaAtual?.id) return;
+    if (!ligaAtual?.id) {
+      setTemporadaSelecionadaState(null);
+      return;
+    }
     if (temporadaAtualId) {
       setTemporadaSelecionadaState(temporadaAtualId);
     } else if (temporadas.length > 0) {
       setTemporadaSelecionadaState(temporadas[0].id);
-    } else {
-      setTemporadaSelecionadaState(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ligaAtual?.id, temporadaAtualId]);
+  }, [ligaAtual?.id, temporadaAtualId, temporadas]);
 
   const changeLiga = (slug: string) => {
     const segs = location.pathname.split("/").filter(Boolean);
