@@ -47,8 +47,15 @@ export function LigaProvider({ children }: { children: ReactNode }) {
         .select("id, nome, espn_slug, pais, mostra_recomendacao_cantos")
         .order("id", { ascending: true });
 
-      if (error) throw error;
-      return (data || []) as Liga[];
+      if (!error) return (data || []) as Liga[];
+
+      // Fallback: schema may not have `mostra_recomendacao_cantos` yet.
+      const fb = await supabase
+        .from("competicoes")
+        .select("id, nome, espn_slug, pais")
+        .order("id", { ascending: true });
+      if (fb.error) throw fb.error;
+      return (fb.data || []).map((l) => ({ ...l, mostra_recomendacao_cantos: null })) as Liga[];
     },
     staleTime: 1000 * 60 * 60,
   });
